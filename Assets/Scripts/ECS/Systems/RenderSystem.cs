@@ -30,24 +30,15 @@ namespace ECS.Systems
     {
         public void Execute()
         {
-            // TODO - Caching (IGroup) of similar components
-            /*
-            foreach (var actor in ActorCache.Instance.GetCached())
-            {
-                
-            }
-            */
+
         }
 
         public void Initialize()
         {
             // TODO - Caching (IGroup) of similar components
-            foreach (var actor in ActorCache.Instance.GetCached())
+            foreach (var component in ComponentCache.Instance.GetCached<RenderComponent>())
             {
-                var renderComponent = actor.Entity.GetComponent<RenderComponent>();
-                if (renderComponent == null) continue;
-
-                renderComponent.Renderer.enabled = false;
+                component.Renderer.enabled = false;
             }
         }
     }
