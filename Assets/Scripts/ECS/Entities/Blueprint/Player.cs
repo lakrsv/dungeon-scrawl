@@ -34,7 +34,8 @@ namespace ECS.Entities.Blueprint
                                  {
                                      new GridPositionComponent(owner),
                                      new RenderComponent(owner) { Sprite = Resources.Load<Sprite>("Sprites/Player.png") },
-                                     new ValueComponent(owner, ComponentType.Health), 
+                                     new ValueComponent(owner, ComponentType.Health) { Value = 10 }, 
+                                     new ValueComponent(owner, ComponentType.FieldOfView) { Value = 5 }, 
                                  };
 
             return components;

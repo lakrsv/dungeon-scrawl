@@ -25,17 +25,36 @@ namespace Utilities.Game.ECSCache
     using System.Collections.ObjectModel;
 
     using ECS.Entities;
+    using ECS.Entities.Blueprint;
 
     public class ActorCache : MonoSingletonCreateIfNull<ActorCache>
     {
+        private readonly Dictionary<IEntityBlueprint, List<Actor>> _actorsByType = new Dictionary<IEntityBlueprint, List<Actor>>();
+
         private readonly List<Actor> _actors = new List<Actor>();
 
-        public void Add(Actor actor)
+        public Actor Player { get; private set; }
+
+        public void Add(Actor actor, IEntityBlueprint blueprint)
         {
             if (_actors.Contains(actor))
                 throw new InvalidOperationException(string.Format("Actors already contains {0}", actor.gameObject.name));
-
             _actors.Add(actor);
+
+            if (blueprint is Player)
+            {
+                Player = actor;
+                return;
+            }
+
+            if (_actorsByType.ContainsKey(blueprint))
+            {
+                _actorsByType[blueprint].Add(actor);
+            }
+            else
+            {
+                _actorsByType.Add(blueprint, new List<Actor> { actor });
+            }
         }
 
         public void Remove(Actor actor)
@@ -44,6 +63,16 @@ namespace Utilities.Game.ECSCache
                 throw new InvalidOperationException(string.Format("Actors does not contain {0}", actor.gameObject.name));
 
             _actors.Remove(actor);
+
+            // TODO - Optimize?
+            foreach (var pair in _actorsByType)
+            {
+                var actors = pair.Value;
+                if (!actors.Contains(actor)) continue;
+
+                actors.Remove(actor);
+                break;
+            }
         }
 
         public ReadOnlyCollection<Actor> GetActors()

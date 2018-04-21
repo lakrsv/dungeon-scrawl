@@ -25,6 +25,7 @@ namespace ECS.Systems
 
     using UnityEngine;
 
+    using Utilities.Game.ECSCache;
     using Utilities.Game.ObjectPool;
 
     public class ActorSpawnerSystem : MonoBehaviour, IInitializeSystem
@@ -42,6 +43,14 @@ namespace ECS.Systems
 
             var actor = ObjectPools.Instance.GetPooledObject<Actor>();
             actor.Initialize(blueprint);
+
+            ActorCache.Instance.Add(actor, blueprint);
+        }
+
+        private void DespawnActor(Actor actor)
+        {
+            ActorCache.Instance.Remove(actor);
+            actor.Disable();
         }
     }
 }

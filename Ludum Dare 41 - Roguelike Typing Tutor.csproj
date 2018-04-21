@@ -394,6 +394,7 @@
     <Compile Include="Assets\Imported\ShaderWeaver\Tutorials\Tutorial14 - Refract Node\SWSimpleCameraFollow.cs" />
     <Compile Include="Assets\Imported\ShaderWeaver\Tutorials\Tutorial7 - Alpha Node\AlphaControl.cs" />
     <Compile Include="Assets\Scripts\Controllers\InputController.cs" />
+    <Compile Include="Assets\Scripts\ECS\Components\ChaseTargetComponent.cs" />
     <Compile Include="Assets\Scripts\ECS\Components\ComponentBase.cs" />
     <Compile Include="Assets\Scripts\ECS\Components\GridPositionComponent.cs" />
     <Compile Include="Assets\Scripts\ECS\Components\IComponent.cs" />
@@ -414,11 +415,15 @@
     <Compile Include="Assets\Scripts\ECS\Systems\RenderSystem.cs" />
     <Compile Include="Assets\Scripts\ECS\Systems\Systems.cs" />
     <Compile Include="Assets\Scripts\ECS\Systems\TurnSystem.cs" />
+    <Compile Include="Assets\Scripts\ECS\Systems\WordSystem.cs" />
     <Compile Include="Assets\Scripts\Tiles\Rule Tile\Scripts\RuleTile.cs" />
+    <Compile Include="Assets\Scripts\Utilities\Constants.cs" />
+    <Compile Include="Assets\Scripts\Utilities\Extensions.cs" />
     <Compile Include="Assets\Scripts\Utilities\Game\DontDestroy.cs" />
     <Compile Include="Assets\Scripts\Utilities\Game\ECSCache\ActorCache.cs" />
     <Compile Include="Assets\Scripts\Utilities\Game\MonoSingleton.cs" />
     <Compile Include="Assets\Scripts\Utilities\Game\MonoSingletonCreateIfNull.cs" />
+    <Compile Include="Assets\Scripts\Utilities\Game\Navigation\Direction.cs" />
     <Compile Include="Assets\Scripts\Utilities\Game\ObjectPool\IPoolable.cs" />
     <Compile Include="Assets\Scripts\Utilities\Game\ObjectPool\ObjectPool.cs" />
     <Compile Include="Assets\Scripts\Utilities\Game\ObjectPool\ObjectPools.cs" />
@@ -516,6 +521,9 @@
     <None Include="Assets\Imported\ShaderWeaver\Tutorials\Tutorial7 - Alpha Node\alpha.shader" />
     <None Include="Assets\Imported\ShaderWeaver\Tutorials\Tutorial8 - Gold Card\goldCard.shader" />
     <None Include="Assets\Imported\ShaderWeaver\Tutorials\Tutorial9 - Sprite Animation\spriteAnimation.shader" />
+    <None Include="Assets\Resources\Words\adjectives.txt" />
+    <None Include="Assets\Resources\Words\nouns.txt" />
+    <None Include="Assets\Resources\Words\verbs.txt" />
     <None Include="Assets\TextMesh Pro\Examples &amp; Extras\Fonts\Anton OFL.txt" />
     <None Include="Assets\TextMesh Pro\Examples &amp; Extras\Fonts\Bangers - OFL.txt" />
     <None Include="Assets\TextMesh Pro\Examples &amp; Extras\Fonts\LiberationSans - OFL.txt" />

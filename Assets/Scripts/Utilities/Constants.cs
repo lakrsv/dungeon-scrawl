@@ -1,5 +1,5 @@
 ﻿// // --------------------------------------------------------------------------------------------------------------------
-// // <copyright file="ComponentType.cs" author="Lars" company="None">
+// // <copyright file="Constants.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -18,13 +18,10 @@
 // // </summary>
 // // --------------------------------------------------------------------------------------------------------------------
 
-namespace ECS.Components.Type
+namespace Utilities
 {
-    public enum ComponentType
+    public static class Constants
     {
-        // For all components that are not generic
-        SpecificType,
-        Health,
-        FieldOfView,
+        public const int RandomSeed = 1234;
     }
 }

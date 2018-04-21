@@ -46,6 +46,7 @@ namespace ECS.Entities
             gameObject.SetActive(false);
 
             ActorCache.Instance.Remove(this);
+            IsActive = false;
         }
 
         public void Enable()
@@ -53,7 +54,7 @@ namespace ECS.Entities
             gameObject.SetActive(true);
 
             Entity = new Entity(gameObject);
-            ActorCache.Instance.Add(this);
+            IsActive = true;
         }
 
         public void Initialize(IEntityBlueprint blueprint)

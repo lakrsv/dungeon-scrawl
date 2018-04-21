@@ -29,6 +29,8 @@ namespace ECS.Systems
     using UnityEngine;
     using UnityEngine.Tilemaps;
 
+    using Utilities;
+
     public class MapSystem : MonoBehaviour, IInitializeSystem
     {
         [SerializeField]
@@ -53,16 +55,13 @@ namespace ECS.Systems
         [SerializeField]
         private int _minRoomSize;
 
-        [SerializeField]
-        private int _randomSeed = 1234;
-
         private IRandom _random;
 
         public Map Map { get; private set; }
 
         public void Initialize()
         {
-            _random = new DotNetRandom(_randomSeed);
+            _random = new DotNetRandom(Constants.RandomSeed);
             CreateDefaultMap();
         }
 

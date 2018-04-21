@@ -1,5 +1,5 @@
 ﻿// // --------------------------------------------------------------------------------------------------------------------
-// // <copyright file="ComponentType.cs" author="Lars" company="None">
+// // <copyright file="Extensions.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -18,13 +18,31 @@
 // // </summary>
 // // --------------------------------------------------------------------------------------------------------------------
 
-namespace ECS.Components.Type
+namespace Utilities
 {
-    public enum ComponentType
+    using System;
+
+    using UnityEngine;
+
+    using Utilities.Game.Navigation;
+
+    public static class Extensions
     {
-        // For all components that are not generic
-        SpecificType,
-        Health,
-        FieldOfView,
+        public static Vector2Int ToVector2Int(this Direction direction)
+        {
+            switch (direction)
+            {
+                case Direction.Up:
+                    return Vector2Int.up;
+                case Direction.Down:
+                    return Vector2Int.down;
+                case Direction.Left:
+                    return Vector2Int.left;
+                case Direction.Right:
+                    return Vector2Int.right;
+                default:
+                    throw new ArgumentOutOfRangeException("direction");
+            }
+        }
     }
 }

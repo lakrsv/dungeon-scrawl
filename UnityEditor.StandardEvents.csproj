@@ -421,6 +421,9 @@
     <None Include="Assets\Imported\ShaderWeaver\Tutorials\Tutorial7 - Alpha Node\alpha.shader" />
     <None Include="Assets\Imported\ShaderWeaver\Tutorials\Tutorial8 - Gold Card\goldCard.shader" />
     <None Include="Assets\Imported\ShaderWeaver\Tutorials\Tutorial9 - Sprite Animation\spriteAnimation.shader" />
+    <None Include="Assets\Resources\Words\adjectives.txt" />
+    <None Include="Assets\Resources\Words\nouns.txt" />
+    <None Include="Assets\Resources\Words\verbs.txt" />
     <None Include="Assets\TextMesh Pro\Examples &amp; Extras\Fonts\Anton OFL.txt" />
     <None Include="Assets\TextMesh Pro\Examples &amp; Extras\Fonts\Bangers - OFL.txt" />
     <None Include="Assets\TextMesh Pro\Examples &amp; Extras\Fonts\LiberationSans - OFL.txt" />
