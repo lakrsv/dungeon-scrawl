@@ -1,3 +1,5 @@
-.DS_Store
-*.userprefs
-*.sln 
+*.sln
+.vs/
+Library/
+Assets/Imported/ShaderWeaver/
+Assets/Imported/ShaderWeaver.meta
