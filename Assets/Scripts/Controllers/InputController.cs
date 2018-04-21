@@ -27,6 +27,8 @@ namespace Controllers
     using ECS.Entities;
     using ECS.Systems;
 
+    using UI;
+
     using UnityEngine;
 
     using Utilities;
@@ -42,6 +44,9 @@ namespace Controllers
         [SerializeField]
         private WordSystem _wordSystem;
 
+        [SerializeField]
+        private MoveHints _moveHints;
+
         private int _attackDifficulty = WordSystem.MinWordLength;
 
         private int _movementDifficulty = WordSystem.MinWordLength;
@@ -49,6 +54,20 @@ namespace Controllers
         private void AppendLetter(char c)
         {
             _currentInputWord.Append(c);
+
+            var invalid = true;
+            HintCache.Instance.GetCached().ForEach(x =>
+                {
+                    x.OnWordTyped(_currentInputWord.ToString());
+                    if (!x.WordWasInvalid) invalid = false;
+
+                    if (x.WordComplete)
+                    {
+                        SubmitInput();
+                    }
+                });
+
+            if (invalid) _currentInputWord.Length = 0;
         }
 
         private void RemoveLetter()
@@ -101,11 +120,17 @@ namespace Controllers
                 var nextPos = player.Entity.GetComponent<GridPositionComponent>().Position;
 
                 var directionVector = direction.ToVector2Int();
-                if (!MapSystem.Instance.IsWalkable(nextPos + directionVector)) continue;
+                if (!MapSystem.Instance.IsWalkable(nextPos + directionVector))
+                {
+                    _moveHints.SetHint(direction, false);
+                    continue;
+                }
 
                 var requiredWord = _wordSystem.GetNextWord(_movementDifficulty);
 
                 _requiredDirectionWord.Add(requiredWord, direction);
+
+                _moveHints.SetHint(direction, true, requiredWord);
 
                 Debug.Log(string.Format("To move {0} type {1}", direction, requiredWord));
             }

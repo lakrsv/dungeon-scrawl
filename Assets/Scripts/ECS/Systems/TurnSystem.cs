@@ -33,7 +33,7 @@ namespace ECS.Systems
 
     public class TurnSystem : MonoBehaviour, IExecuteSystem, IInitializeSystem
     {
-        private float _currentTurnDelay = 0f;
+        private float _currentTurnDelay = 0.25f;
 
         private int _currentTurnIndex;
 
