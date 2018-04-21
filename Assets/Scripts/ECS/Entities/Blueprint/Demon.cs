@@ -1,5 +1,5 @@
 ﻿// // --------------------------------------------------------------------------------------------------------------------
-// // <copyright file="ValueComponent.cs" author="Lars" company="None">
+// // <copyright file="Zombie.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -18,18 +18,27 @@
 // // </summary>
 // // --------------------------------------------------------------------------------------------------------------------
 
-namespace ECS.Components
+namespace ECS.Entities.Blueprint
 {
+    using ECS.Components;
     using ECS.Components.Type;
-    using ECS.Entities;
 
-    public class ValueComponent : ComponentBase
+    using UnityEngine;
+
+    public class Demon : IEntityBlueprint
     {
-        public ValueComponent(Entity owner, ComponentType type)
-            : base(owner, type)
+        public IComponent[] GetComponents(Entity owner)
         {
-        }
+            var components = new IComponent[]
+                                 {
+                                     new GridPositionComponent(owner),
+                                     new RenderComponent(owner) { Sprite = Resources.Load<Sprite>("Sprites/Demon.png") },
+                                     new IntegerComponent(owner, ComponentType.Health) { Value = 10 },
+                                     new IntegerComponent(owner, ComponentType.FieldOfView) { Value = 5 },
+                                     new BooleanComponent(owner, ComponentType.Turn), 
+                                 };
 
-        public int Value { get; set; }
+            return components;
+        }
     }
 }

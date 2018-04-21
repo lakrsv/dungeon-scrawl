@@ -43,7 +43,7 @@ namespace ECS.Systems
         public void Execute()
         {
             // TODO - Cache for performance
-            foreach (var actor in ActorCache.Instance.GetActors())
+            foreach (var actor in ActorCache.Instance.GetCached())
             {
                 if (_movingActors.Contains(actor)) continue;
 

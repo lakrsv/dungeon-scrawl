@@ -32,7 +32,7 @@ namespace ECS.Systems
         {
             // TODO - Caching (IGroup) of similar components
             /*
-            foreach (var actor in ActorCache.Instance.GetActors())
+            foreach (var actor in ActorCache.Instance.GetCached())
             {
                 
             }
@@ -42,7 +42,7 @@ namespace ECS.Systems
         public void Initialize()
         {
             // TODO - Caching (IGroup) of similar components
-            foreach (var actor in ActorCache.Instance.GetActors())
+            foreach (var actor in ActorCache.Instance.GetCached())
             {
                 var renderComponent = actor.Entity.GetComponent<RenderComponent>();
                 if (renderComponent == null) continue;

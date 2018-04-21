@@ -394,14 +394,16 @@
     <Compile Include="Assets\Imported\ShaderWeaver\Tutorials\Tutorial14 - Refract Node\SWSimpleCameraFollow.cs" />
     <Compile Include="Assets\Imported\ShaderWeaver\Tutorials\Tutorial7 - Alpha Node\AlphaControl.cs" />
     <Compile Include="Assets\Scripts\Controllers\InputController.cs" />
+    <Compile Include="Assets\Scripts\ECS\Components\BooleanComponent.cs" />
     <Compile Include="Assets\Scripts\ECS\Components\ChaseTargetComponent.cs" />
     <Compile Include="Assets\Scripts\ECS\Components\ComponentBase.cs" />
     <Compile Include="Assets\Scripts\ECS\Components\GridPositionComponent.cs" />
     <Compile Include="Assets\Scripts\ECS\Components\IComponent.cs" />
+    <Compile Include="Assets\Scripts\ECS\Components\IntegerComponent.cs" />
     <Compile Include="Assets\Scripts\ECS\Components\RenderComponent.cs" />
     <Compile Include="Assets\Scripts\ECS\Components\Type\ComponentType.cs" />
-    <Compile Include="Assets\Scripts\ECS\Components\ValueComponent.cs" />
     <Compile Include="Assets\Scripts\ECS\Entities\Actor.cs" />
+    <Compile Include="Assets\Scripts\ECS\Entities\Blueprint\Demon.cs" />
     <Compile Include="Assets\Scripts\ECS\Entities\Blueprint\IEntityBlueprint.cs" />
     <Compile Include="Assets\Scripts\ECS\Entities\Blueprint\Player.cs" />
     <Compile Include="Assets\Scripts\ECS\Entities\Entity.cs" />
@@ -421,6 +423,8 @@
     <Compile Include="Assets\Scripts\Utilities\Extensions.cs" />
     <Compile Include="Assets\Scripts\Utilities\Game\DontDestroy.cs" />
     <Compile Include="Assets\Scripts\Utilities\Game\ECSCache\ActorCache.cs" />
+    <Compile Include="Assets\Scripts\Utilities\Game\ECSCache\ComponentCache.cs" />
+    <Compile Include="Assets\Scripts\Utilities\Game\ECSCache\ICache.cs" />
     <Compile Include="Assets\Scripts\Utilities\Game\MonoSingleton.cs" />
     <Compile Include="Assets\Scripts\Utilities\Game\MonoSingletonCreateIfNull.cs" />
     <Compile Include="Assets\Scripts\Utilities\Game\Navigation\Direction.cs" />

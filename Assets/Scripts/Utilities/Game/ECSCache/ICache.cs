@@ -1,5 +1,5 @@
 ﻿// // --------------------------------------------------------------------------------------------------------------------
-// // <copyright file="Player.cs" author="Lars" company="None">
+// // <copyright file="ICache.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -18,27 +18,21 @@
 // // </summary>
 // // --------------------------------------------------------------------------------------------------------------------
 
-namespace ECS.Entities.Blueprint
+namespace Utilities.Game.ECSCache
 {
-    using ECS.Components;
-    using ECS.Components.Type;
+    using System;
+    using System.Collections.ObjectModel;
 
-    using UnityEngine;
-
-    // TODO - Make this all nice and editor creatable like a prefab
-    public class Player : IEntityBlueprint
+    public interface ICache<TObject, in TType>
     {
-        public IComponent[] GetComponents(Entity owner)
-        {
-            var components = new IComponent[]
-                                 {
-                                     new GridPositionComponent(owner),
-                                     new RenderComponent(owner) { Sprite = Resources.Load<Sprite>("Sprites/Player.png") },
-                                     new IntegerComponent(owner, ComponentType.Health) { Value = 10 }, 
-                                     new IntegerComponent(owner, ComponentType.FieldOfView) { Value = 5 },
-                                 };
+        void Add(TObject obj, TType type);
 
-            return components;
-        }
+        void Remove(TObject obj);
+
+        ReadOnlyCollection<TObject> GetCached();
+
+        ReadOnlyCollection<TObject> GetCached(TType type);
+
+        ReadOnlyCollection<TObject> GetCached(Type type);
     }
 }

@@ -26,5 +26,6 @@ namespace ECS.Components.Type
         SpecificType,
         Health,
         FieldOfView,
+        Turn
     }
 }

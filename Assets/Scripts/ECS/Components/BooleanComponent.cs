@@ -1,5 +1,5 @@
 ﻿// // --------------------------------------------------------------------------------------------------------------------
-// // <copyright file="Player.cs" author="Lars" company="None">
+// // <copyright file="BooleanComponent.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -18,27 +18,18 @@
 // // </summary>
 // // --------------------------------------------------------------------------------------------------------------------
 
-namespace ECS.Entities.Blueprint
+namespace ECS.Components
 {
-    using ECS.Components;
     using ECS.Components.Type;
+    using ECS.Entities;
 
-    using UnityEngine;
-
-    // TODO - Make this all nice and editor creatable like a prefab
-    public class Player : IEntityBlueprint
+    public class BooleanComponent : ComponentBase
     {
-        public IComponent[] GetComponents(Entity owner)
+        public BooleanComponent(Entity owner, ComponentType type)
+            : base(owner, type)
         {
-            var components = new IComponent[]
-                                 {
-                                     new GridPositionComponent(owner),
-                                     new RenderComponent(owner) { Sprite = Resources.Load<Sprite>("Sprites/Player.png") },
-                                     new IntegerComponent(owner, ComponentType.Health) { Value = 10 }, 
-                                     new IntegerComponent(owner, ComponentType.FieldOfView) { Value = 5 },
-                                 };
-
-            return components;
         }
+
+        public bool Value { get; set; }
     }
 }

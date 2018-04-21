@@ -37,10 +37,12 @@ namespace ECS.Components
 
         public virtual void OnAdd()
         {
+
         }
 
         public virtual void OnRemove()
         {
+
         }
     }
 }

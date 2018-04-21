@@ -27,7 +27,7 @@ namespace Utilities.Game.ECSCache
     using ECS.Entities;
     using ECS.Entities.Blueprint;
 
-    public class ActorCache : MonoSingletonCreateIfNull<ActorCache>
+    public class ActorCache : MonoSingleton<ActorCache>, ICache<Actor, IEntityBlueprint>
     {
         private readonly Dictionary<IEntityBlueprint, List<Actor>> _actorsByType = new Dictionary<IEntityBlueprint, List<Actor>>();
 
@@ -75,9 +75,19 @@ namespace Utilities.Game.ECSCache
             }
         }
 
-        public ReadOnlyCollection<Actor> GetActors()
+        public ReadOnlyCollection<Actor> GetCached()
         {
             return _actors.AsReadOnly();
+        }
+
+        public ReadOnlyCollection<Actor> GetCached(IEntityBlueprint type)
+        {
+            return _actorsByType.ContainsKey(type) ? _actorsByType[type].AsReadOnly() : null;
+        }
+
+        public ReadOnlyCollection<Actor> GetCached(Type type)
+        {
+            throw new NotImplementedException();
         }
     }
 }
