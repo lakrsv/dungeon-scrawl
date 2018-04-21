@@ -20,13 +20,48 @@
 
 namespace ECS.Systems
 {
+    using System.Collections.Generic;
+
+    using DG.Tweening;
+
+    using ECS.Components;
+    using ECS.Entities;
+
     using UnityEngine;
+
+    using Utilities.Game.ECSCache;
 
     public class MoveSystem : MonoBehaviour, IExecuteSystem
     {
+        // TODO - Component for movement duration?
+        private const float MovementDuration = 0.25f;
+
+        private readonly HashSet<Actor> _movingActors = new HashSet<Actor>();
+
+        private Vector3 _temp = Vector2.zero;
+
         public void Execute()
         {
+            // TODO - Cache for performance
+            foreach (var actor in ActorCache.Instance.GetActors())
+            {
+                if (_movingActors.Contains(actor)) continue;
 
+                var gridPosition = actor.Entity.GetComponent<GridPositionComponent>();
+                if (gridPosition == null) continue;
+
+                _temp.Set(gridPosition.Position.x, gridPosition.Position.y, 0);
+                if (actor.gameObject.transform.position == _temp) continue;
+
+                _movingActors.Add(actor);
+                MoveActor(actor, _temp);
+            }
+        }
+
+        private void MoveActor(Actor actor, Vector3 position)
+        {
+            actor.gameObject.transform.DOMove(position, MovementDuration).SetEase(Ease.OutBack)
+                .OnComplete(() => _movingActors.Remove(actor));
         }
     }
 }

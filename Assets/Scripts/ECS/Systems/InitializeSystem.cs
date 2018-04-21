@@ -1,5 +1,5 @@
 ﻿// // --------------------------------------------------------------------------------------------------------------------
-// // <copyright file="SystemController.cs" author="Lars" company="None">
+// // <copyright file="InitializeSystem.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -18,21 +18,17 @@
 // // </summary>
 // // --------------------------------------------------------------------------------------------------------------------
 
-namespace Controllers
+namespace ECS.Systems
 {
+    using DG.Tweening;
+
     using UnityEngine;
 
-    public class GameController : MonoBehaviour
+    public class InitializeSystem : MonoBehaviour, IInitializeSystem
     {
-        // Use this for initialization
-        private void Start()
+        public void Initialize()
         {
-
-        }
-
-        // Update is called once per frame
-        private void Update()
-        {
+            DOTween.Init();
         }
     }
 }

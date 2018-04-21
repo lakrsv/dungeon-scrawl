@@ -393,7 +393,7 @@
     <Compile Include="Assets\Imported\ShaderWeaver\Plugin\Scripts\MonoBehaviours\SWPreview.cs" />
     <Compile Include="Assets\Imported\ShaderWeaver\Tutorials\Tutorial14 - Refract Node\SWSimpleCameraFollow.cs" />
     <Compile Include="Assets\Imported\ShaderWeaver\Tutorials\Tutorial7 - Alpha Node\AlphaControl.cs" />
-    <Compile Include="Assets\Scripts\Controllers\SystemController.cs" />
+    <Compile Include="Assets\Scripts\Controllers\InputController.cs" />
     <Compile Include="Assets\Scripts\ECS\Components\ComponentBase.cs" />
     <Compile Include="Assets\Scripts\ECS\Components\GridPositionComponent.cs" />
     <Compile Include="Assets\Scripts\ECS\Components\IComponent.cs" />
@@ -407,6 +407,7 @@
     <Compile Include="Assets\Scripts\ECS\Systems\ActorSpawnerSystem.cs" />
     <Compile Include="Assets\Scripts\ECS\Systems\IExecuteSystem.cs" />
     <Compile Include="Assets\Scripts\ECS\Systems\IInitializeSystem.cs" />
+    <Compile Include="Assets\Scripts\ECS\Systems\InitializeSystem.cs" />
     <Compile Include="Assets\Scripts\ECS\Systems\ISystem.cs" />
     <Compile Include="Assets\Scripts\ECS\Systems\MapSystem.cs" />
     <Compile Include="Assets\Scripts\ECS\Systems\MoveSystem.cs" />
