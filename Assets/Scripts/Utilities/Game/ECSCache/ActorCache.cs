@@ -75,17 +75,18 @@ namespace Utilities.Game.ECSCache
             }
         }
 
-        public ReadOnlyCollection<Actor> GetCached()
+        public IEnumerable<Actor> GetCached()
         {
             return _actors.AsReadOnly();
         }
 
-        public ReadOnlyCollection<Actor> GetCached(IEntityBlueprint type)
+        public IEnumerable<Actor> GetCached(IEntityBlueprint type)
         {
             return _actorsByType.ContainsKey(type) ? _actorsByType[type].AsReadOnly() : null;
         }
 
-        public ReadOnlyCollection<Actor> GetCached(Type type)
+        public IEnumerable<T> GetCached<T>()
+            where T : Actor
         {
             throw new NotImplementedException();
         }

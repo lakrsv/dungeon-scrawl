@@ -23,6 +23,8 @@ namespace ECS.Components
     using ECS.Components.Type;
     using ECS.Entities;
 
+    using Utilities.Game.ECSCache;
+
     public abstract class ComponentBase : IComponent
     {
         protected ComponentBase(Entity owner, ComponentType type = ComponentType.SpecificType)
@@ -33,16 +35,16 @@ namespace ECS.Components
 
         public ComponentType Type { get; private set; }
 
-        protected Entity Owner { get; private set; }
+        public Entity Owner { get; private set; }
 
         public virtual void OnAdd()
         {
-
+            ComponentCache.Instance.Add(this, Type);
         }
 
         public virtual void OnRemove()
         {
-
+            ComponentCache.Instance.Remove(this);
         }
     }
 }

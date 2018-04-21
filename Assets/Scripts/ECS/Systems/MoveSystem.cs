@@ -36,32 +36,29 @@ namespace ECS.Systems
         // TODO - Component for movement duration?
         private const float MovementDuration = 0.25f;
 
-        private readonly HashSet<Actor> _movingActors = new HashSet<Actor>();
+        private readonly HashSet<Entity> _movingEntities = new HashSet<Entity>();
 
         private Vector3 _temp = Vector2.zero;
 
         public void Execute()
         {
             // TODO - Cache for performance
-            foreach (var actor in ActorCache.Instance.GetCached())
+            foreach (var component in ComponentCache.Instance.GetCached<GridPositionComponent>())
             {
-                if (_movingActors.Contains(actor)) continue;
+                if (_movingEntities.Contains(component.Owner)) continue;
 
-                var gridPosition = actor.Entity.GetComponent<GridPositionComponent>();
-                if (gridPosition == null) continue;
+                _temp.Set(component.Position.x, component.Position.y, 0);
+                if (component.Owner.GameObject.transform.position == _temp) continue;
 
-                _temp.Set(gridPosition.Position.x, gridPosition.Position.y, 0);
-                if (actor.gameObject.transform.position == _temp) continue;
-
-                _movingActors.Add(actor);
-                MoveActor(actor, _temp);
+                _movingEntities.Add(component.Owner);
+                MoveEntity(component.Owner, _temp);
             }
         }
 
-        private void MoveActor(Actor actor, Vector3 position)
+        private void MoveEntity(Entity entity, Vector3 position)
         {
-            actor.gameObject.transform.DOMove(position, MovementDuration).SetEase(Ease.OutBack)
-                .OnComplete(() => _movingActors.Remove(actor));
+            entity.GameObject.transform.DOMove(position, MovementDuration).SetEase(Ease.OutBack)
+                .OnComplete(() => _movingEntities.Remove(entity));
         }
     }
 }

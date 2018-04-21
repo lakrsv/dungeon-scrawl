@@ -20,8 +20,10 @@
 
 namespace Utilities.Game.ECSCache
 {
-    using System;
+    using System.Collections.Generic;
     using System.Collections.ObjectModel;
+
+    using ECS.Components;
 
     public interface ICache<TObject, in TType>
     {
@@ -29,10 +31,11 @@ namespace Utilities.Game.ECSCache
 
         void Remove(TObject obj);
 
-        ReadOnlyCollection<TObject> GetCached();
+        IEnumerable<TObject> GetCached();
 
-        ReadOnlyCollection<TObject> GetCached(TType type);
+        IEnumerable<TObject> GetCached(TType type);
 
-        ReadOnlyCollection<TObject> GetCached(Type type);
+        IEnumerable<T> GetCached<T>()
+            where T : TObject;
     }
 }

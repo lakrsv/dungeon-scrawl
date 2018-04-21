@@ -23,6 +23,7 @@ namespace Utilities.Game.ECSCache
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Linq;
 
     using ECS.Components;
     using ECS.Components.Type;
@@ -51,19 +52,21 @@ namespace Utilities.Game.ECSCache
                 throw new InvalidOperationException("Components does not contain this component");
         }
 
-        public ReadOnlyCollection<IComponent> GetCached()
+        public IEnumerable<IComponent> GetCached()
         {
             return _components.AsReadOnly();
         }
 
-        public ReadOnlyCollection<IComponent> GetCached(ComponentType type)
+        public IEnumerable<IComponent> GetCached(ComponentType type)
         {
             return !_componentsByGenericType.ContainsKey(type) ? null : _componentsByGenericType[type].AsReadOnly();
         }
 
-        public ReadOnlyCollection<IComponent> GetCached(Type type)
+        public IEnumerable<T> GetCached<T>()
+            where T : IComponent
         {
-            return !_componentsBySpecificType.ContainsKey(type) ? null : _componentsBySpecificType[type].AsReadOnly();
+            var type = typeof(T);
+            return !_componentsBySpecificType.ContainsKey(type) ? null : _componentsBySpecificType[type].Cast<T>();
         }
 
         private void AddSpecific(IComponent component)
