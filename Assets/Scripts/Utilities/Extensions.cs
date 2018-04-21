@@ -48,6 +48,31 @@ namespace Utilities
             }
         }
 
+        public static Direction ToDirection(this Vector2Int direction)
+        {
+            if (direction == Vector2Int.up)
+            {
+                return Direction.Up;
+            }
+
+            if (direction == Vector2Int.down)
+            {
+                return Direction.Down;
+            }
+
+            if (direction == Vector2Int.left)
+            {
+                return Direction.Left;
+            }
+
+            if (direction == Vector2Int.right)
+            {
+                return Direction.Right;
+            }
+
+            return Direction.Up;
+        }
+
         public static Vector2Int RandomLocation(this Map map, IRandom random)
         {
             var minX = 0;

@@ -24,6 +24,8 @@ namespace ECS.Components
 
     using UnityEngine;
 
+    using Utilities.Game;
+
     public class RenderComponent : ComponentBase
     {
         public RenderComponent(Entity owner)
@@ -39,7 +41,7 @@ namespace ECS.Components
         {
             Renderer = Owner.GameObject.GetComponentInChildren<SpriteRenderer>();
             Renderer.sprite = Sprite;
-
+            Renderer.sortingOrder = SortOrder.ActorDefault;
             base.OnAdd();
         }
     }

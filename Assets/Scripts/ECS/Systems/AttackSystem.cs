@@ -47,9 +47,9 @@ namespace ECS.Systems
         [SerializeField]
         private MoveSystem _moveSystem;
 
-        public event Action<Entity, SpellHint> OnEntityInvisible;
+        public event Action<Entity, SpellHint> OnEntityLeaveAttackRange;
 
-        public event Action<Entity, SpellHint> OnEntityVisible;
+        public event Action<Entity, SpellHint> OnEntityEnterAttackRange;
 
         public void AttackMelee(Entity entity, Entity target)
         {
@@ -159,7 +159,11 @@ namespace ECS.Systems
             if (targetHealth.Value <= 0)
             {
                 var render = targetHealth.Owner.GetComponent<RenderComponent>();
-                if (render != null) render.Sprite = Sprites.Instance.GetDeathSprite();
+                if (render != null)
+                {
+                    render.Sprite = Sprites.Instance.GetDeathSprite();
+                    render.Renderer.sortingOrder = SortOrder.DeadActor;
+                }
 
                 var turnComponent = targetHealth.Owner.GetComponent<BooleanComponent>(ComponentType.Turn);
                 if (turnComponent != null) targetHealth.Owner.RemoveComponent(turnComponent);
@@ -205,10 +209,24 @@ namespace ECS.Systems
 
         private void UpdateAISpellHints(Entity entity)
         {
+            var entityPos = entity.GetComponent<GridPositionComponent>();
+            if (entityPos == null) return;
+
+            var player = ActorCache.Instance.Player;
+            if (player == null) return;
+
+            var playerPos = player.Entity.GetComponent<GridPositionComponent>();
+            if (playerPos == null) return;
+
+            var playerReach = player.Entity.GetComponent<IntegerComponent>(ComponentType.Reach);
+            if (playerReach == null) return;
+
+            var inReach = playerReach.Value >= Vector2.Distance(entityPos.Position, playerPos.Position);
+
             var render = entity.GetComponent<RenderComponent>();
 
             if (render == null || !render.Renderer.enabled
-                || entity.GetComponent<BooleanComponent>(ComponentType.Turn) == null)
+                || entity.GetComponent<BooleanComponent>(ComponentType.Turn) == null || !inReach)
             {
                 if (_hintsForEntity.ContainsKey(entity))
                 {
@@ -217,18 +235,18 @@ namespace ECS.Systems
                     _hintsForEntity[entity].Disable();
                     _hintsForEntity.Remove(entity);
 
-                    if (OnEntityInvisible != null) OnEntityInvisible(entity, spellHint);
+                    if (OnEntityLeaveAttackRange != null) OnEntityLeaveAttackRange(entity, spellHint);
                 }
 
                 return;
             }
 
-            if (!_hintsForEntity.ContainsKey(entity))
+            if (inReach && !_hintsForEntity.ContainsKey(entity))
             {
                 var spellHint = ObjectPools.Instance.GetPooledObject<SpellHint>();
                 _hintsForEntity.Add(entity, spellHint);
 
-                if (OnEntityVisible != null) OnEntityVisible(entity, spellHint);
+                if (OnEntityEnterAttackRange != null) OnEntityEnterAttackRange(entity, spellHint);
             }
         }
     }

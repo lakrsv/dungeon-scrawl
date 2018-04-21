@@ -48,6 +48,21 @@ namespace UI.Hint
 
         public void SetHint(Direction direction, bool enabled, string word = null)
         {
+            var hint = GetHint(direction);
+
+            if (enabled)
+            {
+                hint.Enable();
+                hint.Initialize(null, word);
+            }
+            else if (!enabled)
+            {
+                hint.Disable();
+            }
+        }
+
+        public SpellHint GetHint(Direction direction)
+        {
             SpellHint hint;
             switch (direction)
             {
@@ -67,15 +82,7 @@ namespace UI.Hint
                     throw new ArgumentOutOfRangeException("direction");
             }
 
-            if (enabled)
-            {
-                hint.Enable();
-                hint.Initialize(null, word);
-            }
-            else if (!enabled)
-            {
-                hint.Disable();
-            }
+            return hint;
         }
 
         public void SetAllHints(bool enabled)

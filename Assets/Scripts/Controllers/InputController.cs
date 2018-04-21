@@ -151,14 +151,26 @@ namespace Controllers
             for (var i = 0; i < 4; i++)
             {
                 var direction = (Direction)i;
-
                 var player = ActorCache.Instance.Player;
                 var nextPos = player.Entity.GetComponent<GridPositionComponent>().Position;
-
                 var directionVector = direction.ToVector2Int();
-                if (!MapSystem.Instance.IsWalkable(nextPos + directionVector))
+
+                if (_requiredDirectionWord.ContainsValue(direction))
                 {
-                    _moveHints.SetHint(direction, false);
+                    if (!MapSystem.Instance.IsWalkable(nextPos + directionVector))
+                    {
+                        _moveHints.SetHint(direction, false);
+                        _requiredDirectionWord.Remove(_moveHints.GetHint(direction).Word);
+                    }
+                }
+                else
+                {
+                    if (MapSystem.Instance.IsWalkable(nextPos + directionVector))
+                    {
+                        var requiredWord = _wordSystem.GetNextWord(_movementDifficulty);
+                        _requiredDirectionWord.Add(requiredWord, direction);
+                        _moveHints.SetHint(direction, true, requiredWord);
+                    }
                 }
             }
         }
@@ -180,12 +192,8 @@ namespace Controllers
                 }
 
                 var requiredWord = _wordSystem.GetNextWord(_movementDifficulty);
-
                 _requiredDirectionWord.Add(requiredWord, direction);
-
                 _moveHints.SetHint(direction, true, requiredWord);
-
-                Debug.Log(string.Format("To move {0} type {1}", direction, requiredWord));
             }
         }
 
@@ -200,13 +208,13 @@ namespace Controllers
 
         private void Start()
         {
-            _attackSystem.OnEntityInvisible += OnEntityInvisible;
-            _attackSystem.OnEntityVisible += OnEntityVisible;
+            _attackSystem.OnEntityLeaveAttackRange += OnEntityLeaveAttackRange;
+            _attackSystem.OnEntityEnterAttackRange += OnEntityEnterAttackRange;
 
             InvokeRepeating("UpdateInputHintVisibility", 0.25f, 0.25f);
         }
 
-        private void OnEntityVisible(Entity entity, SpellHint spellHint)
+        private void OnEntityEnterAttackRange(Entity entity, SpellHint spellHint)
         {
             var player = ActorCache.Instance.Player;
             if (player == null) return;
@@ -232,7 +240,7 @@ namespace Controllers
             _entitySpellHints.Add(entity, spellHint);
         }
 
-        private void OnEntityInvisible(Entity entity, SpellHint spellHint)
+        private void OnEntityLeaveAttackRange(Entity entity, SpellHint spellHint)
         {
             if (_entitySpellHints.ContainsKey(entity))
             {
