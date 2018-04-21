@@ -20,13 +20,14 @@
 
 namespace ECS.Components
 {
-    using System;
+    using ECS.Components.Type;
+    using ECS.Entities;
 
-    public class ValueComponent : IComponent
+    public class ValueComponent : ComponentBase
     {
-        public ValueComponent()
+        public ValueComponent(Entity owner, ComponentType type)
+            : base(owner, type)
         {
-            
         }
 
         public int Value { get; set; }

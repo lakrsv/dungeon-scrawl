@@ -20,7 +20,7 @@
 
 namespace ECS.Systems
 {
-    public interface IExecuteSystem
+    public interface IExecuteSystem : ISystem
     {
         void Execute();
     }

@@ -1,5 +1,5 @@
 ﻿// // --------------------------------------------------------------------------------------------------------------------
-// // <copyright file="IInitializeSystem.cs" author="Lars" company="None">
+// // <copyright file="ActorSpawnerSystem.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -17,10 +17,31 @@
 // //   TODO - Insert file description
 // // </summary>
 // // --------------------------------------------------------------------------------------------------------------------
+
 namespace ECS.Systems
 {
-    public interface IInitializeSystem : ISystem
+    using ECS.Entities;
+    using ECS.Entities.Blueprint;
+
+    using UnityEngine;
+
+    using Utilities.Game.ObjectPool;
+
+    public class ActorSpawnerSystem : MonoBehaviour, IInitializeSystem
     {
-        void Initialize();
+        public void Initialize()
+        {
+            // Spawn Player
+            SpawnActor<Player>();
+        }
+
+        private void SpawnActor<T>()
+            where T : IEntityBlueprint, new()
+        {
+            var blueprint = new T();
+
+            var actor = ObjectPools.Instance.GetPooledObject<Actor>();
+            actor.Initialize(blueprint);
+        }
     }
 }

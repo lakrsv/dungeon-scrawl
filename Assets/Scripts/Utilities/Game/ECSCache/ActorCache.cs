@@ -1,5 +1,5 @@
 ﻿// // --------------------------------------------------------------------------------------------------------------------
-// // <copyright file="Entity.cs" author="Lars" company="None">
+// // <copyright file="ActorCache.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -18,64 +18,37 @@
 // // </summary>
 // // --------------------------------------------------------------------------------------------------------------------
 
-namespace ECS.Entities
+namespace Utilities.Game.ECSCache
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
+    using System.Collections.ObjectModel;
 
-    using ECS.Components;
+    using ECS.Entities;
 
-    using UnityEngine;
-
-    public class Entity
+    public class ActorCache : MonoSingletonCreateIfNull<ActorCache>
     {
-        public Entity(string name)
+        private readonly List<Actor> _actors = new List<Actor>();
+
+        public void Add(Actor actor)
         {
-            Name = name;
-            Components = new List<IComponent>();
+            if (_actors.Contains(actor))
+                throw new InvalidOperationException(string.Format("Actors already contains {0}", actor.gameObject.name));
+
+            _actors.Add(actor);
         }
 
-        public Entity(GameObject gameObject)
-            : this(gameObject.name)
+        public void Remove(Actor actor)
         {
-            GameObject = gameObject;
+            if (!_actors.Contains(actor))
+                throw new InvalidOperationException(string.Format("Actors does not contain {0}", actor.gameObject.name));
+
+            _actors.Remove(actor);
         }
 
-        public string Name { get; private set; }
-
-        public GameObject GameObject { get; private set; }
-
-        public List<IComponent> Components { get; private set; }
-
-        public void AddComponent(IComponent component)
+        public ReadOnlyCollection<Actor> GetActors()
         {
-            if (Components.Contains(component)) throw new InvalidOperationException(string.Format("Entity already has {0} component", component));
-
-            Components.Add(component);
-            component.OnAdd();
-        }
-
-        public void AddComponents(IComponent[] components)
-        {
-            foreach (var component in components)
-            {
-                AddComponent(component);
-            }
-        }
-
-        public T GetComponent<T>()
-            where T : IComponent
-        {
-            return (T)Components.FirstOrDefault(x => x.GetType() == typeof(T));
-        }
-
-        public void RemoveComponent(IComponent component)
-        {
-            if (!Components.Contains(component)) throw new InvalidOperationException(string.Format("Entity doesn't have component {0}", component));
-
-            Components.Remove(component);
-            component.OnRemove();
+            return _actors.AsReadOnly();
         }
     }
 }

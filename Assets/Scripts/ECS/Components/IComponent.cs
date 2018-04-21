@@ -20,7 +20,14 @@
 
 namespace ECS.Components
 {
+    using ECS.Components.Type;
+
     public interface IComponent
     {
+        ComponentType Type { get; }
+
+        void OnAdd();
+
+        void OnRemove();
     }
 }

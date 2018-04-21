@@ -66,11 +66,6 @@ namespace ECS.Systems
             CreateDefaultMap();
         }
 
-        private void Awake()
-        {
-            Initialize();
-        }
-
         private void CreateDefaultMap()
         {
             _map.ClearAllTiles();

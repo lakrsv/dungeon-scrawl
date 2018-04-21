@@ -1,5 +1,5 @@
 ﻿// // --------------------------------------------------------------------------------------------------------------------
-// // <copyright file="IInitializeSystem.cs" author="Lars" company="None">
+// // <copyright file="SystemController.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -17,10 +17,22 @@
 // //   TODO - Insert file description
 // // </summary>
 // // --------------------------------------------------------------------------------------------------------------------
-namespace ECS.Systems
+
+namespace Controllers
 {
-    public interface IInitializeSystem : ISystem
+    using UnityEngine;
+
+    public class GameController : MonoBehaviour
     {
-        void Initialize();
+        // Use this for initialization
+        private void Start()
+        {
+
+        }
+
+        // Update is called once per frame
+        private void Update()
+        {
+        }
     }
 }

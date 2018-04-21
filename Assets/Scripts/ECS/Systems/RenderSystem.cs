@@ -1,5 +1,5 @@
 ﻿// // --------------------------------------------------------------------------------------------------------------------
-// // <copyright file="IInitializeSystem.cs" author="Lars" company="None">
+// // <copyright file="RenderSystem.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -17,10 +17,38 @@
 // //   TODO - Insert file description
 // // </summary>
 // // --------------------------------------------------------------------------------------------------------------------
+
 namespace ECS.Systems
 {
-    public interface IInitializeSystem : ISystem
+    using ECS.Components;
+
+    using UnityEngine;
+
+    using Utilities.Game.ECSCache;
+
+    public class RenderSystem : MonoBehaviour, IInitializeSystem, IExecuteSystem
     {
-        void Initialize();
+        public void Execute()
+        {
+            // TODO - Caching (IGroup) of similar components
+            /*
+            foreach (var actor in ActorCache.Instance.GetActors())
+            {
+                
+            }
+            */
+        }
+
+        public void Initialize()
+        {
+            // TODO - Caching (IGroup) of similar components
+            foreach (var actor in ActorCache.Instance.GetActors())
+            {
+                var renderComponent = actor.Entity.GetComponent<RenderComponent>();
+                if (renderComponent == null) continue;
+
+                renderComponent.Renderer.enabled = false;
+            }
+        }
     }
 }

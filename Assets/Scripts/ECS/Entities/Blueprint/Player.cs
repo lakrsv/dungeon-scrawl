@@ -1,5 +1,5 @@
 ﻿// // --------------------------------------------------------------------------------------------------------------------
-// // <copyright file="IInitializeSystem.cs" author="Lars" company="None">
+// // <copyright file="Player.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -17,10 +17,27 @@
 // //   TODO - Insert file description
 // // </summary>
 // // --------------------------------------------------------------------------------------------------------------------
-namespace ECS.Systems
+
+namespace ECS.Entities.Blueprint
 {
-    public interface IInitializeSystem : ISystem
+    using ECS.Components;
+    using ECS.Components.Type;
+
+    using UnityEngine;
+
+    // TODO - Make this all nice and editor creatable like a prefab
+    public class Player : IEntityBlueprint
     {
-        void Initialize();
+        public IComponent[] GetComponents(Entity owner)
+        {
+            var components = new IComponent[]
+                                 {
+                                     new GridPositionComponent(owner),
+                                     new RenderComponent(owner) { Sprite = Resources.Load<Sprite>("Sprites/Player.png") },
+                                     new ValueComponent(owner, ComponentType.Health), 
+                                 };
+
+            return components;
+        }
     }
 }

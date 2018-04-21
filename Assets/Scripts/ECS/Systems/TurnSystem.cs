@@ -1,5 +1,5 @@
 ﻿// // --------------------------------------------------------------------------------------------------------------------
-// // <copyright file="IInitializeSystem.cs" author="Lars" company="None">
+// // <copyright file="TurnSystem.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -17,10 +17,21 @@
 // //   TODO - Insert file description
 // // </summary>
 // // --------------------------------------------------------------------------------------------------------------------
+
 namespace ECS.Systems
 {
-    public interface IInitializeSystem : ISystem
+    using UnityEngine;
+
+    public class TurnSystem : MonoBehaviour, IExecuteSystem, IInitializeSystem
     {
-        void Initialize();
+        public void Execute()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void Initialize()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

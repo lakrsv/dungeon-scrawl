@@ -1,5 +1,5 @@
 ﻿// // --------------------------------------------------------------------------------------------------------------------
-// // <copyright file="Entity.cs" author="Lars" company="None">
+// // <copyright file="Actor.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -20,62 +20,45 @@
 
 namespace ECS.Entities
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-
-    using ECS.Components;
+    using ECS.Entities.Blueprint;
 
     using UnityEngine;
 
-    public class Entity
+    using Utilities.Game.ECSCache;
+    using Utilities.Game.ObjectPool;
+
+    public class Actor : MonoBehaviour, IPoolable
     {
-        public Entity(string name)
+        public Entity Entity { get; private set; }
+
+        public bool IsActive { get; set; }
+
+        public bool IsEnabled
         {
-            Name = name;
-            Components = new List<IComponent>();
-        }
-
-        public Entity(GameObject gameObject)
-            : this(gameObject.name)
-        {
-            GameObject = gameObject;
-        }
-
-        public string Name { get; private set; }
-
-        public GameObject GameObject { get; private set; }
-
-        public List<IComponent> Components { get; private set; }
-
-        public void AddComponent(IComponent component)
-        {
-            if (Components.Contains(component)) throw new InvalidOperationException(string.Format("Entity already has {0} component", component));
-
-            Components.Add(component);
-            component.OnAdd();
-        }
-
-        public void AddComponents(IComponent[] components)
-        {
-            foreach (var component in components)
+            get
             {
-                AddComponent(component);
+                return gameObject.activeInHierarchy;
             }
         }
 
-        public T GetComponent<T>()
-            where T : IComponent
+        public void Disable()
         {
-            return (T)Components.FirstOrDefault(x => x.GetType() == typeof(T));
+            gameObject.SetActive(false);
+
+            ActorCache.Instance.Remove(this);
         }
 
-        public void RemoveComponent(IComponent component)
+        public void Enable()
         {
-            if (!Components.Contains(component)) throw new InvalidOperationException(string.Format("Entity doesn't have component {0}", component));
+            gameObject.SetActive(true);
 
-            Components.Remove(component);
-            component.OnRemove();
+            Entity = new Entity(gameObject);
+            ActorCache.Instance.Add(this);
+        }
+
+        public void Initialize(IEntityBlueprint blueprint)
+        {
+            Entity.AddComponents(blueprint.GetComponents(Entity));
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿// // --------------------------------------------------------------------------------------------------------------------
-// // <copyright file="IInitializeSystem.cs" author="Lars" company="None">
+// // <copyright file="GridPositionComponent.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -17,10 +17,20 @@
 // //   TODO - Insert file description
 // // </summary>
 // // --------------------------------------------------------------------------------------------------------------------
-namespace ECS.Systems
+
+namespace ECS.Components
 {
-    public interface IInitializeSystem : ISystem
+    using ECS.Entities;
+
+    using UnityEngine;
+
+    public class GridPositionComponent : ComponentBase
     {
-        void Initialize();
+        public GridPositionComponent(Entity owner)
+            : base(owner)
+        {
+        }
+
+        public Vector2Int Position { get; set; }
     }
 }

@@ -1,5 +1,5 @@
 ﻿// // --------------------------------------------------------------------------------------------------------------------
-// // <copyright file="IInitializeSystem.cs" author="Lars" company="None">
+// // <copyright file="IComponent.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -17,10 +17,30 @@
 // //   TODO - Insert file description
 // // </summary>
 // // --------------------------------------------------------------------------------------------------------------------
-namespace ECS.Systems
+
+namespace ECS.Components
 {
-    public interface IInitializeSystem : ISystem
+    using ECS.Components.Type;
+    using ECS.Entities;
+
+    public abstract class ComponentBase : IComponent
     {
-        void Initialize();
+        protected ComponentBase(Entity owner, ComponentType type = ComponentType.SpecificType)
+        {
+            Owner = owner;
+            Type = type;
+        }
+
+        public ComponentType Type { get; private set; }
+
+        protected Entity Owner { get; private set; }
+
+        public virtual void OnAdd()
+        {
+        }
+
+        public virtual void OnRemove()
+        {
+        }
     }
 }

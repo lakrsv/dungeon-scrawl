@@ -1,5 +1,5 @@
 ﻿// // --------------------------------------------------------------------------------------------------------------------
-// // <copyright file="IInitializeSystem.cs" author="Lars" company="None">
+// // <copyright file="ComponentType.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -17,10 +17,15 @@
 // //   TODO - Insert file description
 // // </summary>
 // // --------------------------------------------------------------------------------------------------------------------
-namespace ECS.Systems
+
+namespace ECS.Components.Type
 {
-    public interface IInitializeSystem : ISystem
+    using UnityEngine;
+
+    public enum ComponentType
     {
-        void Initialize();
+        // For all components that are not generic
+        SpecificType,
+        Health,
     }
 }
