@@ -22,6 +22,7 @@ namespace ECS.Entities.Blueprint
 {
     using ECS.Components;
     using ECS.Components.Type;
+    using ECS.Systems;
 
     using UnityEngine;
 
@@ -32,8 +33,8 @@ namespace ECS.Entities.Blueprint
         {
             var components = new IComponent[]
                                  {
-                                     new GridPositionComponent(owner),
-                                     new RenderComponent(owner) { Sprite = Resources.Load<Sprite>("Sprites/Player.png") },
+                                     new GridPositionComponent(owner) { Position = MapSystem.Instance.GetRandomAvailableTile() },
+                                     new RenderComponent(owner) { Sprite = Resources.Load<Sprite>("Sprites/Player") },
                                      new IntegerComponent(owner, ComponentType.Health) { Value = 10 }, 
                                      new IntegerComponent(owner, ComponentType.FieldOfView) { Value = 5 },
                                  };

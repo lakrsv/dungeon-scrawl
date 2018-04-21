@@ -20,18 +20,57 @@
 
 namespace ECS.Systems
 {
+    using System;
+    using System.Linq;
+
+    using ECS.Components;
+    using ECS.Components.Type;
+    using ECS.Entities;
+
     using UnityEngine;
+
+    using Utilities.Game.ECSCache;
 
     public class TurnSystem : MonoBehaviour, IExecuteSystem, IInitializeSystem
     {
+        private float _currentTurnDelay = 0f;
+
+        private int _currentTurnIndex;
+
+        private float _turnEndTime;
+
         public void Execute()
         {
-            throw new System.NotImplementedException();
+            var turnComponents = ComponentCache.Instance.GetCached(ComponentType.Turn);
+
+            var currentTurnComponent = turnComponents[_currentTurnIndex] as BooleanComponent;
+            if (currentTurnComponent == null) throw new InvalidOperationException("Component was invalid!");
+
+            if (currentTurnComponent.Value) return;
+
+            if (_turnEndTime == 0) _turnEndTime = Time.time;
+            var timePassed = Time.time - _turnEndTime;
+            if (timePassed < _currentTurnDelay) return;
+            _turnEndTime = 0;
+
+            Debug.Log("Turn Started!");
+
+            _currentTurnIndex++;
+            if (_currentTurnIndex >= turnComponents.Count) _currentTurnIndex = 0;
+
+            var nextTurnComponent = turnComponents[_currentTurnIndex] as BooleanComponent;
+            if (nextTurnComponent == null) throw new InvalidOperationException("Component was invalid!");
+
+            nextTurnComponent.Value = true;
         }
 
         public void Initialize()
         {
-            throw new System.NotImplementedException();
+            var turnComponents = ComponentCache.Instance.GetCached(ComponentType.Turn);
+            var currentTurnComponent = turnComponents[_currentTurnIndex] as BooleanComponent;
+
+            if (currentTurnComponent == null) throw new InvalidOperationException("Component was invalid!");
+            currentTurnComponent.Value = true;
         }
     }
 }

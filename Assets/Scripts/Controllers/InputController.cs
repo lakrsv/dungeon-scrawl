@@ -88,7 +88,7 @@ namespace Controllers
                         break;
                 }
 
-            Debug.Log(_currentInputWord.ToString());
+            ////Debug.Log(_currentInputWord.ToString());
         }
 
         private void SetMovementWords()
@@ -96,9 +96,18 @@ namespace Controllers
             for (var i = 0; i < 4; i++)
             {
                 var direction = (Direction)i;
+
+                var player = ActorCache.Instance.Player;
+                var nextPos = player.Entity.GetComponent<GridPositionComponent>().Position;
+
+                var directionVector = direction.ToVector2Int();
+                if (!MapSystem.Instance.IsWalkable(nextPos + directionVector)) continue;
+
                 var requiredWord = _wordSystem.GetNextWord(_movementDifficulty);
 
                 _requiredDirectionWord.Add(requiredWord, direction);
+
+                Debug.Log(string.Format("To move {0} type {1}", direction, requiredWord));
             }
         }
 
@@ -106,7 +115,6 @@ namespace Controllers
         {
             var directionVector = direction.ToVector2Int();
             var player = ActorCache.Instance.Player;
-
             player.Entity.GetComponent<GridPositionComponent>().Position += directionVector;
 
             _requiredDirectionWord.Clear();

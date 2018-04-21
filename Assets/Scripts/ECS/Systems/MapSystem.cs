@@ -20,6 +20,13 @@
 
 namespace ECS.Systems
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading;
+
+    using ECS.Components;
+
     using Imported.RogueSharp;
     using Imported.RogueSharp.MapCreation;
     using Imported.RogueSharp.Random;
@@ -30,8 +37,10 @@ namespace ECS.Systems
     using UnityEngine.Tilemaps;
 
     using Utilities;
+    using Utilities.Game;
+    using Utilities.Game.ECSCache;
 
-    public class MapSystem : MonoBehaviour, IInitializeSystem
+    public class MapSystem : MonoSingleton<MapSystem>, IInitializeSystem
     {
         [SerializeField]
         private Tilemap _map;
@@ -57,12 +66,69 @@ namespace ECS.Systems
 
         private IRandom _random;
 
+        private PathFinder _pathFinder;
+
+        private List<Vector3Int> _currentFov = new List<Vector3Int>();
+
         public Map Map { get; private set; }
 
         public void Initialize()
         {
             _random = new DotNetRandom(Constants.RandomSeed);
             CreateDefaultMap();
+        }
+
+        public Vector2Int GetMoveDirection(Vector2Int from, Vector2Int to)
+        {
+            _pathFinder = new PathFinder(Map);
+
+            var fromCell = Map.GetCell(from.x, from.y);
+            var toCell = Map.GetCell(to.x, to.y);
+
+            var path = _pathFinder.TryFindShortestPath(fromCell, toCell);
+            if (path == null) return Vector2Int.zero;
+
+            var nextCell = path.TryStepForward();
+            if (nextCell == null) return Vector2Int.zero;
+
+            var moveDirection = new Vector2Int(nextCell.X - from.x, nextCell.Y - from.y);
+            return moveDirection;
+        }
+
+        public Vector2Int GetRandomAvailableTile()
+        {
+            var maxIterations = 100;
+            var currentIterations = 0;
+
+            while (currentIterations < maxIterations)
+            {
+                var randomPosition = Map.RandomLocation(_random);
+
+                if (IsWalkable(randomPosition)) return randomPosition;
+
+                currentIterations++;
+            }
+
+            throw new InvalidOperationException("No available tile found!");
+        }
+
+        public bool IsWalkable(Vector2Int position)
+        {
+            var entityPositions = ComponentCache.Instance.GetCached<GridPositionComponent>();
+
+            return Map.IsWalkable(position.x, position.y)
+                   && (entityPositions == null || entityPositions.All(x => x.Position != position));
+        }
+
+        public void ComputeFov(int xOrigin, int yOrigin, int radius, bool lightWalls = true)
+        {
+            ThreadPool.QueueUserWorkItem(
+                state =>
+                    {
+                        var fovCells = Map.ComputeFov(xOrigin, yOrigin, radius, lightWalls);
+                        var exploredPositions = fovCells.Select(c => new Vector3Int(c.X, c.Y, 0)).ToList();
+                        RoutineDispatcher.Instance.ExecuteOnMainThread(() => SetTileVisibilities(exploredPositions));
+                    });
         }
 
         private void CreateDefaultMap()
@@ -90,11 +156,32 @@ namespace ECS.Systems
                 if (cell.IsWalkable)
                 {
                     _map.SetTile(tilePosition, _wallTile);
-
-                    ////_map.SetColor(tilePosition, Visibility.Invisible);
+                    _map.SetColor(tilePosition, Visibility.Invisible);
                     _map.RefreshTile(tilePosition);
                 }
             }
+        }
+
+        private void SetTileVisibilities(List<Vector3Int> visiblePositions)
+        {
+            foreach (var pos in _currentFov)
+            {
+                _map.SetColor(
+                    pos,
+                    Map.IsExplored(pos.x, pos.y) ? Visibility.ExploredInvisible : Visibility.Invisible);
+
+                _map.RefreshTile(pos);
+            }
+
+            foreach (var pos in visiblePositions)
+            {
+                Map.SetCellExplored(pos.x, pos.y, true);
+
+                _map.SetColor(pos, Visibility.Visible);
+                _map.RefreshTile(pos);
+            }
+
+            _currentFov = visiblePositions;
         }
     }
 }

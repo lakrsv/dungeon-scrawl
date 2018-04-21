@@ -22,6 +22,9 @@ namespace Utilities
 {
     using System;
 
+    using Imported.RogueSharp;
+    using Imported.RogueSharp.Random;
+
     using UnityEngine;
 
     using Utilities.Game.Navigation;
@@ -43,6 +46,19 @@ namespace Utilities
                 default:
                     throw new ArgumentOutOfRangeException("direction");
             }
+        }
+
+        public static Vector2Int RandomLocation(this Map map, IRandom random)
+        {
+            var minX = 0;
+            var maxX = map.Width;
+            var minY = 0;
+            var maxY = map.Height;
+
+            var x = random.Next(minX, maxX - 1);
+            var y = random.Next(minY, maxY - 1);
+
+            return new Vector2Int(x, y);
         }
     }
 }

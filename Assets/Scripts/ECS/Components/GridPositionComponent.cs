@@ -32,5 +32,12 @@ namespace ECS.Components
         }
 
         public Vector2Int Position { get; set; }
+
+        public override void OnAdd()
+        {
+            Owner.GameObject.transform.position = new Vector2(Position.x, Position.y);
+
+            base.OnAdd();
+        }
     }
 }

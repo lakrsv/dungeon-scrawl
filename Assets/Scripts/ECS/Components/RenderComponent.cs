@@ -38,6 +38,7 @@ namespace ECS.Components
         public override void OnAdd()
         {
             Renderer = Owner.GameObject.GetComponentInChildren<SpriteRenderer>();
+            Renderer.sprite = Sprite;
 
             base.OnAdd();
         }

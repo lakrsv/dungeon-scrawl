@@ -49,14 +49,10 @@ namespace ECS.Systems
                 {
                     initializeSystems.Add(system as IInitializeSystem);
                 }
-                else if (system is IExecuteSystem)
+
+                if (system is IExecuteSystem)
                 {
                     executeSystems.Add(system as IExecuteSystem);
-                }
-                else
-                {
-                    throw new InvalidOperationException(
-                        string.Format("System {0} does not contain a valid system!", transform.GetChild(i).name));
                 }
             }
 

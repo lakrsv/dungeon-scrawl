@@ -1,5 +1,5 @@
 ﻿// // --------------------------------------------------------------------------------------------------------------------
-// // <copyright file="Actor.cs" author="Lars" company="None">
+// // <copyright file="IActor.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -22,44 +22,12 @@ namespace ECS.Entities
 {
     using ECS.Entities.Blueprint;
 
-    using UnityEngine;
-
-    using Utilities.Game.ECSCache;
-    using Utilities.Game.ObjectPool;
-
-    public class Actor : MonoBehaviour, IActor, IPoolable
+    public interface IActor
     {
-        public Entity Entity { get; private set; }
+        Entity Entity { get; }
 
-        public bool IsActive { get; set; }
+        bool IsActive { get; }
 
-        public bool IsEnabled
-        {
-            get
-            {
-                return gameObject.activeInHierarchy;
-            }
-        }
-
-        public void Disable()
-        {
-            gameObject.SetActive(false);
-
-            if (ActorCache.Instance.Contains(this)) ActorCache.Instance.Remove(this);
-            IsActive = false;
-        }
-
-        public void Enable()
-        {
-            gameObject.SetActive(true);
-
-            Entity = new Entity(gameObject);
-            IsActive = true;
-        }
-
-        public void Initialize(IEntityBlueprint blueprint)
-        {
-            Entity.AddComponents(blueprint.GetComponents(Entity));
-        }
+        void Initialize(IEntityBlueprint blueprint);
     }
 }

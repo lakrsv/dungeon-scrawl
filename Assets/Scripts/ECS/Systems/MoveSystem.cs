@@ -25,6 +25,7 @@ namespace ECS.Systems
     using DG.Tweening;
 
     using ECS.Components;
+    using ECS.Components.Type;
     using ECS.Entities;
 
     using UnityEngine;
@@ -42,23 +43,67 @@ namespace ECS.Systems
 
         public void Execute()
         {
-            // TODO - Cache for performance
-            foreach (var component in ComponentCache.Instance.GetCached<GridPositionComponent>())
+            var positionComponents = ComponentCache.Instance.GetCached<GridPositionComponent>();
+            if (positionComponents == null) return;
+
+            foreach (var component in positionComponents)
             {
-                if (_movingEntities.Contains(component.Owner)) continue;
-
-                _temp.Set(component.Position.x, component.Position.y, 0);
-                if (component.Owner.GameObject.transform.position == _temp) continue;
-
-                _movingEntities.Add(component.Owner);
-                MoveEntity(component.Owner, _temp);
+                UpdatePosition(component);
+                MovePosition(component);
             }
+        }
+
+        private void UpdatePosition(GridPositionComponent component)
+        {
+            if (_movingEntities.Contains(component.Owner)) return;
+
+            // Not our turn.
+            var turnComponent = component.Owner.GetComponent<BooleanComponent>(ComponentType.Turn);
+            if (turnComponent == null || !turnComponent.Value) return;
+
+            // No Vision
+            var fieldOfView = component.Owner.GetComponent<IntegerComponent>(ComponentType.FieldOfView);
+            if (fieldOfView == null) return;
+
+            // No Movement Defined
+            var chaseTarget = component.Owner.GetComponent<ChaseTargetComponent>();
+            if (chaseTarget == null) return;
+
+            // No Target Position
+            var targetPosition = chaseTarget.Target.GetComponent<GridPositionComponent>();
+            if (targetPosition == null) return;
+
+            // Out of Range.
+            if (Vector2Int.Distance(targetPosition.Position, component.Position) > fieldOfView.Value)
+            {
+                turnComponent.Value = false;
+                return;
+            }
+
+            var moveDirection = MapSystem.Instance.GetMoveDirection(component.Position, targetPosition.Position);
+            component.Position += moveDirection;
+        }
+
+        private void MovePosition(GridPositionComponent component)
+        {
+            if (_movingEntities.Contains(component.Owner)) return;
+
+            _temp.Set(component.Position.x, component.Position.y, 0);
+            if (component.Owner.GameObject.transform.position == _temp) return;
+
+            _movingEntities.Add(component.Owner);
+            MoveEntity(component.Owner, _temp);
         }
 
         private void MoveEntity(Entity entity, Vector3 position)
         {
             entity.GameObject.transform.DOMove(position, MovementDuration).SetEase(Ease.OutBack)
-                .OnComplete(() => _movingEntities.Remove(entity));
+                .OnComplete(() =>
+                    {
+                        var turnComponent = entity.GetComponent<BooleanComponent>(ComponentType.Turn);
+                        if (turnComponent != null) turnComponent.Value = false;
+                        _movingEntities.Remove(entity);
+                    });
         }
     }
 }

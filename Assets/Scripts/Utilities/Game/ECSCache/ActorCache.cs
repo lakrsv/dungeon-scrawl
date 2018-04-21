@@ -27,18 +27,18 @@ namespace Utilities.Game.ECSCache
     using ECS.Entities;
     using ECS.Entities.Blueprint;
 
-    public class ActorCache : MonoSingleton<ActorCache>, ICache<Actor, IEntityBlueprint>
+    public class ActorCache : MonoSingleton<ActorCache>, ICache<IActor, IEntityBlueprint>
     {
-        private readonly Dictionary<IEntityBlueprint, List<Actor>> _actorsByType = new Dictionary<IEntityBlueprint, List<Actor>>();
+        private readonly Dictionary<IEntityBlueprint, List<IActor>> _actorsByType = new Dictionary<IEntityBlueprint, List<IActor>>();
 
-        private readonly List<Actor> _actors = new List<Actor>();
+        private readonly List<IActor> _actors = new List<IActor>();
 
-        public Actor Player { get; private set; }
+        public IActor Player { get; private set; }
 
-        public void Add(Actor actor, IEntityBlueprint blueprint)
+        public void Add(IActor actor, IEntityBlueprint blueprint)
         {
             if (_actors.Contains(actor))
-                throw new InvalidOperationException(string.Format("Actors already contains {0}", actor.gameObject.name));
+                throw new InvalidOperationException("Actors already contains this actor");
             _actors.Add(actor);
 
             if (blueprint is Player)
@@ -53,14 +53,14 @@ namespace Utilities.Game.ECSCache
             }
             else
             {
-                _actorsByType.Add(blueprint, new List<Actor> { actor });
+                _actorsByType.Add(blueprint, new List<IActor> { actor });
             }
         }
 
-        public void Remove(Actor actor)
+        public void Remove(IActor actor)
         {
             if (!_actors.Contains(actor))
-                throw new InvalidOperationException(string.Format("Actors does not contain {0}", actor.gameObject.name));
+                throw new InvalidOperationException("Actors does not contain this actor");
 
             _actors.Remove(actor);
 
@@ -75,18 +75,23 @@ namespace Utilities.Game.ECSCache
             }
         }
 
-        public IEnumerable<Actor> GetCached()
+        public bool Contains(IActor actor)
+        {
+            return _actors.Contains(actor);
+        }
+
+        public IEnumerable<IActor> GetCached()
         {
             return _actors.AsReadOnly();
         }
 
-        public IEnumerable<Actor> GetCached(IEntityBlueprint type)
+        public ReadOnlyCollection<IActor> GetCached(IEntityBlueprint type)
         {
             return _actorsByType.ContainsKey(type) ? _actorsByType[type].AsReadOnly() : null;
         }
 
         public IEnumerable<T> GetCached<T>()
-            where T : Actor
+            where T : class, IActor
         {
             throw new NotImplementedException();
         }

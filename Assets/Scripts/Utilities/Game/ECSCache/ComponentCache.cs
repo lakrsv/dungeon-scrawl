@@ -52,18 +52,23 @@ namespace Utilities.Game.ECSCache
                 throw new InvalidOperationException("Components does not contain this component");
         }
 
+        public bool Contains(IComponent component)
+        {
+            return _components.Contains(component);
+        }
+
         public IEnumerable<IComponent> GetCached()
         {
             return _components.AsReadOnly();
         }
 
-        public IEnumerable<IComponent> GetCached(ComponentType type)
+        public ReadOnlyCollection<IComponent> GetCached(ComponentType type)
         {
             return !_componentsByGenericType.ContainsKey(type) ? null : _componentsByGenericType[type].AsReadOnly();
         }
 
         public IEnumerable<T> GetCached<T>()
-            where T : IComponent
+            where T : class, IComponent
         {
             var type = typeof(T);
             return !_componentsBySpecificType.ContainsKey(type) ? null : _componentsBySpecificType[type].Cast<T>();

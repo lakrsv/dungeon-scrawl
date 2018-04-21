@@ -22,8 +22,11 @@ namespace ECS.Entities.Blueprint
 {
     using ECS.Components;
     using ECS.Components.Type;
+    using ECS.Systems;
 
     using UnityEngine;
+
+    using Utilities.Game.ECSCache;
 
     public class Demon : IEntityBlueprint
     {
@@ -31,11 +34,12 @@ namespace ECS.Entities.Blueprint
         {
             var components = new IComponent[]
                                  {
-                                     new GridPositionComponent(owner),
-                                     new RenderComponent(owner) { Sprite = Resources.Load<Sprite>("Sprites/Demon.png") },
+                                     new GridPositionComponent(owner) { Position = MapSystem.Instance.GetRandomAvailableTile()},
+                                     new RenderComponent(owner) { Sprite = Resources.Load<Sprite>("Sprites/Demon") },
                                      new IntegerComponent(owner, ComponentType.Health) { Value = 10 },
                                      new IntegerComponent(owner, ComponentType.FieldOfView) { Value = 5 },
-                                     new BooleanComponent(owner, ComponentType.Turn), 
+                                     new BooleanComponent(owner, ComponentType.Turn),
+                                     new ChaseTargetComponent(owner) { Target = ActorCache.Instance.Player.Entity }, 
                                  };
 
             return components;

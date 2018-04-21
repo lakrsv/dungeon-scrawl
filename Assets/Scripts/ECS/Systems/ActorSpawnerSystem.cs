@@ -34,6 +34,12 @@ namespace ECS.Systems
         {
             // Spawn Player
             SpawnActor<Player>();
+
+            // Spawn some Demons
+            for (var i = 0; i < 10; i++)
+            {
+                SpawnActor<Demon>();
+            }
         }
 
         private void SpawnActor<T>()

@@ -25,15 +25,18 @@ namespace ECS.Entities
     using System.Linq;
 
     using ECS.Components;
+    using ECS.Components.Type;
 
     using UnityEngine;
 
     public class Entity
     {
+        private readonly List<IComponent> _components;
+
         public Entity(string name)
         {
             Name = name;
-            Components = new List<IComponent>();
+            _components = new List<IComponent>();
         }
 
         public Entity(GameObject gameObject)
@@ -46,13 +49,11 @@ namespace ECS.Entities
 
         public GameObject GameObject { get; private set; }
 
-        public List<IComponent> Components { get; private set; }
-
         public void AddComponent(IComponent component)
         {
-            if (Components.Contains(component)) throw new InvalidOperationException(string.Format("Entity already has {0} component", component));
+            if (_components.Contains(component)) throw new InvalidOperationException(string.Format("Entity already has {0} component", component));
 
-            Components.Add(component);
+            _components.Add(component);
             component.OnAdd();
         }
 
@@ -65,16 +66,27 @@ namespace ECS.Entities
         }
 
         public T GetComponent<T>()
-            where T : IComponent
+            where T : class, IComponent
         {
-            return (T)Components.FirstOrDefault(x => x.GetType() == typeof(T));
+            return (T)_components.FirstOrDefault(x => x.GetType() == typeof(T));
+        }
+
+        public T GetComponent<T>(ComponentType type)
+            where T : class, IComponent
+        {
+            return (T)_components.FirstOrDefault(
+                x =>
+                    {
+                        var tComponent = x as T;
+                        return tComponent != null && tComponent.Type == type;
+                    });
         }
 
         public void RemoveComponent(IComponent component)
         {
-            if (!Components.Contains(component)) throw new InvalidOperationException(string.Format("Entity doesn't have component {0}", component));
+            if (!_components.Contains(component)) throw new InvalidOperationException(string.Format("Entity doesn't have component {0}", component));
 
-            Components.Remove(component);
+            _components.Remove(component);
             component.OnRemove();
         }
     }

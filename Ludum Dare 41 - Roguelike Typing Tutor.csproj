@@ -407,6 +407,7 @@
     <Compile Include="Assets\Scripts\ECS\Entities\Blueprint\IEntityBlueprint.cs" />
     <Compile Include="Assets\Scripts\ECS\Entities\Blueprint\Player.cs" />
     <Compile Include="Assets\Scripts\ECS\Entities\Entity.cs" />
+    <Compile Include="Assets\Scripts\ECS\Entities\IActor.cs" />
     <Compile Include="Assets\Scripts\ECS\Systems\ActorSpawnerSystem.cs" />
     <Compile Include="Assets\Scripts\ECS\Systems\IExecuteSystem.cs" />
     <Compile Include="Assets\Scripts\ECS\Systems\IInitializeSystem.cs" />
@@ -419,6 +420,7 @@
     <Compile Include="Assets\Scripts\ECS\Systems\TurnSystem.cs" />
     <Compile Include="Assets\Scripts\ECS\Systems\WordSystem.cs" />
     <Compile Include="Assets\Scripts\Tiles\Rule Tile\Scripts\RuleTile.cs" />
+    <Compile Include="Assets\Scripts\Utilities\Camera\CameraMovement.cs" />
     <Compile Include="Assets\Scripts\Utilities\Constants.cs" />
     <Compile Include="Assets\Scripts\Utilities\Extensions.cs" />
     <Compile Include="Assets\Scripts\Utilities\Game\DontDestroy.cs" />

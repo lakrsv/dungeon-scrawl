@@ -21,6 +21,7 @@
 namespace ECS.Systems
 {
     using ECS.Components;
+    using ECS.Components.Type;
 
     using UnityEngine;
 
@@ -28,9 +29,12 @@ namespace ECS.Systems
 
     public class RenderSystem : MonoBehaviour, IInitializeSystem, IExecuteSystem
     {
+        private Vector2Int _lastFovPosition;
+
         public void Execute()
         {
-
+            CalculateFov();
+            UpdateVisibilities();
         }
 
         public void Initialize()
@@ -39,6 +43,40 @@ namespace ECS.Systems
             foreach (var component in ComponentCache.Instance.GetCached<RenderComponent>())
             {
                 component.Renderer.enabled = false;
+            }
+        }
+
+        private void CalculateFov()
+        {
+            var player = ActorCache.Instance.Player;
+            if (player == null) return;
+
+            var positionComponent = player.Entity.GetComponent<GridPositionComponent>();
+            if (positionComponent == null) return;
+
+            var fieldOfView = player.Entity.GetComponent<IntegerComponent>(ComponentType.FieldOfView);
+            if (fieldOfView == null) return;
+
+            if (_lastFovPosition == positionComponent.Position) return;
+
+            _lastFovPosition = positionComponent.Position;
+            MapSystem.Instance.ComputeFov(_lastFovPosition.x, _lastFovPosition.y, fieldOfView.Value);
+        }
+
+        private void UpdateVisibilities()
+        {
+            var renderComponents = ComponentCache.Instance.GetCached<RenderComponent>();
+            if (renderComponents == null) return;
+
+            foreach (var render in renderComponents)
+            {
+                var position = render.Owner.GetComponent<GridPositionComponent>();
+                if (position == null) continue;
+
+                var visible = MapSystem.Instance.Map.IsInFov(position.Position.x, position.Position.y);
+                render.Renderer.enabled = visible;
+
+                if (render.Renderer.sprite != render.Sprite) render.Renderer.sprite = render.Sprite;
             }
         }
     }

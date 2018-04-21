@@ -31,11 +31,13 @@ namespace Utilities.Game.ECSCache
 
         void Remove(TObject obj);
 
+        bool Contains(TObject obj);
+
         IEnumerable<TObject> GetCached();
 
-        IEnumerable<TObject> GetCached(TType type);
+        ReadOnlyCollection<TObject> GetCached(TType type);
 
         IEnumerable<T> GetCached<T>()
-            where T : TObject;
+            where T : class, TObject;
     }
 }
