@@ -1,5 +1,5 @@
 ﻿// // --------------------------------------------------------------------------------------------------------------------
-// // <copyright file="HintCache.cs" author="Lars" company="None">
+// // <copyright file="Sprites.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -18,37 +18,25 @@
 // // </summary>
 // // --------------------------------------------------------------------------------------------------------------------
 
-namespace UI
+using UnityEngine;
+
+using Random = System.Random;
+
+namespace Utilities.Game
 {
-    using System;
-    using System.Collections.Generic;
-
-    using Utilities.Game;
-
-    public class HintCache : MonoSingleton<HintCache>
+    public class Sprites : MonoSingleton<Sprites>
     {
-        private readonly List<SpellHint> _hints = new List<SpellHint>();
+        [SerializeField]
+        private Sprite[] _deathSprites;
 
-        public List<SpellHint> GetCached()
-        {
-            return _hints;
-        }
+        private Random _random;
 
-        public void Add(SpellHint hint)
+        public Sprite GetDeathSprite()
         {
-            if (_hints.Contains(hint)) throw new InvalidOperationException("Hints already contains this hint!");
-            _hints.Add(hint);
-        }
+            if (_random == null) _random = new Random(Constants.RandomSeed);
+            var index = _random.Next(0, _deathSprites.Length);
 
-        public bool Contains(SpellHint hint)
-        {
-            return _hints.Contains(hint);
-        }
-
-        public void Remove(SpellHint hint)
-        {
-            if (!_hints.Contains(hint)) throw new InvalidOperationException("Hints do not contain this hint!");
-            _hints.Remove(hint);
+            return _deathSprites[index];
         }
     }
 }

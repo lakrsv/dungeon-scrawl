@@ -28,9 +28,12 @@ namespace ECS.Systems
     using ECS.Components.Type;
     using ECS.Entities;
 
+    using UI.Notification;
+
     using UnityEngine;
 
     using Utilities.Game.ECSCache;
+    using Utilities.Game.ObjectPool;
 
     public class MoveSystem : MonoBehaviour, IExecuteSystem
     {
@@ -38,6 +41,9 @@ namespace ECS.Systems
         private const float MovementDuration = 0.25f;
 
         private readonly HashSet<Entity> _movingEntities = new HashSet<Entity>();
+
+        [SerializeField]
+        private AttackSystem _attackSystem;
 
         private Vector3 _temp = Vector2.zero;
 
@@ -53,9 +59,14 @@ namespace ECS.Systems
             }
         }
 
+        public bool IsMoving(Entity entity)
+        {
+            return _movingEntities.Contains(entity);
+        }
+
         private void UpdatePosition(GridPositionComponent component)
         {
-            if (_movingEntities.Contains(component.Owner)) return;
+            if (IsMoving(component.Owner) || _attackSystem.IsAttacking(component.Owner)) return;
 
             // Not our turn.
             var turnComponent = component.Owner.GetComponent<BooleanComponent>(ComponentType.Turn);
@@ -74,25 +85,37 @@ namespace ECS.Systems
             if (targetPosition == null) return;
 
             // Out of Range.
-            if (Vector2Int.Distance(targetPosition.Position, component.Position) > fieldOfView.Value)
+            var distance = Vector2Int.Distance(targetPosition.Position, component.Position);
+            if (distance > fieldOfView.Value)
             {
                 turnComponent.Value = false;
                 return;
             }
 
+            var reach = component.Owner.GetComponent<IntegerComponent>(ComponentType.Reach);
+            if (reach != null && reach.Value >= distance) return;
+
             var moveDirection = MapSystem.Instance.GetMoveDirection(component.Position, targetPosition.Position);
-            component.Position += moveDirection;
+
+            if (!MapSystem.Instance.IsWalkable(component.Position + moveDirection))
+            {
+                turnComponent.Value = false;
+            }
+            else
+            {
+                component.Position += moveDirection;
+            }
         }
 
         private void MovePosition(GridPositionComponent component)
         {
-            if (_movingEntities.Contains(component.Owner)) return;
+            if (IsMoving(component.Owner) || _attackSystem.IsAttacking(component.Owner)) return;
 
             _temp.Set(component.Position.x, component.Position.y, 0);
             if (component.Owner.GameObject.transform.position == _temp) return;
 
-            _movingEntities.Add(component.Owner);
-            MoveEntity(component.Owner, _temp);
+           _movingEntities.Add(component.Owner);
+           MoveEntity(component.Owner, _temp);
         }
 
         private void MoveEntity(Entity entity, Vector3 position)

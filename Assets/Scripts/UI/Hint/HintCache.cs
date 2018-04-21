@@ -1,5 +1,5 @@
 ﻿// // --------------------------------------------------------------------------------------------------------------------
-// // <copyright file="ComponentType.cs" author="Lars" company="None">
+// // <copyright file="HintCache.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -18,16 +18,37 @@
 // // </summary>
 // // --------------------------------------------------------------------------------------------------------------------
 
-namespace ECS.Components.Type
+namespace UI.Hint
 {
-    public enum ComponentType
+    using System;
+    using System.Collections.Generic;
+
+    using Utilities.Game;
+
+    public class HintCache : MonoSingleton<HintCache>
     {
-        // For all components that are not generic
-        SpecificType,
-        Health,
-        Damage,
-        Reach,
-        FieldOfView,
-        Turn
+        private readonly List<SpellHint> _hints = new List<SpellHint>();
+
+        public List<SpellHint> GetCached()
+        {
+            return _hints;
+        }
+
+        public void Add(SpellHint hint)
+        {
+            if (_hints.Contains(hint)) throw new InvalidOperationException("Hints already contains this hint!");
+            _hints.Add(hint);
+        }
+
+        public bool Contains(SpellHint hint)
+        {
+            return _hints.Contains(hint);
+        }
+
+        public void Remove(SpellHint hint)
+        {
+            if (!_hints.Contains(hint)) throw new InvalidOperationException("Hints do not contain this hint!");
+            _hints.Remove(hint);
+        }
     }
 }

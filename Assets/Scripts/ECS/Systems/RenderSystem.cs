@@ -20,8 +20,13 @@
 
 namespace ECS.Systems
 {
+    using System.Collections.Generic;
+
     using ECS.Components;
     using ECS.Components.Type;
+    using ECS.Entities;
+
+    using UI.Hint;
 
     using UnityEngine;
 
@@ -74,9 +79,9 @@ namespace ECS.Systems
                 if (position == null) continue;
 
                 var visible = MapSystem.Instance.Map.IsInFov(position.Position.x, position.Position.y);
-                render.Renderer.enabled = visible;
 
-                if (render.Renderer.sprite != render.Sprite) render.Renderer.sprite = render.Sprite;
+                render.Renderer.enabled = visible;
+                render.Renderer.sprite = render.Sprite;
             }
         }
     }

@@ -50,6 +50,17 @@ namespace Utilities.Game.ECSCache
         {
             if (!_components.Contains(component))
                 throw new InvalidOperationException("Components does not contain this component");
+
+            if (component.Type == ComponentType.SpecificType)
+            {
+                _componentsBySpecificType[component.GetType()].Remove(component);
+            }
+            else
+            {
+                _componentsByGenericType[component.Type].Remove(component);
+            }
+
+            _components.Remove(component);
         }
 
         public bool Contains(IComponent component)

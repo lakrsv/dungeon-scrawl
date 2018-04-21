@@ -43,6 +43,8 @@ namespace ECS.Systems
         {
             var turnComponents = ComponentCache.Instance.GetCached(ComponentType.Turn);
 
+            if (_currentTurnIndex >= turnComponents.Count) _currentTurnIndex = 0;
+
             var currentTurnComponent = turnComponents[_currentTurnIndex] as BooleanComponent;
             if (currentTurnComponent == null) throw new InvalidOperationException("Component was invalid!");
 

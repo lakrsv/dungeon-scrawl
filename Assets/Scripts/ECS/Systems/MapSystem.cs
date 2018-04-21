@@ -26,6 +26,8 @@ namespace ECS.Systems
     using System.Threading;
 
     using ECS.Components;
+    using ECS.Components.Type;
+    using ECS.Entities;
 
     using Imported.RogueSharp;
     using Imported.RogueSharp.MapCreation;
@@ -114,10 +116,20 @@ namespace ECS.Systems
 
         public bool IsWalkable(Vector2Int position)
         {
-            var entityPositions = ComponentCache.Instance.GetCached<GridPositionComponent>();
-
+            var entityAtPos = GetEntityAtPosition(position);
             return Map.IsWalkable(position.x, position.y)
-                   && (entityPositions == null || entityPositions.All(x => x.Position != position));
+                   && (entityAtPos == null || entityAtPos.GetComponent<BooleanComponent>(ComponentType.Turn) == null);
+        }
+
+        public Entity GetEntityAtPosition(Vector2Int position)
+        {
+            var entityPositions = ComponentCache.Instance.GetCached<GridPositionComponent>();
+            if (entityPositions == null) return null;
+
+            var first = entityPositions.FirstOrDefault(x => x.Position == position);
+            if (first == null) return null;
+
+            return first.Owner;
         }
 
         public void ComputeFov(int xOrigin, int yOrigin, int radius, bool lightWalls = true)

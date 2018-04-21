@@ -18,7 +18,7 @@
 // // </summary>
 // // --------------------------------------------------------------------------------------------------------------------
 
-namespace UI
+namespace UI.Hint
 {
     using System;
     using System.Collections.Generic;
@@ -35,7 +35,7 @@ namespace UI
     {
         private readonly List<Tween> _currentTweens = new List<Tween>();
 
-        private readonly Vector2 _followOffset = new Vector2(0f, 0.25f);
+        private readonly Vector2 _followOffset = new Vector2(0f, 1.0f);
 
         [SerializeField]
         private float _appearDuration = 0.75f;
@@ -60,6 +60,8 @@ namespace UI
         public bool WordWasInvalid { get; private set; }
 
         public bool WordComplete { get; private set; }
+
+        public string Word { get; private set; }
 
         public void Disable()
         {
@@ -101,6 +103,8 @@ namespace UI
         {
             _followTarget = follow;
             _text.SetText(word);
+
+            Word = word;
         }
 
         public void OnWordTyped(string letters)
@@ -161,22 +165,24 @@ namespace UI
             KillCurrentTweens();
 
             var scaleTween = transform.DOScale(Vector3.zero, duration * 1.0f).SetEase(Ease.OutBack)
-                .OnComplete(() => onCompleted());
+                .SetDelay(_wordCompleteAnimationDuration).OnComplete(() => onCompleted());
             _currentTweens.Add(scaleTween);
 
             if (_followTarget == null)
             {
-                var moveTween = DOTween.To(
-                    () => transform.localPosition,
-                    x => transform.localPosition = x,
-                    -new Vector3(0, duration * 0.333f),
-                    duration).SetRelative();
+                var moveTween = DOTween
+                    .To(
+                        () => transform.localPosition,
+                        x => transform.localPosition = x,
+                        -new Vector3(0, duration * 0.333f),
+                        duration).SetDelay(_wordCompleteAnimationDuration).SetRelative();
 
                 _currentTweens.Add(moveTween);
             }
             else
             {
-                var moveTween = transform.DOMove(new Vector3(0, duration * 0.333f), duration).SetRelative(true);
+                var moveTween = transform.DOMove(new Vector3(0, duration * 0.333f), duration)
+                    .SetDelay(_wordCompleteAnimationDuration).SetRelative(true);
                 _currentTweens.Add(moveTween);
             }
         }
@@ -189,7 +195,7 @@ namespace UI
 
             var colorSequence = DOTween.Sequence();
             colorSequence.Append(_text.DOColor(Color.yellow, duration).SetEase(Ease.OutBack));
-            colorSequence.Append(_text.DOColor(Color.white, duration).SetEase(Ease.OutBack));
+            colorSequence.Append(_text.DOColor(Color.black, duration).SetEase(Ease.OutBack));
         }
 
         private void KillCurrentTweens()

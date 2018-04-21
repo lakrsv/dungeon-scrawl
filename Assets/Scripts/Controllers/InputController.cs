@@ -24,10 +24,12 @@ namespace Controllers
     using System.Text;
 
     using ECS.Components;
+    using ECS.Components.Type;
     using ECS.Entities;
     using ECS.Systems;
 
     using UI;
+    using UI.Hint;
 
     using UnityEngine;
 
@@ -41,13 +43,20 @@ namespace Controllers
 
         private readonly Dictionary<string, Direction> _requiredDirectionWord = new Dictionary<string, Direction>();
 
+        private readonly Dictionary<string, Entity> _requiredAttackWord = new Dictionary<string, Entity>();
+
+        private readonly Dictionary<Entity, SpellHint> _entitySpellHints = new Dictionary<Entity, SpellHint>();
+
         [SerializeField]
         private WordSystem _wordSystem;
 
         [SerializeField]
+        private AttackSystem _attackSystem;
+
+        [SerializeField]
         private MoveHints _moveHints;
 
-        private int _attackDifficulty = WordSystem.MinWordLength;
+        private int _attackDifficulty = WordSystem.MinWordLength + 1;
 
         private int _movementDifficulty = WordSystem.MinWordLength;
 
@@ -85,12 +94,41 @@ namespace Controllers
             {
                 MovePlayer(_requiredDirectionWord[inputWord]);
             }
+            else if (_requiredAttackWord.ContainsKey(inputWord))
+            {
+                var player = ActorCache.Instance.Player;
+                if (player == null) return;
+
+                var target = _requiredAttackWord[inputWord];
+
+                var playerPos = player.Entity.GetComponent<GridPositionComponent>();
+                var enemyPos = target.GetComponent<GridPositionComponent>();
+
+                var newAttackWord = _wordSystem.GetNextWord(_attackDifficulty);
+                var spellHint = _entitySpellHints[enemyPos.Owner];
+                spellHint.Initialize(enemyPos.Owner.GameObject.transform, newAttackWord);
+
+                _requiredAttackWord.Remove(inputWord);
+                _requiredAttackWord.Add(newAttackWord, target);
+
+                if (Vector2.Distance(playerPos.Position, enemyPos.Position) <= 1)
+                {
+                    _attackSystem.AttackMelee(player.Entity, target);
+                }
+                else
+                {
+                    _attackSystem.AttackRanged(player.Entity, target);
+                }
+            }
         }
 
         // Update is called once per frame
         private void Update()
         {
-            if (_requiredDirectionWord.Count == 0) SetMovementWords();
+            if (_requiredDirectionWord.Count == 0)
+            {
+                SetMovementWords();
+            }
 
             foreach (var c in Input.inputString)
                 switch (c)
@@ -106,8 +144,23 @@ namespace Controllers
                         AppendLetter(c);
                         break;
                 }
+        }
 
-            ////Debug.Log(_currentInputWord.ToString());
+        private void UpdateInputHintVisibility()
+        {
+            for (var i = 0; i < 4; i++)
+            {
+                var direction = (Direction)i;
+
+                var player = ActorCache.Instance.Player;
+                var nextPos = player.Entity.GetComponent<GridPositionComponent>().Position;
+
+                var directionVector = direction.ToVector2Int();
+                if (!MapSystem.Instance.IsWalkable(nextPos + directionVector))
+                {
+                    _moveHints.SetHint(direction, false);
+                }
+            }
         }
 
         private void SetMovementWords()
@@ -143,6 +196,53 @@ namespace Controllers
             player.Entity.GetComponent<GridPositionComponent>().Position += directionVector;
 
             _requiredDirectionWord.Clear();
+        }
+
+        private void Start()
+        {
+            _attackSystem.OnEntityInvisible += OnEntityInvisible;
+            _attackSystem.OnEntityVisible += OnEntityVisible;
+
+            InvokeRepeating("UpdateInputHintVisibility", 0.25f, 0.25f);
+        }
+
+        private void OnEntityVisible(Entity entity, SpellHint spellHint)
+        {
+            var player = ActorCache.Instance.Player;
+            if (player == null) return;
+
+            var playerPos = player.Entity.GetComponent<GridPositionComponent>();
+            if (playerPos == null) return;
+
+            var enemyPos = entity.GetComponent<GridPositionComponent>();
+            if (enemyPos == null) return;
+
+            var reach = player.Entity.GetComponent<IntegerComponent>(ComponentType.Reach);
+            if (reach == null) return;
+
+            var distance = Vector2.Distance(playerPos.Position, enemyPos.Position);
+            if (distance > reach.Value) return;
+
+            var requiredWord = _wordSystem.GetNextWord(_attackDifficulty);
+            _requiredAttackWord.Add(requiredWord, entity);
+
+            spellHint.transform.position = enemyPos.Position + Vector2.up;
+            spellHint.Initialize(entity.GameObject.transform, requiredWord);
+
+            _entitySpellHints.Add(entity, spellHint);
+        }
+
+        private void OnEntityInvisible(Entity entity, SpellHint spellHint)
+        {
+            if (_entitySpellHints.ContainsKey(entity))
+            {
+                if (_requiredAttackWord.ContainsKey(spellHint.Word))
+                {
+                    _requiredAttackWord.Remove(spellHint.Word);
+                }
+
+                _entitySpellHints.Remove(entity);
+            }
         }
     }
 }

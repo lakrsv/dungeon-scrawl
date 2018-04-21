@@ -36,6 +36,8 @@ namespace ECS.Entities.Blueprint
                                      new GridPositionComponent(owner) { Position = MapSystem.Instance.GetRandomAvailableTile() },
                                      new RenderComponent(owner) { Sprite = Resources.Load<Sprite>("Sprites/Player") },
                                      new IntegerComponent(owner, ComponentType.Health) { Value = 10 }, 
+                                     new IntegerComponent(owner, ComponentType.Damage) { Value = 1 }, 
+                                     new IntegerComponent(owner, ComponentType.Reach) { Value = 5 }, 
                                      new IntegerComponent(owner, ComponentType.FieldOfView) { Value = 5 },
                                  };
 
