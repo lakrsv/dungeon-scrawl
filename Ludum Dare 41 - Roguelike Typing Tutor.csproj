@@ -396,6 +396,10 @@
     <Compile Include="Assets\Scripts\ECS\Components\IComponent.cs" />
     <Compile Include="Assets\Scripts\ECS\Components\ValueComponent.cs" />
     <Compile Include="Assets\Scripts\ECS\Entities\Entity.cs" />
+    <Compile Include="Assets\Scripts\ECS\Systems\IExecuteSystem.cs" />
+    <Compile Include="Assets\Scripts\ECS\Systems\IInitializeSystem.cs" />
+    <Compile Include="Assets\Scripts\ECS\Systems\MapSystem.cs" />
+    <Compile Include="Assets\Scripts\Tiles\Rule Tile\Scripts\RuleTile.cs" />
     <Compile Include="Assets\Scripts\Utilities\Game\DontDestroy.cs" />
     <Compile Include="Assets\Scripts\Utilities\Game\MonoSingleton.cs" />
     <Compile Include="Assets\Scripts\Utilities\Game\MonoSingletonCreateIfNull.cs" />

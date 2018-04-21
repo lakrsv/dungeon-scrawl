@@ -487,6 +487,7 @@
     <Compile Include="Assets\Imported\ShaderWeaver\Plugin\Scripts\Editor\Window\SWWindowMainCode.cs" />
     <Compile Include="Assets\Imported\ShaderWeaver\Plugin\Scripts\Editor\Window\SWWindowMainRight.cs" />
     <Compile Include="Assets\Imported\ShaderWeaver\Plugin\Scripts\Editor\Window\SWWindowMixerEditor.cs" />
+    <Compile Include="Assets\Scripts\Tiles\Rule Tile\Scripts\Editor\RuleTileEditor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Imported\DawnLike\README.txt" />
