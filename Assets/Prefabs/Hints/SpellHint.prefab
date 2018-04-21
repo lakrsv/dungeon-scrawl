@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 223532834759618664}
   - component: {fileID: 114619304058821736}
   - component: {fileID: 114567036749935708}
+  - component: {fileID: 225092483529653918}
   m_Layer: 0
   m_Name: SpellHint
   m_TagString: Untagged
@@ -276,6 +277,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _appearDuration: 0.75
+  _wordCompleteAnimationDuration: 0.25
   _movementSpeed: 2.5
   _text: {fileID: 114378729855237418}
 --- !u!114 &114619304058821736
@@ -463,3 +465,14 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0, y: 1}
+--- !u!225 &225092483529653918
+CanvasGroup:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1226001210489200}
+  m_Enabled: 1
+  m_Alpha: 0.6
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0

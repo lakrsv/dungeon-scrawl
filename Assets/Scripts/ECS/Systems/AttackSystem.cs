@@ -74,11 +74,7 @@ namespace ECS.Systems
 
             sequence.Append(
                 entity.GameObject.transform.DOMove(entityPosition.Position + direction * distance / 2f, 0.25f)
-                    .SetEase(Ease.InOutBack).OnComplete(
-                        () =>
-                        {
-                            ApplyDamage(targetPosition, damage, targetHealth);
-                        }));
+                    .SetEase(Ease.InOutBack).OnComplete(() => { ApplyDamage(targetPosition, damage, targetHealth); }));
 
             sequence.Append(
                 entity.GameObject.transform.DOMove((Vector2)entityPosition.Position, 0.25f).SetEase(Ease.OutBack));
@@ -92,28 +88,51 @@ namespace ECS.Systems
                     });
         }
 
-        private static void ApplyDamage(GridPositionComponent targetPosition, IntegerComponent damage, IntegerComponent targetHealth)
-        {
-            ObjectPools.Instance.GetPooledObject<TextPopup>().Enable(
-                                                (-damage.Value).ToString(),
-                                                targetPosition.Position + Vector2.up,
-                                                1.0f);
-            targetHealth.Value -= damage.Value;
-
-            if (targetHealth.Value <= 0)
-            {
-                var render = targetHealth.Owner.GetComponent<RenderComponent>();
-                if (render != null) render.Sprite = Sprites.Instance.GetDeathSprite();
-
-                var turnComponent = targetHealth.Owner.GetComponent<BooleanComponent>(ComponentType.Turn);
-                if (turnComponent != null) targetHealth.Owner.RemoveComponent(turnComponent);
-            }
-        }
-
         public void AttackRanged(Entity entity, Entity target)
         {
-            // TODO - Implement ranged attack
-            AttackMelee(entity, target);
+            _attackingEntities.Add(entity);
+
+            var entityPosition = entity.GetComponent<GridPositionComponent>();
+            if (entityPosition == null) return;
+
+            var targetPosition = target.GetComponent<GridPositionComponent>();
+            if (targetPosition == null) return;
+
+            var direction = ((Vector2)targetPosition.Position - entityPosition.Position).normalized;
+            var distance = Vector2.Distance(entityPosition.Position, targetPosition.Position);
+
+            var damage = entity.GetComponent<IntegerComponent>(ComponentType.Damage);
+            if (damage == null) return;
+
+            var targetHealth = target.GetComponent<IntegerComponent>(ComponentType.Health);
+            if (targetHealth == null) return;
+
+            var sequence = DOTween.Sequence();
+
+            sequence.Append(
+                entity.GameObject.transform.DOMove(entityPosition.Position + (direction / 2f), 0.5f)
+                    .SetEase(Ease.InOutBack));
+
+            var fireball = ObjectPools.Instance.GetPooledObject<Fireball>();
+            fireball.Animate(
+                entityPosition.Position,
+                targetPosition.Position,
+                0.50f,
+                () =>
+                    {
+                        ApplyDamage(targetPosition, damage, targetHealth);
+                    });
+
+            sequence.Append(
+                entity.GameObject.transform.DOMove((Vector2)entityPosition.Position, 0.25f).SetEase(Ease.OutBack));
+
+            sequence.OnComplete(
+                () =>
+                    {
+                        var turnComponent = entity.GetComponent<BooleanComponent>(ComponentType.Turn);
+                        if (turnComponent != null) turnComponent.Value = false;
+                        _attackingEntities.Remove(entity);
+                    });
         }
 
         public void Execute()
@@ -124,6 +143,27 @@ namespace ECS.Systems
         public bool IsAttacking(Entity entity)
         {
             return _attackingEntities.Contains(entity);
+        }
+
+        private static void ApplyDamage(
+            GridPositionComponent targetPosition,
+            IntegerComponent damage,
+            IntegerComponent targetHealth)
+        {
+            ObjectPools.Instance.GetPooledObject<TextPopup>().Enable(
+                (-damage.Value).ToString(),
+                targetPosition.Position + Vector2.up,
+                1.0f);
+            targetHealth.Value -= damage.Value;
+
+            if (targetHealth.Value <= 0)
+            {
+                var render = targetHealth.Owner.GetComponent<RenderComponent>();
+                if (render != null) render.Sprite = Sprites.Instance.GetDeathSprite();
+
+                var turnComponent = targetHealth.Owner.GetComponent<BooleanComponent>(ComponentType.Turn);
+                if (turnComponent != null) targetHealth.Owner.RemoveComponent(turnComponent);
+            }
         }
 
         private void UpdateAI()
@@ -167,7 +207,8 @@ namespace ECS.Systems
         {
             var render = entity.GetComponent<RenderComponent>();
 
-            if (render == null || !render.Renderer.enabled || entity.GetComponent<BooleanComponent>(ComponentType.Turn) == null)
+            if (render == null || !render.Renderer.enabled
+                || entity.GetComponent<BooleanComponent>(ComponentType.Turn) == null)
             {
                 if (_hintsForEntity.ContainsKey(entity))
                 {

@@ -394,6 +394,7 @@
     <Compile Include="Assets\Imported\ShaderWeaver\Tutorials\Tutorial14 - Refract Node\SWSimpleCameraFollow.cs" />
     <Compile Include="Assets\Imported\ShaderWeaver\Tutorials\Tutorial7 - Alpha Node\AlphaControl.cs" />
     <Compile Include="Assets\Scripts\Controllers\InputController.cs" />
+    <Compile Include="Assets\Scripts\Controllers\InventoryController.cs" />
     <Compile Include="Assets\Scripts\ECS\Components\BooleanComponent.cs" />
     <Compile Include="Assets\Scripts\ECS\Components\ChaseTargetComponent.cs" />
     <Compile Include="Assets\Scripts\ECS\Components\ComponentBase.cs" />
@@ -420,6 +421,8 @@
     <Compile Include="Assets\Scripts\ECS\Systems\Systems.cs" />
     <Compile Include="Assets\Scripts\ECS\Systems\TurnSystem.cs" />
     <Compile Include="Assets\Scripts\ECS\Systems\WordSystem.cs" />
+    <Compile Include="Assets\Scripts\Explosion.cs" />
+    <Compile Include="Assets\Scripts\Fireball.cs" />
     <Compile Include="Assets\Scripts\Tiles\Rule Tile\Scripts\RuleTile.cs" />
     <Compile Include="Assets\Scripts\UI\ArrowMove.cs" />
     <Compile Include="Assets\Scripts\UI\Hint\HintCache.cs" />
