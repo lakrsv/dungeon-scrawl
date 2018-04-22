@@ -406,7 +406,7 @@ namespace Controllers
         private string GetWordNonConflicting(int length)
         {
             string word;
-            var maxIterations = 20;
+            var maxIterations = 30;
             var currentIterations = 0;
 
             do
