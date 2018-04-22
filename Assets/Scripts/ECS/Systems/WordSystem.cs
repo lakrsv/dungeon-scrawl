@@ -46,6 +46,8 @@ namespace ECS.Systems
 
         private readonly Dictionary<int, List<string>> _wordsByLength = new Dictionary<int, List<string>>();
 
+        private readonly Dictionary<int, List<string>> _usedWordsByLength = new Dictionary<int, List<string>>();
+
         private Random _random;
 
         public string GetNextWord(int wordLength)
@@ -63,9 +65,25 @@ namespace ECS.Systems
 
             var wordsWithLength = _wordsByLength[wordLength];
             var count = wordsWithLength.Count;
+
+            if (count == 0)
+            {
+                _wordsByLength[wordLength] = new List<string>(_usedWordsByLength[wordLength]);
+                _usedWordsByLength[wordLength].Clear();
+
+                wordsWithLength = _wordsByLength[wordLength];
+                count = wordsWithLength.Count;
+            }
+
             var index = _random.Next(0, count);
 
-            return wordsWithLength[index];
+            var word = wordsWithLength[index];
+            wordsWithLength.Remove(word);
+
+            if (_usedWordsByLength.ContainsKey(wordLength)) _usedWordsByLength[wordLength].Add(word);
+            else _usedWordsByLength.Add(wordLength, new List<string> { word });
+
+            return word;
         }
 
         public void Initialize()

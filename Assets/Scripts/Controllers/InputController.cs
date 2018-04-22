@@ -236,6 +236,7 @@ namespace Controllers
                     continue;
                 }
 
+
                 var requiredWord = _wordSystem.GetNextWord(_movementDifficulty);
                 _requiredDirectionWord.Add(requiredWord, direction);
                 _moveHints.SetHint(direction, true, requiredWord);

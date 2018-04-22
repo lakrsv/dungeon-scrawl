@@ -1,5 +1,5 @@
 ﻿// // --------------------------------------------------------------------------------------------------------------------
-// // <copyright file="BoardTweener.cs" author="Lars" company="None">
+// // <copyright file="GameOverScreenTweener.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -24,39 +24,40 @@ namespace UI.Tweeners
 
     using DG.Tweening;
 
-    using ECS.Components;
-
     using UnityEngine;
+    using UnityEngine.UI;
 
-    using Utilities.Camera;
-    using Utilities.Game.ECSCache;
-
-    public class BoardTweener : MonoBehaviour
+    public class GameOverScreenTweener : MonoBehaviour
     {
-        public IEnumerator BoardAppear()
+        [SerializeField]
+        private Button _continueButton;
+
+        [SerializeField]
+        private Button _exitButton;
+
+        [SerializeField]
+        private Text _gameOverText;
+
+        private void Awake()
         {
-            transform.DOMove(new Vector3(0, -10f, 0), 1.0f).From().SetEase(Ease.OutCubic).OnStart(() => gameObject.SetActive(true));
-            yield return new WaitForSeconds(1.0f);
+            _gameOverText.gameObject.SetActive(false);
+
+            _continueButton.gameObject.SetActive(false);
+            _exitButton.gameObject.SetActive(false);
         }
 
-        public IEnumerator BoardDisappear()
+        private IEnumerator Start()
         {
-            var playerPos = ActorCache.Instance.Player.Entity.GetComponent<GridPositionComponent>();
-            Camera.main.transform.DOMove(new Vector3(playerPos.Position.x, playerPos.Position.y, -10), 1.0f).SetEase(Ease.OutBack);
-            yield return new WaitForSeconds(1.0f);
-            Camera.main.DOOrthoSize(0f, 2.0f).SetEase(Ease.InBounce);
-            ////transform.DOMove(new Vector3(0, -100, 0), 1.0f);
-            yield return new WaitForSeconds(2.0f);
-        }
+            yield return null;
 
-        public IEnumerator BoardDisappearOpposite()
-        {
-            var playerPos = ActorCache.Instance.Player.Entity.GetComponent<GridPositionComponent>();
-            Camera.main.transform.DOMove(new Vector3(playerPos.Position.x, playerPos.Position.y, -10), 1.0f).SetEase(Ease.OutBack);
-            yield return new WaitForSeconds(1.0f);
-            Camera.main.DOOrthoSize(300f, 2.0f).SetEase(Ease.InBounce);
-            ////transform.DOMove(new Vector3(0, -100, 0), 1.0f);
-            yield return new WaitForSeconds(2.0f);
+            _gameOverText.transform.DOMoveY(-10, 1.0f).From().SetEase(Ease.OutBack)
+                .OnStart(() => _gameOverText.gameObject.SetActive(true));
+
+            _continueButton.transform.DOMoveY(-10, 1.0f).From().SetEase(Ease.OutBack).SetDelay(0.25f)
+                .OnStart(() => _continueButton.gameObject.SetActive(true));
+
+            _exitButton.transform.DOMoveY(-10, 1.0f).From().SetEase(Ease.OutBack).SetDelay(0.5f)
+                .OnStart(() => _exitButton.gameObject.SetActive(true));
         }
     }
 }

@@ -35,7 +35,7 @@ namespace ECS.Systems
 
     public class TurnSystem : MonoBehaviour, IExecuteSystem, IInitializeSystem
     {
-        private float _currentTurnDelay = 0.05f;
+        private float _currentTurnDelay = 0.1f;
 
         private int _currentTurnIndex;
 
@@ -47,10 +47,11 @@ namespace ECS.Systems
 
             var turnComponents = ComponentCache.Instance.GetCached(ComponentType.Turn);
 
+            if (turnComponents.Count == 0) return;
             if (_currentTurnIndex >= turnComponents.Count) _currentTurnIndex = 0;
 
             var currentTurnComponent = turnComponents[_currentTurnIndex] as BooleanComponent;
-            if (currentTurnComponent == null) throw new InvalidOperationException("Component was invalid!");
+            if (currentTurnComponent == null) return;
 
             if (currentTurnComponent.Value) return;
 

@@ -23,6 +23,7 @@ namespace Controllers
     using System.Collections;
 
     using ECS.Components;
+    using ECS.Entities.Blueprint;
     using ECS.Systems;
 
     using UI.Tweeners;
@@ -59,18 +60,35 @@ namespace Controllers
             if (CurrentLevel == 5)
             {
                 // Game Is Done!
+                StartCoroutine(GameDone());
             }
             else
             {
                 CurrentLevel++;
+                Player.SavePlayerStats();
                 StartCoroutine(GoToNextLevel());
             }
         }
 
         public void GameOver()
         {
+            CurrentLevel = 0;
             IsPlaying = false;
             _renderSystem.Execute();
+            Player.ClearPlayerStats();
+
+            StartCoroutine(GameOverRoutine());
+        }
+
+        private IEnumerator GameOverRoutine()
+        {
+            yield return _board.BoardDisappearOpposite();
+            SceneManager.LoadScene("GameOver");
+        }
+
+        private IEnumerator GameDone()
+        {
+            yield return null;
         }
 
         private IEnumerator GoToNextLevel()
