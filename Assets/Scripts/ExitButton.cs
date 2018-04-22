@@ -38,7 +38,7 @@ namespace UI
         public void OnClick()
         {
             _button.interactable = false;
-            _canvas.DOFade(0f, 0.5f).SetEase(Ease.OutCirc).OnComplete(() => Application.Quit());
+            _canvas.DOFade(0f, 0.5f).SetEase(Ease.OutCirc).OnComplete(() => SceneManager.LoadScene("SplashScreen"));
         }
 
         public void OnPointerEnter(PointerEventData eventData)

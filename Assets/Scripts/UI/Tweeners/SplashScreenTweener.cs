@@ -88,6 +88,12 @@ namespace UI.Tweeners
 
         private void Update()
         {
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                Application.Quit();
+                return;
+            }
+
             if (Input.anyKeyDown)
             {
                 SceneManager.LoadScene("MainMenu");
