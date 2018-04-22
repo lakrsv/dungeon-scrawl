@@ -22,6 +22,7 @@ namespace Controllers
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text;
 
     using ECS.Components;
@@ -70,6 +71,8 @@ namespace Controllers
         private int _movementDifficulty = WordSystem.MinWordLength;
 
         private int _lootDifficulty = WordSystem.MaxWordLength;
+
+        private bool _movingSimple;
 
         private void AppendLetter(char c)
         {
@@ -129,7 +132,7 @@ namespace Controllers
                 var playerPos = player.Entity.GetComponent<GridPositionComponent>();
                 var enemyPos = target.GetComponent<GridPositionComponent>();
 
-                var newAttackWord = _wordSystem.GetNextWord(_attackDifficulty);
+                var newAttackWord = GetWordNonConflicting(_attackDifficulty);
                 var spellHint = _entitySpellHints[enemyPos.Owner];
                 spellHint.Initialize(enemyPos.Owner.GameObject.transform, newAttackWord);
 
@@ -169,7 +172,7 @@ namespace Controllers
                 SetMovementWords();
             }
 
-            foreach (var c in Input.inputString)
+            foreach (var c in Input.inputString.ToLower())
                 switch (c)
                 {
                     case '\b':
@@ -218,19 +221,54 @@ namespace Controllers
                 {
                     if (!MapSystem.Instance.IsWalkable(nextPos + directionVector))
                     {
+                        var moveHintWord = _moveHints.GetHint(direction).Word;
                         _moveHints.SetHint(direction, false);
-                        _requiredDirectionWord.Remove(_moveHints.GetHint(direction).Word);
+
+                        if (moveHintWord != null) _requiredDirectionWord.Remove(moveHintWord);
                     }
                 }
                 else
                 {
                     if (MapSystem.Instance.IsWalkable(nextPos + directionVector))
                     {
-                        var requiredWord = _wordSystem.GetNextWord(_movementDifficulty);
-                        _requiredDirectionWord.Add(requiredWord, direction);
-                        _moveHints.SetHint(direction, true, requiredWord);
+                        var requiredWord = _movingSimple ? GetLetterNonConflicting() : GetWordNonConflicting(_movementDifficulty);
+                        if (!_requiredDirectionWord.ContainsKey(requiredWord))
+                        {
+                            _requiredDirectionWord.Add(requiredWord, direction);
+                            _moveHints.SetHint(direction, true, requiredWord);
+                        }
                     }
                 }
+            }
+        }
+
+        private void UpdateMovementType()
+        {
+            var renderers = ComponentCache.Instance.GetCached<RenderComponent>();
+
+            if (renderers == null)
+            {
+                _movingSimple = true;
+                return;
+            }
+
+            var shouldMoveSimple = true;
+            foreach (var render in renderers)
+            {
+                if (ActorCache.Instance.Player.Entity == render.Owner) continue;
+
+                if (render.Renderer.enabled && render.Owner.GetComponent<BooleanComponent>(ComponentType.Turn) != null)
+                {
+                    shouldMoveSimple = false;
+                    break;
+                }
+            }
+
+            if (shouldMoveSimple != _movingSimple)
+            {
+                _movingSimple = shouldMoveSimple;
+                _requiredDirectionWord.Clear();
+                SetMovementWords();                
             }
         }
 
@@ -246,12 +284,20 @@ namespace Controllers
                 var directionVector = direction.ToVector2Int();
                 if (!MapSystem.Instance.IsWalkable(nextPos + directionVector))
                 {
+                    var hintToDisable = _moveHints.GetHint(direction);
                     _moveHints.SetHint(direction, false);
+
+                    if (hintToDisable.Word == null) continue;
+
+                    if (_requiredDirectionWord.ContainsKey(hintToDisable.Word))
+                    {
+                        _requiredDirectionWord.Remove(hintToDisable.Word);
+                    }
                     continue;
                 }
 
 
-                var requiredWord = _wordSystem.GetNextWord(_movementDifficulty);
+                var requiredWord = _movingSimple ? GetLetterNonConflicting() : GetWordNonConflicting(_movementDifficulty);
                 if (!_requiredDirectionWord.ContainsKey(requiredWord))
                 {
                     _requiredDirectionWord.Add(requiredWord, direction);
@@ -280,6 +326,7 @@ namespace Controllers
             _itemSystem.OnPlayerLeaveLootArea += OnPlayerLeaveLootArea;
 
             InvokeRepeating("UpdateInputHintVisibility", 0.25f, 0.25f);
+            InvokeRepeating("UpdateMovementType", 0.25f, 0.25f);
         }
 
         private void OnPlayerLeaveLootArea(Chest chest)
@@ -290,7 +337,8 @@ namespace Controllers
             _chestSpellHints.Remove(chest);
 
             var word = spellHint.Word;
-            if (_requiredLootWord.ContainsKey(word))
+
+            if (word != null && _requiredLootWord.ContainsKey(word))
             {
                 _requiredLootWord.Remove(word);
             }
@@ -300,7 +348,7 @@ namespace Controllers
 
         private void OnPlayerEnterLootArea(Chest chest)
         {
-            var requiredLootWord = _wordSystem.GetNextWord(_lootDifficulty);
+            var requiredLootWord = GetWordNonConflicting(_lootDifficulty);
             _requiredLootWord.Add(requiredLootWord, chest);
 
             var spellHint = ObjectPools.Instance.GetPooledObject<SpellHint>();
@@ -327,7 +375,7 @@ namespace Controllers
             var distance = Vector2.Distance(playerPos.Position, enemyPos.Position);
             if (distance > reach.Value) return;
 
-            var requiredWord = _wordSystem.GetNextWord(_attackDifficulty);
+            var requiredWord = GetWordNonConflicting(_attackDifficulty);
             _requiredAttackWord.Add(requiredWord, entity);
 
             spellHint.transform.position = enemyPos.Position + Vector2.up;
@@ -340,13 +388,48 @@ namespace Controllers
         {
             if (_entitySpellHints.ContainsKey(entity))
             {
-                if (_requiredAttackWord.ContainsKey(spellHint.Word))
+                if (spellHint.Word != null && _requiredAttackWord.ContainsKey(spellHint.Word))
                 {
                     _requiredAttackWord.Remove(spellHint.Word);
                 }
 
+                spellHint.Disable();
                 _entitySpellHints.Remove(entity);
             }
+        }
+
+        private string GetWordNonConflicting(int length)
+        {
+            string word;
+            var maxIterations = 20;
+            var currentIterations = 0;
+
+            do
+            {
+                word = _wordSystem.GetNextWord(length);
+                currentIterations++;
+            }
+            while ((_requiredDirectionWord.ContainsKey(word) || _requiredAttackWord.ContainsKey(word)
+                   || _requiredLootWord.ContainsKey(word)) && currentIterations < maxIterations);
+
+            return word;
+        }
+
+        private string GetLetterNonConflicting()
+        {
+            string letter;
+            var maxIterations = 20;
+            var currentIterations = 0;
+
+            do
+            {
+                letter = _wordSystem.GetNextLetter();
+                currentIterations++;
+            }
+            while (currentIterations < maxIterations && (_requiredAttackWord.Any(x => x.Key.StartsWith(letter))
+                                                         || _requiredLootWord.Any(x => x.Key.StartsWith(letter))));
+
+            return letter;
         }
     }
 }

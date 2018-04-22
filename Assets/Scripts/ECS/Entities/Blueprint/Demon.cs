@@ -39,10 +39,10 @@ namespace ECS.Entities.Blueprint
                                  {
                                      new GridPositionComponent(owner) { Position = MapSystem.Instance.GetRandomAvailableTile()},
                                      new RenderComponent(owner) { Sprite = Sprites.Instance.GetDemonSprite() },
-                                     new IntegerComponent(owner, ComponentType.Health) { Value = 10 },
-                                     new IntegerComponent(owner, ComponentType.Damage) { Value = 3 },
-                                     new IntegerComponent(owner, ComponentType.Reach) { Value = 3 },
-                                     new IntegerComponent(owner, ComponentType.FieldOfView) { Value = 5 + GameController.CurrentLevel },
+                                     new IntegerComponent(owner, ComponentType.Health) { Value = 4 * GameController.Instance.GetDifficulty() },
+                                     new IntegerComponent(owner, ComponentType.Damage) { Value = 2 * GameController.Instance.GetDifficulty() },
+                                     new IntegerComponent(owner, ComponentType.Reach) { Value = 2 + GameController.Instance.GetDifficulty() },
+                                     new IntegerComponent(owner, ComponentType.FieldOfView) { Value = 5 + GameController.CurrentLevel + GameController.Instance.GetDifficulty() },
                                      new BooleanComponent(owner, ComponentType.Turn),
                                      new ChaseTargetComponent(owner) { Target = ActorCache.Instance.Player.Entity }, 
                                  };

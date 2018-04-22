@@ -44,9 +44,14 @@ namespace ECS.Systems
 
         private const string WordFilePath = "Words/{0}";
 
+        private const string Letters = "abcdefghijklmnopqrstuvwxyz";
+
         private readonly Dictionary<int, List<string>> _wordsByLength = new Dictionary<int, List<string>>();
 
         private readonly Dictionary<int, List<string>> _usedWordsByLength = new Dictionary<int, List<string>>();
+
+        private List<char> _letters = new List<char>();
+
 
         private Random _random;
 
@@ -86,6 +91,17 @@ namespace ECS.Systems
             return word;
         }
 
+        public string GetNextLetter()
+        {
+            if (_letters.Count == 0) PrepareLetters();
+
+            var index = _random.Next(0, _letters.Count);
+            var letter = _letters[index];
+
+            _letters.Remove(letter);
+            return letter.ToString();
+        }
+
         public void Initialize()
         {
             _random = new Random(Constants.GetRandomSeed());
@@ -93,6 +109,11 @@ namespace ECS.Systems
             PrepareWords(Adjectives);
             PrepareWords(Nouns);
             PrepareWords(Verbs);
+        }
+
+        private void PrepareLetters()
+        {
+            _letters.AddRange(Letters.ToCharArray());
         }
 
         private void PrepareWords(string fileName)
@@ -109,8 +130,8 @@ namespace ECS.Systems
 
                     if (length > MaxWordLength || length < MinWordLength) continue;
 
-                    if (_wordsByLength.ContainsKey(length)) _wordsByLength[length].Add(line);
-                    else _wordsByLength.Add(length, new List<string> { line });
+                    if (_wordsByLength.ContainsKey(length)) _wordsByLength[length].Add(line.ToLower());
+                    else _wordsByLength.Add(length, new List<string> { line.ToLower() });
                 }
             }
         }

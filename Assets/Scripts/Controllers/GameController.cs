@@ -26,6 +26,8 @@ namespace Controllers
     using ECS.Entities.Blueprint;
     using ECS.Systems;
 
+    using UI.Hint;
+    using UI.Notification;
     using UI.Tweeners;
 
     using UnityEngine;
@@ -34,6 +36,7 @@ namespace Controllers
     using Utilities.Camera;
     using Utilities.Game;
     using Utilities.Game.ECSCache;
+    using Utilities.Game.ObjectPool;
 
     public class GameController : MonoSingleton<GameController>
     {
@@ -51,6 +54,9 @@ namespace Controllers
 
         [SerializeField]
         private RenderSystem _renderSystem;
+
+        [SerializeField]
+        private MoveHints _moveHints;
 
         public void EndLevel()
         {
@@ -94,14 +100,16 @@ namespace Controllers
         private IEnumerator GoToNextLevel()
         {
             yield return _board.BoardDisappear();
+            _board.gameObject.SetActive(false);
+            _moveHints.gameObject.SetActive(false);
+            ObjectPools.Instance.GetPooledObject<TextPopup>().Enable(string.Format("-LEVEL {0}-", CurrentLevel), new Vector2(_cameraMovement.transform.position.x, _cameraMovement.transform.position.y), 3.0f);
+            Camera.main.orthographicSize = 5;
+            yield return new WaitForSeconds(3.0f);
             SceneManager.LoadScene("Game");
         }
 
         private void Awake()
         {
-            PlayerPrefs.DeleteAll();
-            PlayerPrefs.Save();
-
             PlayerHasMoved = false;
             IsPlaying = false;
         }
@@ -120,6 +128,11 @@ namespace Controllers
 
             yield return _board.BoardAppear();
             IsPlaying = true;
+        }
+
+        public int GetDifficulty()
+        {
+            return PlayerPrefs.GetInt("Difficulty", 1);
         }
 
     }

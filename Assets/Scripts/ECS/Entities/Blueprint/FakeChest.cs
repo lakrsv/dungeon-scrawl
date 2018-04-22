@@ -20,6 +20,8 @@
 
 namespace ECS.Entities.Blueprint
 {
+    using Controllers;
+
     using ECS.Components;
     using ECS.Components.Type;
     using ECS.Systems;
@@ -37,8 +39,8 @@ namespace ECS.Entities.Blueprint
                                  {
                                      new GridPositionComponent(owner) { Position = MapSystem.Instance.GetRandomAvailableTile()},
                                      new RenderComponent(owner) { Sprite = Sprites.Instance.GetChestSprite() },
-                                     new IntegerComponent(owner, ComponentType.Health) { Value = 2 },
-                                     new IntegerComponent(owner, ComponentType.Damage) { Value = 5 },
+                                     new IntegerComponent(owner, ComponentType.Health) { Value = 2 + GameController.Instance.GetDifficulty() },
+                                     new IntegerComponent(owner, ComponentType.Damage) { Value = 3 * GameController.Instance.GetDifficulty() },
                                      new IntegerComponent(owner, ComponentType.Reach) { Value = 1 },
                                      new IntegerComponent(owner, ComponentType.FieldOfView) { Value = 1 },
                                      new BooleanComponent(owner, ComponentType.Turn),

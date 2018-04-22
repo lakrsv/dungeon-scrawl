@@ -1832,6 +1832,7 @@ MonoBehaviour:
   _board: {fileID: 1828696578}
   _cameraMovement: {fileID: 296426702}
   _renderSystem: {fileID: 780963319}
+  _moveHints: {fileID: 58266354}
 --- !u!1 &937798844
 GameObject:
   m_ObjectHideFlags: 0

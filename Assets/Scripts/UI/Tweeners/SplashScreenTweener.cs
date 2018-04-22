@@ -79,6 +79,9 @@ namespace UI.Tweeners
 
         private void Awake()
         {
+            PlayerPrefs.DeleteAll();
+            PlayerPrefs.Save();
+
             _title.gameObject.SetActive(false);
             _continueText.gameObject.SetActive(false);
         }

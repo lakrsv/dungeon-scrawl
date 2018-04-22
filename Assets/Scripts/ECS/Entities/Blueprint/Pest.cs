@@ -39,8 +39,8 @@ namespace ECS.Entities.Blueprint
                                  {
                                      new GridPositionComponent(owner) { Position = MapSystem.Instance.GetRandomAvailableTile()},
                                      new RenderComponent(owner) { Sprite = Sprites.Instance.GetPestSprite() },
-                                     new IntegerComponent(owner, ComponentType.Health) { Value = 1 },
-                                     new IntegerComponent(owner, ComponentType.Damage) { Value = GameController.CurrentLevel },
+                                     new IntegerComponent(owner, ComponentType.Health) { Value = 1 * GameController.Instance.GetDifficulty() },
+                                     new IntegerComponent(owner, ComponentType.Damage) { Value = GameController.Instance.GetDifficulty() },
                                      new IntegerComponent(owner, ComponentType.Reach) { Value = 1 },
                                      new IntegerComponent(owner, ComponentType.FieldOfView) { Value = 8 },
                                      new BooleanComponent(owner, ComponentType.Turn),

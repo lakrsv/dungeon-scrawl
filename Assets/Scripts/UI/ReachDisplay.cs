@@ -37,7 +37,7 @@ namespace UI
             var playerReach = Player.GetSavedStat(ComponentType.Reach);
             if (playerReach == Player.DefaultValues[ComponentType.Reach]) return;
 
-            SetReachCount(playerReach);
+            SetReachCount(playerReach - 1);
         }
 
         public void SetReachCount(int fireballs)

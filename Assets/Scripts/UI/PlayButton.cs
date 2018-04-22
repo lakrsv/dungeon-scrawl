@@ -38,8 +38,13 @@ namespace UI
         [SerializeField]
         private RectTransform _rect;
 
+        public int Difficulty;
+
         public void OnClick()
         {
+            PlayerPrefs.SetInt("Difficulty", Difficulty);
+            PlayerPrefs.Save();
+
             _button.interactable = false;
             _canvas.DOFade(0f, 0.5f).SetEase(Ease.OutCirc).OnComplete(() => SceneManager.LoadScene("Game"));
         }
