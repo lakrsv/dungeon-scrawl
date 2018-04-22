@@ -26,6 +26,7 @@ namespace ECS.Entities.Blueprint
 
     using UnityEngine;
 
+    using Utilities.Game;
     using Utilities.Game.ECSCache;
 
     public class Demon : IEntityBlueprint
@@ -35,10 +36,10 @@ namespace ECS.Entities.Blueprint
             var components = new IComponent[]
                                  {
                                      new GridPositionComponent(owner) { Position = MapSystem.Instance.GetRandomAvailableTile()},
-                                     new RenderComponent(owner) { Sprite = Resources.Load<Sprite>("Sprites/Demon") },
-                                     new IntegerComponent(owner, ComponentType.Health) { Value = 1 },
+                                     new RenderComponent(owner) { Sprite = Sprites.Instance.GetDemonSprite() },
+                                     new IntegerComponent(owner, ComponentType.Health) { Value = 4 },
                                      new IntegerComponent(owner, ComponentType.Damage) { Value = 2 },
-                                     new IntegerComponent(owner, ComponentType.Reach) { Value = 1 },
+                                     new IntegerComponent(owner, ComponentType.Reach) { Value = 3 },
                                      new IntegerComponent(owner, ComponentType.FieldOfView) { Value = 5 },
                                      new BooleanComponent(owner, ComponentType.Turn),
                                      new ChaseTargetComponent(owner) { Target = ActorCache.Instance.Player.Entity }, 

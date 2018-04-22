@@ -30,15 +30,29 @@ namespace ECS.Systems
 
     public class ActorSpawnerSystem : MonoBehaviour, IInitializeSystem
     {
+        public static int CurrentLevel = 2;
+
         public void Initialize()
         {
-            // Spawn Player
-            SpawnActor<Player>();
-
-            // Spawn some Demons
-            for (var i = 0; i < 10; i++)
+            if (CurrentLevel == 1)
             {
-                SpawnActor<Demon>();
+                SpawnLevel1Actors();
+            }
+            else if (CurrentLevel == 2)
+            {
+                SpawnLevel2Actors();
+            }
+            else if (CurrentLevel == 3)
+            {
+                SpawnLevel3Actors();
+            }
+            else if (CurrentLevel == 4)
+            {
+                SpawnLevel4Actors();
+            }
+            else if (CurrentLevel == 5)
+            {
+                SpawnLevel5Actors();
             }
         }
 
@@ -57,6 +71,124 @@ namespace ECS.Systems
         {
             ActorCache.Instance.Remove(actor);
             actor.Disable();
+        }
+
+        public void SpawnLevel1Actors()
+        {
+            // Spawn Player
+            SpawnActor<Player>();
+
+            for (var i = 0; i < 10; i++)
+            {
+                SpawnActor<Pest>();
+            }
+
+            for (var i = 0; i < 2; i++)
+            {
+                SpawnActor<Slime>();
+            }
+        }
+
+        public void SpawnLevel2Actors()
+        {
+            // Spawn Player
+            SpawnActor<Player>();
+
+            // Spawn some Demons
+            for (var i = 0; i < 10; i++)
+            {
+                SpawnActor<Pest>();
+            }
+
+            // Spawn some Demons
+            for (var i = 0; i < 2; i++)
+            {
+                SpawnActor<Demon>();
+            }
+
+            // Spawn some Demons
+            for (var i = 0; i < 3; i++)
+            {
+                SpawnActor<Slime>();
+            }
+
+            // Make one fake chest.. HEHEHE
+            SpawnActor<FakeChest>();
+
+        }
+
+        public void SpawnLevel3Actors()
+        {
+            // Spawn Player
+            SpawnActor<Player>();
+
+            // Spawn some Demons
+            for (var i = 0; i < 5; i++)
+            {
+                SpawnActor<Demon>();
+            }
+
+            // Spawn some Demons
+            for (var i = 0; i < 10; i++)
+            {
+                SpawnActor<Pest>();
+            }
+
+            // Spawn some Demons
+            for (var i = 0; i < 10; i++)
+            {
+                SpawnActor<Slime>();
+            }
+
+            // Make one fake chest.. HEHEHE
+            SpawnActor<FakeChest>();
+            // Make one fake chest.. HEHEHE
+            SpawnActor<FakeChest>();
+        }
+
+        public void SpawnLevel4Actors()
+        {
+            // Spawn Player
+            SpawnActor<Player>();
+
+            // Spawn some Demons
+            for (var i = 0; i < 10; i++)
+            {
+                SpawnActor<Demon>();
+            }
+
+            for (var i = 0; i < 5; i++)
+            {
+                SpawnActor<Pest>();
+            }
+
+            for (var i = 0; i < 4; i++)
+            {
+                // Make one fake chest.. HEHEHE
+                SpawnActor<FakeChest>();
+            }
+        }
+
+        public void SpawnLevel5Actors()
+        {
+            // Spawn Player
+            SpawnActor<Player>();
+
+            // Spawn some Demons
+            for (var i = 0; i < 10; i++)
+            {
+                SpawnActor<Demon>();
+            }
+
+            for (var i = 0; i < 15; i++)
+            {
+                SpawnActor<Pest>();
+            }
+
+            for (var i = 0; i < 10; i++)
+            {
+                SpawnActor<Slime>();
+            }
         }
     }
 }

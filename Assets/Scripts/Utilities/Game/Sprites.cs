@@ -29,6 +29,18 @@ namespace Utilities.Game
         [SerializeField]
         private Sprite[] _deathSprites;
 
+        [SerializeField]
+        private Sprite[] _demonSprites;
+
+        [SerializeField]
+        private Sprite[] _slimeSprites;
+
+        [SerializeField]
+        private Sprite[] _pestSprites;
+
+        [SerializeField]
+        private Sprite[] _chestSprites;
+
         private Random _random;
 
         public Sprite GetDeathSprite()
@@ -37,6 +49,38 @@ namespace Utilities.Game
             var index = _random.Next(0, _deathSprites.Length);
 
             return _deathSprites[index];
+        }
+
+        public Sprite GetDemonSprite()
+        {
+            if (_random == null) _random = new Random(Constants.RandomSeed);
+            var index = _random.Next(0, _demonSprites.Length);
+
+            return _demonSprites[index];
+        }
+
+        public Sprite GetPestSprite()
+        {
+            if (_random == null) _random = new Random(Constants.RandomSeed);
+            var index = _random.Next(0, _pestSprites.Length);
+
+            return _pestSprites[index];
+        }
+
+        public Sprite GetSlimeSprite()
+        {
+            if (_random == null) _random = new Random(Constants.RandomSeed);
+            var index = _random.Next(0, _slimeSprites.Length);
+
+            return _slimeSprites[index];
+        }
+
+        public Sprite GetChestSprite()
+        {
+            if (_random == null) _random = new Random(Constants.RandomSeed);
+            var index = _random.Next(0, _chestSprites.Length);
+
+            return _chestSprites[index];
         }
     }
 }

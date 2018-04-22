@@ -29,6 +29,7 @@ namespace ECS.Systems
     using ECS.Components.Type;
     using ECS.Entities;
 
+    using UI;
     using UI.Hint;
     using UI.Notification;
 
@@ -46,6 +47,9 @@ namespace ECS.Systems
 
         [SerializeField]
         private MoveSystem _moveSystem;
+
+        [SerializeField]
+        private HealthDisplay _healthDisplay;
 
         public event Action<Entity, SpellHint> OnEntityLeaveAttackRange;
 
@@ -145,7 +149,7 @@ namespace ECS.Systems
             return _attackingEntities.Contains(entity);
         }
 
-        private static void ApplyDamage(
+        private void ApplyDamage(
             GridPositionComponent targetPosition,
             IntegerComponent damage,
             IntegerComponent targetHealth)
@@ -155,6 +159,17 @@ namespace ECS.Systems
                 targetPosition.Position + Vector2.up,
                 1.0f);
             targetHealth.Value -= damage.Value;
+
+            if (ActorCache.Instance.Player.Entity == targetHealth.Owner)
+            {
+                _healthDisplay.SetHealth(targetHealth.Value);
+            }
+
+            var fireImmune = targetHealth.Owner.GetComponent<FireImmuneComponent>();
+            if (fireImmune != null) targetHealth.Owner.RemoveComponent(fireImmune);
+
+            var neutral = targetHealth.Owner.GetComponent<NeutralComponent>();
+            if (neutral != null) targetHealth.Owner.RemoveComponent(neutral);
 
             if (targetHealth.Value <= 0)
             {
@@ -167,6 +182,8 @@ namespace ECS.Systems
 
                 var turnComponent = targetHealth.Owner.GetComponent<BooleanComponent>(ComponentType.Turn);
                 if (turnComponent != null) targetHealth.Owner.RemoveComponent(turnComponent);
+
+                // IF Player, Game Over
             }
         }
 
@@ -221,7 +238,11 @@ namespace ECS.Systems
             var playerReach = player.Entity.GetComponent<IntegerComponent>(ComponentType.Reach);
             if (playerReach == null) return;
 
-            var inReach = playerReach.Value >= Vector2.Distance(entityPos.Position, playerPos.Position);
+            var distance = Vector2.Distance(entityPos.Position, playerPos.Position);
+            var inReach = playerReach.Value >= distance;
+
+            var fireImmune = entity.GetComponent<FireImmuneComponent>();
+            if (fireImmune != null && distance > 1) return;
 
             var render = entity.GetComponent<RenderComponent>();
 

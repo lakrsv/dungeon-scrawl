@@ -20,19 +20,86 @@
 
 namespace Controllers
 {
+    using ECS.Components;
+    using ECS.Components.Type;
+    using ECS.Systems;
+
+    using UI;
+    using UI.Notification;
+
     using UnityEngine;
+
+    using Utilities.Game.ECSCache;
+    using Utilities.Game.ObjectPool;
 
     public class InventoryController : MonoBehaviour
     {
-        public const int FireballsPerReach = 5;
+        public const int MaxReach = 10;
 
-        private int _currentFireballs = 0;
+        public const int MaxHealth = 10;
 
-        public void AddFireball()
+        public const int MaxFov = 10;
+
+        [SerializeField]
+        private ReachDisplay _reachDisplay;
+
+        [SerializeField]
+        private HealthDisplay _healthDisplay;
+
+        [SerializeField]
+        private FovDisplay _fovDisplay;
+
+        private int _currentReach = 0;
+
+        public void AddPower()
         {
-            _currentFireballs++;
+            if (_currentReach >= MaxReach) return;
 
-            
+            var player = ActorCache.Instance.Player;
+            player.Entity.GetComponent<IntegerComponent>(ComponentType.Reach).Value += 1;
+            player.Entity.GetComponent<IntegerComponent>(ComponentType.Damage).Value += 1;
+
+            _currentReach++;
+            _reachDisplay.SetReachCount(_currentReach);
+
+            ObjectPools.Instance.GetPooledObject<TextPopup>().Enable("POWER+", GetDisplayPos(), 3.0f);
+        }
+
+        public void AddHealth()
+        {
+            var player = ActorCache.Instance.Player;
+            var playerHealth = player.Entity.GetComponent<IntegerComponent>(ComponentType.Health);
+            if (playerHealth.Value >= MaxHealth) return;
+
+            playerHealth.Value += 1;
+
+            _healthDisplay.SetHealth(playerHealth.Value);
+
+            ObjectPools.Instance.GetPooledObject<TextPopup>().Enable("HEALTH+", GetDisplayPos(), 3.0f);
+        }
+
+        public void AddFov()
+        {
+            var player = ActorCache.Instance.Player;
+            var playerFov = player.Entity.GetComponent<IntegerComponent>(ComponentType.FieldOfView);
+            if (playerFov.Value >= MaxFov) return;
+
+            playerFov.Value += 1;
+
+            _fovDisplay.SetFov(playerFov.Value);
+
+            var playerPos = player.Entity.GetComponent<GridPositionComponent>();
+            if (playerPos != null)
+            {
+                MapSystem.Instance.ComputeFov(playerPos.Position.x, playerPos.Position.y, playerFov.Value);
+            }
+
+            ObjectPools.Instance.GetPooledObject<TextPopup>().Enable("LIGHT+", GetDisplayPos(), 3.0f);
+        }
+
+        private Vector2 GetDisplayPos()
+        {
+            return (Vector2)ActorCache.Instance.Player.Entity.GameObject.transform.position + Vector2.up;
         }
     }
 }

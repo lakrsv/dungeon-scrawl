@@ -32,7 +32,7 @@ namespace ECS.Systems
 
     public class WordSystem : MonoBehaviour, IInitializeSystem
     {
-        public const int MaxWordLength = 10;
+        public const int MaxWordLength = 9;
 
         public const int MinWordLength = 3;
 

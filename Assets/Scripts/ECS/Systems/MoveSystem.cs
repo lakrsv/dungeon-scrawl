@@ -80,6 +80,14 @@ namespace ECS.Systems
             var chaseTarget = component.Owner.GetComponent<ChaseTargetComponent>();
             if (chaseTarget == null) return;
 
+            // Neutral is Defined
+            var neutral = component.Owner.GetComponent<NeutralComponent>();
+            if (neutral != null)
+            {
+                turnComponent.Value = false;
+                return;
+            }
+
             // No Target Position
             var targetPosition = chaseTarget.Target.GetComponent<GridPositionComponent>();
             if (targetPosition == null) return;

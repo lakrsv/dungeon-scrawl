@@ -20,6 +20,7 @@
 
 namespace Controllers
 {
+    using System;
     using System.Collections.Generic;
     using System.Text;
 
@@ -36,6 +37,7 @@ namespace Controllers
     using Utilities;
     using Utilities.Game.ECSCache;
     using Utilities.Game.Navigation;
+    using Utilities.Game.ObjectPool;
 
     public class InputController : MonoBehaviour
     {
@@ -44,6 +46,10 @@ namespace Controllers
         private readonly Dictionary<string, Direction> _requiredDirectionWord = new Dictionary<string, Direction>();
 
         private readonly Dictionary<string, Entity> _requiredAttackWord = new Dictionary<string, Entity>();
+
+        private readonly Dictionary<string, Chest> _requiredLootWord = new Dictionary<string, Chest>();
+
+        private readonly Dictionary<Chest, SpellHint> _chestSpellHints = new Dictionary<Chest, SpellHint>();
 
         private readonly Dictionary<Entity, SpellHint> _entitySpellHints = new Dictionary<Entity, SpellHint>();
 
@@ -54,11 +60,16 @@ namespace Controllers
         private AttackSystem _attackSystem;
 
         [SerializeField]
+        private ItemSystem _itemSystem;
+
+        [SerializeField]
         private MoveHints _moveHints;
 
         private int _attackDifficulty = WordSystem.MinWordLength + 1;
 
         private int _movementDifficulty = WordSystem.MinWordLength;
+
+        private int _lootDifficulty = WordSystem.MaxWordLength;
 
         private void AppendLetter(char c)
         {
@@ -119,6 +130,18 @@ namespace Controllers
                 {
                     _attackSystem.AttackRanged(player.Entity, target);
                 }
+            }
+            else if (_requiredLootWord.ContainsKey(inputWord))
+            {
+                var chest = _requiredLootWord[inputWord];
+                _itemSystem.ChestPickup(chest);
+                chest.Open();
+
+                _requiredLootWord.Remove(inputWord);
+                var spellHint = _chestSpellHints[chest];
+                _chestSpellHints.Remove(chest);
+
+                spellHint.Disable();
             }
         }
 
@@ -211,7 +234,36 @@ namespace Controllers
             _attackSystem.OnEntityLeaveAttackRange += OnEntityLeaveAttackRange;
             _attackSystem.OnEntityEnterAttackRange += OnEntityEnterAttackRange;
 
+            _itemSystem.OnPlayerEnterLootArea += OnPlayerEnterLootArea;
+            _itemSystem.OnPlayerLeaveLootArea += OnPlayerLeaveLootArea;
+
             InvokeRepeating("UpdateInputHintVisibility", 0.25f, 0.25f);
+        }
+
+        private void OnPlayerLeaveLootArea(Chest chest)
+        {
+            if (!_chestSpellHints.ContainsKey(chest)) return;
+
+            var spellHint = _chestSpellHints[chest];
+            _chestSpellHints.Remove(chest);
+
+            var word = spellHint.Word;
+            if (_requiredLootWord.ContainsKey(word))
+            {
+                _requiredLootWord.Remove(word);
+            }
+        }
+
+        private void OnPlayerEnterLootArea(Chest chest)
+        {
+            var requiredLootWord = _wordSystem.GetNextWord(_lootDifficulty);
+            _requiredLootWord.Add(requiredLootWord, chest);
+
+            var spellHint = ObjectPools.Instance.GetPooledObject<SpellHint>();
+            spellHint.transform.position = (Vector2)chest.gameObject.transform.position + Vector2.up;
+            spellHint.Initialize(chest.gameObject.transform, requiredLootWord);
+
+            _chestSpellHints.Add(chest, spellHint);
         }
 
         private void OnEntityEnterAttackRange(Entity entity, SpellHint spellHint)
