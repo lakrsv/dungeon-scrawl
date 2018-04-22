@@ -57,6 +57,8 @@ namespace UI.Hint
         [SerializeField]
         private TextMeshProUGUI _text;
 
+        private Vector2 _originalLocalPosition;
+
         public bool IsEnabled { get; private set; }
 
         public bool WordWasInvalid { get; private set; }
@@ -86,15 +88,17 @@ namespace UI.Hint
 
         public void Enable()
         {
-            if (gameObject.activeInHierarchy)
-            {
-                return;
-            }
-
             IsEnabled = true;
 
             _text.SetText(string.Empty);
             gameObject.SetActive(true);
+
+            if (_originalLocalPosition == Vector2.zero)
+            {
+                _originalLocalPosition = transform.localPosition;
+            }
+
+            transform.localPosition = _originalLocalPosition;
 
             _text.color = Color.black;
             _text.transform.localScale = Vector3.one;
@@ -154,11 +158,12 @@ namespace UI.Hint
 
             if (_followTarget == null)
             {
+               
                 var moveTween = DOTween.To(
                     () => transform.localPosition,
                     x => transform.localPosition = x,
                     new Vector3(0, duration * 0.333f),
-                    duration).SetRelative(true).OnComplete(() => _follow = true);
+                    duration).SetRelative(true).OnStart(() => transform.localPosition = _originalLocalPosition).OnComplete(() => _follow = true);
 
                 _currentTweens.Add(moveTween);
             }
@@ -236,14 +241,7 @@ namespace UI.Hint
                     tween.Rewind(false);
                 }
 
-            foreach (var sequence in _currentSequences)
-            {
-                sequence.Kill(false);
-                sequence.Rewind(false);
-            }
-
             _currentTweens.Clear();
-            _currentSequences.Clear();
         }
 
         private void LateUpdate()

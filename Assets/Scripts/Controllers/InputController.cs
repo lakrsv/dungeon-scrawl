@@ -54,6 +54,8 @@ namespace Controllers
 
         private readonly Dictionary<Entity, SpellHint> _entitySpellHints = new Dictionary<Entity, SpellHint>();
 
+        private bool _shouldRemoveMovementWords = false;
+
         [SerializeField]
         private WordSystem _wordSystem;
 
@@ -120,6 +122,7 @@ namespace Controllers
 
             if (_requiredDirectionWord.ContainsKey(inputWord))
             {
+                GameController.Instance.PlayerHasMoved = true;
                 MovePlayer(_requiredDirectionWord[inputWord]);
             }
             else if (_requiredAttackWord.ContainsKey(inputWord))
@@ -139,6 +142,8 @@ namespace Controllers
                 _requiredAttackWord.Remove(inputWord);
                 _requiredAttackWord.Add(newAttackWord, target);
 
+                GameController.Instance.PlayerHasMoved = true;
+
                 if (Vector2.Distance(playerPos.Position, enemyPos.Position) <= 1)
                 {
                     _attackSystem.AttackMelee(player.Entity, target);
@@ -150,6 +155,8 @@ namespace Controllers
             }
             else if (_requiredLootWord.ContainsKey(inputWord))
             {
+                GameController.Instance.PlayerHasMoved = true;
+
                 var chest = _requiredLootWord[inputWord];
                 _itemSystem.ChestPickup(chest);
                 chest.Open();
@@ -168,6 +175,12 @@ namespace Controllers
             if (!GameController.Instance.IsPlaying) return;
 
             UpdateMovementType();
+
+            if (_shouldRemoveMovementWords)
+            {
+                _shouldRemoveMovementWords = false;
+                _requiredDirectionWord.Clear();
+            }
 
             if (_requiredDirectionWord.Count == 0)
             {
@@ -225,6 +238,10 @@ namespace Controllers
                 {
                     CreateMovementHint(direction);
                 }
+                else
+                {
+                    _moveHints.SetHint(direction, false);
+                }
             }
         }
 
@@ -269,19 +286,17 @@ namespace Controllers
             if (shouldMoveSimple != _movingSimple)
             {
                 _movingSimple = shouldMoveSimple;
-                _requiredDirectionWord.Clear();
+                _shouldRemoveMovementWords = true;
             }
         }
 
         private void MovePlayer(Direction direction)
         {
-            GameController.Instance.PlayerHasMoved = true;
-
             var directionVector = direction.ToVector2Int();
             var player = ActorCache.Instance.Player;
             player.Entity.GetComponent<GridPositionComponent>().Position += directionVector;
 
-            _requiredDirectionWord.Clear();
+            _shouldRemoveMovementWords = true;
         }
 
         private void Start()

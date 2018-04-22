@@ -34,10 +34,10 @@ namespace UI
 
         private void Start()
         {
-            var playerReach = Player.GetSavedStat(ComponentType.Reach);
-            if (playerReach == Player.DefaultValues[ComponentType.Reach]) return;
+            var playerDamage = Player.GetSavedStat(ComponentType.Damage);
+            if (playerDamage == Player.DefaultValues[ComponentType.Damage]) return;
 
-            SetReachCount(playerReach - 1);
+            SetReachCount(playerDamage - 1);
         }
 
         public void SetReachCount(int fireballs)

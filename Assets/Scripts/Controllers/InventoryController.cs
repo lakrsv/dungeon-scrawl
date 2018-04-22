@@ -34,7 +34,9 @@ namespace Controllers
 
     public class InventoryController : MonoBehaviour
     {
-        public const int MaxReach = 10;
+        public const int MaxDamage = 10;
+
+        public const int MaxReach = 6;
 
         public const int MaxHealth = 10;
 
@@ -49,18 +51,19 @@ namespace Controllers
         [SerializeField]
         private FovDisplay _fovDisplay;
 
-        private int _currentReach = 0;
-
         public void AddPower()
         {
-            if (_currentReach >= MaxReach) return;
-
             var player = ActorCache.Instance.Player;
-            player.Entity.GetComponent<IntegerComponent>(ComponentType.Reach).Value += 1;
-            player.Entity.GetComponent<IntegerComponent>(ComponentType.Damage).Value += 1;
 
-            _currentReach++;
-            _reachDisplay.SetReachCount(_currentReach);
+            var damageComponent = player.Entity.GetComponent<IntegerComponent>(ComponentType.Damage);
+            var reachComponent = player.Entity.GetComponent<IntegerComponent>(ComponentType.Reach);
+
+            if (damageComponent.Value >= MaxDamage) return;
+            damageComponent.Value += 1;
+
+            if (reachComponent.Value < MaxReach) reachComponent.Value += 1;
+
+            _reachDisplay.SetReachCount(damageComponent.Value - 1);
 
             ObjectPools.Instance.GetPooledObject<TextPopup>().Enable("POWER+", GetDisplayPos(), 3.0f);
         }
