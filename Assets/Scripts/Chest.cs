@@ -85,11 +85,12 @@ public class Chest : MonoBehaviour
     public void Open()
     {
         var sequence = DOTween.Sequence();
+        AudioPlayer.Instance.PlayAudio(AudioPlayer.Type.ChestOpen);
         sequence.Append(transform.DOShakePosition(1f, new Vector3(0.25f, 0.25f, 0))).OnComplete(
             () =>
                 {
-                    // TODO - Play fancy animation
-                    // TODO - Pickup item
+                    AudioPlayer.Instance.PlayAudio(AudioPlayer.Type.Powerup);
+
                     _lootExplosion.gameObject.SetActive(true);
                     _renderer.enabled = false;
 

@@ -393,6 +393,7 @@
     <Compile Include="Assets\Imported\ShaderWeaver\Plugin\Scripts\MonoBehaviours\SWPreview.cs" />
     <Compile Include="Assets\Imported\ShaderWeaver\Tutorials\Tutorial14 - Refract Node\SWSimpleCameraFollow.cs" />
     <Compile Include="Assets\Imported\ShaderWeaver\Tutorials\Tutorial7 - Alpha Node\AlphaControl.cs" />
+    <Compile Include="Assets\Scripts\AudioPlayer.cs" />
     <Compile Include="Assets\Scripts\Chest.cs" />
     <Compile Include="Assets\Scripts\Controllers\GameController.cs" />
     <Compile Include="Assets\Scripts\Controllers\InputController.cs" />

@@ -65,6 +65,7 @@ namespace Controllers
 
             _reachDisplay.SetReachCount(damageComponent.Value - 1);
 
+            AudioPlayer.Instance.PlayAudio(AudioPlayer.Type.ItemApply);
             ObjectPools.Instance.GetPooledObject<TextPopup>().Enable("POWER+", GetDisplayPos(), 3.0f);
         }
 
@@ -78,6 +79,7 @@ namespace Controllers
 
             _healthDisplay.SetHealth(playerHealth.Value);
 
+            AudioPlayer.Instance.PlayAudio(AudioPlayer.Type.ItemApply);
             ObjectPools.Instance.GetPooledObject<TextPopup>().Enable("HEALTH+", GetDisplayPos(), 3.0f);
         }
 
@@ -97,6 +99,7 @@ namespace Controllers
                 MapSystem.Instance.ComputeFov(playerPos.Position.x, playerPos.Position.y, playerFov.Value);
             }
 
+            AudioPlayer.Instance.PlayAudio(AudioPlayer.Type.ItemApply);
             ObjectPools.Instance.GetPooledObject<TextPopup>().Enable("LIGHT+", GetDisplayPos(), 3.0f);
         }
 

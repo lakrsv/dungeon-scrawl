@@ -162,6 +162,8 @@ namespace ECS.Systems
                 1.0f);
             targetHealth.Value -= damage.Value;
 
+            AudioPlayer.Instance.PlayAudio(AudioPlayer.Type.Damage);
+
             if (ActorCache.Instance.Player.Entity == targetHealth.Owner)
             {
                 _healthDisplay.SetHealth(targetHealth.Value);

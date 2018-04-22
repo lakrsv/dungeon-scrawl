@@ -1,5 +1,5 @@
 ﻿// // --------------------------------------------------------------------------------------------------------------------
-// // <copyright file="Fireball.cs" author="Lars" company="None">
+// // <copyright file="AudioPlayer.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -19,50 +19,58 @@
 // // --------------------------------------------------------------------------------------------------------------------
 
 using System;
-
-using DG.Tweening;
+using System.Collections.Generic;
 
 using UnityEngine;
 
-using Utilities.Game.ObjectPool;
+using Utilities.Game;
 
-public class Fireball : MonoBehaviour, IPoolable
+public class AudioPlayer : MonoSingleton<AudioPlayer>
 {
-    public bool IsEnabled
+    private readonly Dictionary<Type, AudioClip> _audioClips = new Dictionary<Type, AudioClip>();
+
+    [SerializeField]
+    private AudioSource _audioSource;
+
+    [SerializeField]
+    private List<Clip> _clips;
+
+    public enum Type
     {
-        get
-        {
-            return gameObject.activeInHierarchy;
-        }
+        Powerup,
+
+        Shoot,
+
+        Explosion,
+
+        Damage,
+
+        ChestOpen,
+
+        ItemApply,
+
+        Teleport,
+
+        LevelText,
+
+        GameOver
     }
 
-    public void Disable()
+    public void PlayAudio(Type type)
     {
-        gameObject.SetActive(false);
+        _audioSource.PlayOneShot(_audioClips[type]);
     }
 
-    public void Enable()
+    private void Awake()
     {
-        gameObject.SetActive(true);
+        foreach (var clip in _clips) _audioClips.Add(clip.Type, clip.AClip);
     }
 
-    public void Animate(Vector2Int from, Vector2Int to, float duration, Action onCompleted)
+    [Serializable]
+    public class Clip
     {
-        AudioPlayer.Instance.PlayAudio(AudioPlayer.Type.Shoot);
+        public AudioClip AClip;
 
-        gameObject.transform.position = (Vector2)from;
-        gameObject.transform.DOMove((Vector2)to, duration).SetEase(Ease.InBack).OnComplete(() =>
-            {
-                onCompleted();
-                ExplodeThenDisable();
-            });
-    }
-
-    public void ExplodeThenDisable()
-    {
-        AudioPlayer.Instance.PlayAudio(AudioPlayer.Type.Explosion);
-
-        ObjectPools.Instance.GetPooledObject<Explosion>().Explode(transform.position);
-        Disable();
+        public Type Type;
     }
 }

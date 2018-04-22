@@ -123,6 +123,7 @@ namespace Controllers
             _moveHints.gameObject.SetActive(false);
             HintCache.Instance.GetCached().ForEach(x => x.gameObject.SetActive(false));
             ObjectPools.Instance.GetPooledObject<TextPopup>().Enable(string.Format("-LEVEL {0}-", CurrentLevel), new Vector2(_cameraMovement.transform.position.x, _cameraMovement.transform.position.y), 3.0f);
+            AudioPlayer.Instance.PlayAudio(AudioPlayer.Type.LevelText);
             Camera.main.orthographicSize = 5;
             yield return new WaitForSeconds(3.0f);
             SceneManager.LoadScene("Game");

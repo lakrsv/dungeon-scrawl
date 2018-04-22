@@ -259,6 +259,12 @@ namespace Controllers
                 {
                     RemoveMovementHint(direction);
                 }
+
+                if (_requiredDirectionWord.ContainsValue(direction)
+                    && !_requiredDirectionWord.ContainsKey(_moveHints.GetHint(direction).Word))
+                {
+                    _shouldRemoveMovementWords = true;
+                }
             }
         }
 
