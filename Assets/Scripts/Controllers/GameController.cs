@@ -65,6 +65,11 @@ namespace Controllers
 
             if (CurrentLevel == 5)
             {
+                CurrentLevel = 1;
+                IsPlaying = false;
+                _renderSystem.Execute();
+                Player.ClearPlayerStats();
+
                 // Game Is Done!
                 StartCoroutine(GameDone());
             }
@@ -94,7 +99,19 @@ namespace Controllers
 
         private IEnumerator GameDone()
         {
-            yield return null;
+            yield return _board.BoardDisappear();
+            _board.gameObject.SetActive(false);
+            _moveHints.gameObject.SetActive(false);
+            ObjectPools.Instance.GetPooledObject<TextPopup>().Enable("-CONGRATULATIONS-", new Vector2(_cameraMovement.transform.position.x, _cameraMovement.transform.position.y), 5.0f);
+            Camera.main.orthographicSize = 5;
+            yield return new WaitForSeconds(5.0f);
+            ObjectPools.Instance.GetPooledObject<TextPopup>().Enable("SIT BACK...", new Vector2(_cameraMovement.transform.position.x, _cameraMovement.transform.position.y), 2.0f);
+            yield return new WaitForSeconds(2.0f);
+            ObjectPools.Instance.GetPooledObject<TextPopup>().Enable("RELAX...", new Vector2(_cameraMovement.transform.position.x, _cameraMovement.transform.position.y), 2.0f);
+            yield return new WaitForSeconds(2.0f);
+            ObjectPools.Instance.GetPooledObject<TextPopup>().Enable("IT'S DONE", new Vector2(_cameraMovement.transform.position.x, _cameraMovement.transform.position.y), 2.0f);
+            yield return new WaitForSeconds(2.0f);
+            SceneManager.LoadScene("SplashScreen");
         }
 
         private IEnumerator GoToNextLevel()

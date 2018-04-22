@@ -39,13 +39,13 @@ namespace ECS.Systems
 
         private const int MinFireballPerLevel = 1;
 
-        private const int MaxHealthPerLevel = 6;
+        private const int MaxHealthPerLevel = 4;
 
         private const int MinHealthPerLevel = 2;
 
-        private const int MaxFovPerLevel = 3;
+        private const int MaxFovPerLevel = 2;
 
-        private const int MinFovPerLevel = 2;
+        private const int MinFovPerLevel = 1;
 
         [SerializeField]
         private Transform _board;

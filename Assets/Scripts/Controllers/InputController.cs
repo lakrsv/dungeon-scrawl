@@ -138,6 +138,7 @@ namespace Controllers
                 var newAttackWord = GetWordNonConflicting(_attackDifficulty);
                 var spellHint = _entitySpellHints[enemyPos.Owner];
                 spellHint.Initialize(enemyPos.Owner.GameObject.transform, newAttackWord);
+                spellHint.SetIcon(SpellHint.IconType.Attack);
 
                 _requiredAttackWord.Remove(inputWord);
                 _requiredAttackWord.Add(newAttackWord, target);
@@ -333,6 +334,7 @@ namespace Controllers
             var spellHint = ObjectPools.Instance.GetPooledObject<SpellHint>();
             spellHint.transform.position = (Vector2)chest.gameObject.transform.position + Vector2.up;
             spellHint.Initialize(chest.gameObject.transform, requiredLootWord);
+            spellHint.SetIcon(SpellHint.IconType.Chest);
 
             _chestSpellHints.Add(chest, spellHint);
         }
@@ -359,6 +361,7 @@ namespace Controllers
 
             spellHint.transform.position = enemyPos.Position + Vector2.up;
             spellHint.Initialize(entity.GameObject.transform, requiredWord);
+            spellHint.SetIcon(SpellHint.IconType.Attack);
 
             _entitySpellHints.Add(entity, spellHint);
         }

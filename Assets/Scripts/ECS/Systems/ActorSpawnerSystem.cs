@@ -76,14 +76,9 @@ namespace ECS.Systems
             // Spawn Player
             SpawnActor<Player>();
 
-            for (var i = 0; i < 5; i++)
+            for (var i = 0; i < 8; i++)
             {
                 SpawnActor<Pest>();
-            }
-
-            for (var i = 0; i < 2; i++)
-            {
-                SpawnActor<Slime>();
             }
         }
 
@@ -93,13 +88,13 @@ namespace ECS.Systems
             SpawnActor<Player>();
 
             // Spawn some Demons
-            for (var i = 0; i < 10; i++)
+            for (var i = 0; i < 6; i++)
             {
                 SpawnActor<Pest>();
             }
 
             // Spawn some Demons
-            for (var i = 0; i < 1; i++)
+            for (var i = 0; i < 2; i++)
             {
                 SpawnActor<Demon>();
             }
@@ -121,19 +116,19 @@ namespace ECS.Systems
             SpawnActor<Player>();
 
             // Spawn some Demons
-            for (var i = 0; i < 3; i++)
+            for (var i = 0; i < 5; i++)
             {
                 SpawnActor<Demon>();
             }
 
             // Spawn some Demons
-            for (var i = 0; i < 12; i++)
+            for (var i = 0; i < 3; i++)
             {
                 SpawnActor<Pest>();
             }
 
             // Spawn some Demons
-            for (var i = 0; i < 6; i++)
+            for (var i = 0; i < 4; i++)
             {
                 SpawnActor<Slime>();
             }
@@ -145,17 +140,12 @@ namespace ECS.Systems
             SpawnActor<Player>();
 
             // Spawn some Demons
-            for (var i = 0; i < 10; i++)
+            for (var i = 0; i < 8; i++)
             {
                 SpawnActor<Demon>();
             }
 
-            for (var i = 0; i < 10; i++)
-            {
-                SpawnActor<Pest>();
-            }
-
-            for (var i = 0; i < 2; i++)
+            for (var i = 0; i < 3; i++)
             {
                 SpawnActor<FakeChest>();
             }
@@ -167,19 +157,9 @@ namespace ECS.Systems
             SpawnActor<Player>();
 
             // Spawn some Demons
-            for (var i = 0; i < 10; i++)
+            for (var i = 0; i < 12; i++)
             {
                 SpawnActor<Demon>();
-            }
-
-            for (var i = 0; i < 15; i++)
-            {
-                SpawnActor<Pest>();
-            }
-
-            for (var i = 0; i < 10; i++)
-            {
-                SpawnActor<Slime>();
             }
         }
     }

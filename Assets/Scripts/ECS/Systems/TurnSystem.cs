@@ -35,7 +35,7 @@ namespace ECS.Systems
 
     public class TurnSystem : MonoBehaviour, IExecuteSystem, IInitializeSystem
     {
-        private float _currentTurnDelay = 0.25f;
+        private float _currentTurnDelay = 0.4f;
 
         private int _currentTurnIndex;
 
@@ -73,6 +73,7 @@ namespace ECS.Systems
 
         public void Initialize()
         {
+            _currentTurnDelay = 0.4f / GameController.Instance.GetDifficulty();
             var turnComponents = ComponentCache.Instance.GetCached(ComponentType.Turn);
             var currentTurnComponent = turnComponents[_currentTurnIndex] as BooleanComponent;
 

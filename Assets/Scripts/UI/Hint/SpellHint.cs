@@ -28,11 +28,18 @@ namespace UI.Hint
     using TMPro;
 
     using UnityEngine;
+    using UnityEngine.UI;
 
     using Utilities.Game.ObjectPool;
 
     public class SpellHint : MonoBehaviour, IPoolable
     {
+        public enum IconType
+        {
+            Attack,
+            Chest
+        }
+
         private readonly List<Tween> _currentTweens = new List<Tween>();
 
         private readonly List<Sequence> _currentSequences = new List<Sequence>();
@@ -56,6 +63,15 @@ namespace UI.Hint
 
         [SerializeField]
         private TextMeshProUGUI _text;
+
+        [SerializeField]
+        private Image _icon;
+
+        [SerializeField]
+        private Sprite _chestIcon;
+
+        [SerializeField]
+        private Sprite _attackIcon;
 
         private Vector2 _originalLocalPosition;
 
@@ -120,6 +136,19 @@ namespace UI.Hint
             _text.SetText(word);
 
             Word = word;
+        }
+
+        public void SetIcon(IconType icon)
+        {
+            switch (icon)
+            {
+                case IconType.Attack:
+                    _icon.sprite = _attackIcon;
+                    break;
+                case IconType.Chest:
+                    _icon.sprite = _chestIcon;
+                    break;
+            }
         }
 
         public void OnWordTyped(string letters)

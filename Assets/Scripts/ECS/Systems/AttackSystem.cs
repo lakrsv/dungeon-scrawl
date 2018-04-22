@@ -214,6 +214,8 @@ namespace ECS.Systems
             var gridPos = entity.GetComponent<GridPositionComponent>();
             if (gridPos == null) return;
 
+            if (!MapSystem.Instance.Map.IsInFov(gridPos.Position.x, gridPos.Position.y)) return;
+
             var reach = entity.GetComponent<IntegerComponent>(ComponentType.Reach);
             if (reach == null) return;
 
@@ -225,6 +227,7 @@ namespace ECS.Systems
 
             var distanceToTarget = Vector2.Distance(gridPos.Position, chaseGridPos.Position);
             if (!(reach.Value >= distanceToTarget)) return;
+
 
             if (distanceToTarget <= 1) AttackMelee(turnComponent.Owner, chase.Target);
             else AttackRanged(turnComponent.Owner, chase.Target);
