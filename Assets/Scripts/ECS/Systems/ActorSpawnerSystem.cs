@@ -20,6 +20,8 @@
 
 namespace ECS.Systems
 {
+    using Controllers;
+
     using ECS.Entities;
     using ECS.Entities.Blueprint;
 
@@ -30,27 +32,28 @@ namespace ECS.Systems
 
     public class ActorSpawnerSystem : MonoBehaviour, IInitializeSystem
     {
-        public static int CurrentLevel = 2;
+        [SerializeField]
+        private Transform _board;
 
         public void Initialize()
         {
-            if (CurrentLevel == 1)
+            if (GameController.CurrentLevel == 1)
             {
                 SpawnLevel1Actors();
             }
-            else if (CurrentLevel == 2)
+            else if (GameController.CurrentLevel == 2)
             {
                 SpawnLevel2Actors();
             }
-            else if (CurrentLevel == 3)
+            else if (GameController.CurrentLevel == 3)
             {
                 SpawnLevel3Actors();
             }
-            else if (CurrentLevel == 4)
+            else if (GameController.CurrentLevel == 4)
             {
                 SpawnLevel4Actors();
             }
-            else if (CurrentLevel == 5)
+            else if (GameController.CurrentLevel == 5)
             {
                 SpawnLevel5Actors();
             }
@@ -63,14 +66,9 @@ namespace ECS.Systems
 
             var actor = ObjectPools.Instance.GetPooledObject<Actor>();
             actor.Initialize(blueprint);
+            actor.gameObject.transform.SetParent(_board, true);
 
             ActorCache.Instance.Add(actor, blueprint);
-        }
-
-        private void DespawnActor(Actor actor)
-        {
-            ActorCache.Instance.Remove(actor);
-            actor.Disable();
         }
 
         public void SpawnLevel1Actors()
@@ -78,7 +76,7 @@ namespace ECS.Systems
             // Spawn Player
             SpawnActor<Player>();
 
-            for (var i = 0; i < 10; i++)
+            for (var i = 0; i < 5; i++)
             {
                 SpawnActor<Pest>();
             }
@@ -101,7 +99,7 @@ namespace ECS.Systems
             }
 
             // Spawn some Demons
-            for (var i = 0; i < 2; i++)
+            for (var i = 0; i < 1; i++)
             {
                 SpawnActor<Demon>();
             }
@@ -123,27 +121,22 @@ namespace ECS.Systems
             SpawnActor<Player>();
 
             // Spawn some Demons
-            for (var i = 0; i < 5; i++)
+            for (var i = 0; i < 3; i++)
             {
                 SpawnActor<Demon>();
             }
 
             // Spawn some Demons
-            for (var i = 0; i < 10; i++)
+            for (var i = 0; i < 12; i++)
             {
                 SpawnActor<Pest>();
             }
 
             // Spawn some Demons
-            for (var i = 0; i < 10; i++)
+            for (var i = 0; i < 6; i++)
             {
                 SpawnActor<Slime>();
             }
-
-            // Make one fake chest.. HEHEHE
-            SpawnActor<FakeChest>();
-            // Make one fake chest.. HEHEHE
-            SpawnActor<FakeChest>();
         }
 
         public void SpawnLevel4Actors()
@@ -157,14 +150,13 @@ namespace ECS.Systems
                 SpawnActor<Demon>();
             }
 
-            for (var i = 0; i < 5; i++)
+            for (var i = 0; i < 10; i++)
             {
                 SpawnActor<Pest>();
             }
 
-            for (var i = 0; i < 4; i++)
+            for (var i = 0; i < 2; i++)
             {
-                // Make one fake chest.. HEHEHE
                 SpawnActor<FakeChest>();
             }
         }

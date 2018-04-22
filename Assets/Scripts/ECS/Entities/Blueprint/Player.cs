@@ -20,28 +20,95 @@
 
 namespace ECS.Entities.Blueprint
 {
+    using System.Collections.Generic;
+
     using ECS.Components;
     using ECS.Components.Type;
     using ECS.Systems;
 
     using UnityEngine;
 
+    using Utilities.Game.ECSCache;
+
     // TODO - Make this all nice and editor creatable like a prefab
     public class Player : IEntityBlueprint
     {
+        public static readonly Dictionary<ComponentType, int> DefaultValues =
+            new Dictionary<ComponentType, int>
+                {
+                    { ComponentType.Health, 5 },
+                    { ComponentType.Damage, 1 },
+                    { ComponentType.Reach, 1 },
+                    { ComponentType.FieldOfView, 3 }
+                };
+
+        public static void ClearPlayerStats()
+        {
+            ClearPlayerStat(ComponentType.Health);
+            ClearPlayerStat(ComponentType.Damage);
+            ClearPlayerStat(ComponentType.Reach);
+            ClearPlayerStat(ComponentType.FieldOfView);
+        }
+
+        public static int GetSavedStat(ComponentType type)
+        {
+            return PlayerPrefs.GetInt(type.ToString(), DefaultValues[type]);
+        }
+
+        public static void SavePlayerStats()
+        {
+            SavePlayerStat(ComponentType.Health);
+            SavePlayerStat(ComponentType.Damage);
+            SavePlayerStat(ComponentType.Reach);
+            SavePlayerStat(ComponentType.FieldOfView);
+        }
+
         public IComponent[] GetComponents(Entity owner)
         {
             var components = new IComponent[]
                                  {
-                                     new GridPositionComponent(owner) { Position = MapSystem.Instance.GetRandomAvailableTile() },
+                                     new GridPositionComponent(owner)
+                                         {
+                                             Position = MapSystem.Instance
+                                                 .GetRandomAvailableTile()
+                                         },
                                      new RenderComponent(owner) { Sprite = Resources.Load<Sprite>("Sprites/Player") },
-                                     new IntegerComponent(owner, ComponentType.Health) { Value = 5 }, 
-                                     new IntegerComponent(owner, ComponentType.Damage) { Value = 1 }, 
-                                     new IntegerComponent(owner, ComponentType.Reach) { Value = 1 }, 
-                                     new IntegerComponent(owner, ComponentType.FieldOfView) { Value = 2 },
+                                     new IntegerComponent(owner, ComponentType.Health)
+                                         {
+                                             Value = GetSavedStat(
+                                                 ComponentType.Health)
+                                         },
+                                     new IntegerComponent(owner, ComponentType.Damage)
+                                         {
+                                             Value = GetSavedStat(
+                                                 ComponentType.Damage)
+                                         },
+                                     new IntegerComponent(owner, ComponentType.Reach)
+                                         {
+                                             Value = GetSavedStat(
+                                                 ComponentType.Reach)
+                                         },
+                                     new IntegerComponent(owner, ComponentType.FieldOfView)
+                                         {
+                                             Value = GetSavedStat(
+                                                 ComponentType.FieldOfView)
+                                         }
                                  };
 
             return components;
+        }
+
+        private static void ClearPlayerStat(ComponentType type)
+        {
+            PlayerPrefs.SetInt(type.ToString(), DefaultValues[type]);
+            PlayerPrefs.Save();
+        }
+
+        private static void SavePlayerStat(ComponentType type)
+        {
+            var playerStat = ActorCache.Instance.Player.Entity.GetComponent<IntegerComponent>(type);
+            PlayerPrefs.SetInt(type.ToString(), playerStat.Value);
+            PlayerPrefs.Save();
         }
     }
 }

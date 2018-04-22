@@ -76,7 +76,7 @@ namespace ECS.Systems
 
         public void Initialize()
         {
-            _random = new DotNetRandom(Constants.RandomSeed);
+            _random = new DotNetRandom(Constants.GetRandomSeed());
             CreateDefaultMap();
         }
 
@@ -123,13 +123,16 @@ namespace ECS.Systems
 
         public Entity GetEntityAtPosition(Vector2Int position)
         {
-            var entityPositions = ComponentCache.Instance.GetCached<GridPositionComponent>();
+            var entityPositions = ActorCache.Instance.GetCached();
             if (entityPositions == null) return null;
 
-            var first = entityPositions.FirstOrDefault(x => x.Position == position);
-            if (first == null) return null;
+            var first = entityPositions.FirstOrDefault(x =>
+                {
+                    var gridPos = x.Entity.GetComponent<GridPositionComponent>();
+                    return gridPos != null && gridPos.Position == position;
+                });
 
-            return first.Owner;
+            return first == null ? null : first.Entity;
         }
 
         public void ComputeFov(int xOrigin, int yOrigin, int radius, bool lightWalls = true)

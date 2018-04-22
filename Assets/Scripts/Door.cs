@@ -1,5 +1,5 @@
 ﻿// // --------------------------------------------------------------------------------------------------------------------
-// // <copyright file="HealthDisplay.cs" author="Lars" company="None">
+// // <copyright file="Door.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -18,45 +18,33 @@
 // // </summary>
 // // --------------------------------------------------------------------------------------------------------------------
 
-namespace UI
+using ECS.Systems;
+
+using UnityEngine;
+
+using Utilities.Game;
+
+public class Door : MonoBehaviour
 {
-    using System.Collections.Generic;
+    private SpriteRenderer _renderer;
 
-    using ECS.Components.Type;
-    using ECS.Entities.Blueprint;
+    private int _xPos;
 
-    using UnityEngine;
+    private int _yPos;
 
-    public class HealthDisplay : MonoBehaviour
+    // Use this for initialization
+    private void Start()
     {
-        [SerializeField]
-        private List<GameResource> _hearts = new List<GameResource>();
+        _xPos = Mathf.RoundToInt(transform.position.x);
+        _yPos = Mathf.RoundToInt(transform.position.y);
+        _renderer = GetComponent<SpriteRenderer>();
+    }
 
-        private void Start()
-        {
-            SetHealth(Player.GetSavedStat(ComponentType.Health));
-        }
-
-        public void SetHealth(int health)
-        {
-            if (health <= 0)
-            {
-                for (var i = 0; i < _hearts.Count; i++)
-                {
-                    _hearts[i].Disable();
-                }
-                return;
-            }
-
-            for (var i = 0; i < health; i++)
-            {
-                _hearts[i].Enable();
-            }
-
-            for (var i = health; i < _hearts.Count; i++)
-            {           
-                _hearts[i].Disable();
-            }
-        }
+    // Update is called once per frame
+    private void Update()
+    {
+        if (MapSystem.Instance.Map.IsInFov(_xPos, _yPos)) _renderer.color = Visibility.Visible;
+        else if (MapSystem.Instance.Map.IsExplored(_xPos, _yPos)) _renderer.color = Visibility.ExploredInvisible;
+        else _renderer.color = Visibility.Invisible;
     }
 }

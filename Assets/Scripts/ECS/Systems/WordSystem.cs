@@ -70,7 +70,7 @@ namespace ECS.Systems
 
         public void Initialize()
         {
-            _random = new Random(Constants.RandomSeed);
+            _random = new Random(Constants.GetRandomSeed());
 
             PrepareWords(Adjectives);
             PrepareWords(Nouns);

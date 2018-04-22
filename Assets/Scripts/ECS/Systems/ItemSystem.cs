@@ -23,6 +23,8 @@ namespace ECS.Systems
     using System;
     using System.Collections.Generic;
 
+    using Controllers;
+
     using ECS.Components;
 
     using UnityEngine;
@@ -33,22 +35,30 @@ namespace ECS.Systems
 
     public class ItemSystem : MonoBehaviour, IInitializeSystem, IExecuteSystem
     {
-        private const int MaxFireballPerLevel = 5;
+        private const int MaxFireballPerLevel = 4;
 
-        private const int MinFireballPerLevel = 2;
+        private const int MinFireballPerLevel = 1;
 
-        private const int MaxHealthPerLevel = 8;
+        private const int MaxHealthPerLevel = 10;
 
-        private const int MinHealthPerLevel = 3;
+        private const int MinHealthPerLevel = 4;
 
         private const int MaxFovPerLevel = 4;
 
         private const int MinFovPerLevel = 2;
 
         [SerializeField]
+        private Transform _board;
+
+        [SerializeField]
         private Chest _chestPrefab;
 
+        [SerializeField]
+        private GameObject _door;
+
         private Dictionary<Vector2Int, Chest> _chestsAtPositions = new Dictionary<Vector2Int, Chest>();
+
+        private Vector2Int _doorPosition;
 
         public event Action<Chest> OnPlayerEnterLootArea;
 
@@ -79,6 +89,11 @@ namespace ECS.Systems
                     _currentAvailableChest = null;
                 }
             }
+
+            if (playerPos.Position == _doorPosition)
+            {
+                GameController.Instance.EndLevel();
+            }
         }
 
         public void Initialize()
@@ -94,6 +109,8 @@ namespace ECS.Systems
                 chest.Create(chestPosition, Chest.Pickup.Health);
 
                 _chestsAtPositions.Add(chestPosition, chest);
+
+                chest.transform.SetParent(_board, true);
             }
 
             for (var i = 0; i < powerForLevel; i++)
@@ -103,6 +120,8 @@ namespace ECS.Systems
                 chest.Create(chestPosition, Chest.Pickup.Power);
 
                 _chestsAtPositions.Add(chestPosition, chest);
+
+                chest.transform.SetParent(_board, true);
             }
 
             for (var i = 0; i < fovForLevel; i++)
@@ -112,7 +131,16 @@ namespace ECS.Systems
                 chest.Create(chestPosition, Chest.Pickup.Fov);
 
                 _chestsAtPositions.Add(chestPosition, chest);
+
+                chest.transform.SetParent(_board, true);
             }
+
+            var door = Instantiate(_door);
+            var doorPosition = GetDoorPosition();
+            door.transform.position = (Vector2)doorPosition;
+            _doorPosition = doorPosition;
+
+            door.transform.SetParent(_board, true);
         }
 
         public void ChestPickup(Chest chest)
@@ -139,6 +167,35 @@ namespace ECS.Systems
             }
 
             return Vector2Int.zero;
+        }
+
+        private Vector2Int GetDoorPosition()
+        {
+            var maxIterations = 100;
+            var currentIterations = 0;
+
+            var playerPos = ActorCache.Instance.Player.Entity.GetComponent<GridPositionComponent>();
+
+            var lastPos = Vector2Int.zero;
+            var highestDistanceFound = 0f;
+
+            while (currentIterations < maxIterations)
+            {
+                var position = MapSystem.Instance.GetRandomAvailableTile();
+                if (!_chestsAtPositions.ContainsKey(position))
+                {
+                    var distance = Vector2.Distance(playerPos.Position, position);
+
+                    if (distance > highestDistanceFound)
+                    {
+                        highestDistanceFound = distance;
+                        lastPos = position;
+                    }
+                }
+
+                currentIterations++;
+            }
+            return lastPos;
         }
     }
 }

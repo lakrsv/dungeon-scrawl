@@ -22,6 +22,8 @@ using UnityEngine;
 
 namespace Utilities.Camera
 {
+    using Controllers;
+
     using Utilities.Game.ECSCache;
 
     public class CameraMovement : MonoBehaviour
@@ -32,6 +34,8 @@ namespace Utilities.Camera
 
         private void LateUpdate()
         {
+            if (!GameController.Instance.IsPlaying) return;
+
             if (_followTarget == null)
             {
                 var player = ActorCache.Instance.Player;
@@ -47,6 +51,11 @@ namespace Utilities.Camera
                 MovementSpeed * Time.deltaTime);
 
             transform.position = newPos;
+        }
+
+        public void SetPosition(Vector2 position)
+        {
+            transform.position = new Vector3(position.x, position.y, -10);
         }
     }
 }

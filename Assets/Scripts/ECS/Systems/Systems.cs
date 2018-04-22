@@ -24,6 +24,8 @@ namespace ECS.Systems
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
 
+    using Controllers;
+
     using UnityEngine;
 
     using Utilities.Game;
@@ -70,6 +72,8 @@ namespace ECS.Systems
 
         private void Update()
         {
+            if (!GameController.Instance.IsPlaying) return;
+
             for (var i = 0; i < _executeSystems.Length; i++)
             {
                 _executeSystems[i].Execute();

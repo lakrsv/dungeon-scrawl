@@ -148,6 +148,8 @@ namespace Controllers
         // Update is called once per frame
         private void Update()
         {
+            if (!GameController.Instance.IsPlaying) return;
+
             if (_requiredDirectionWord.Count == 0)
             {
                 SetMovementWords();
@@ -167,6 +169,26 @@ namespace Controllers
                         AppendLetter(c);
                         break;
                 }
+            /*
+#if UNITY_EDITOR
+            if (Input.GetKeyDown(KeyCode.W))
+            {
+                MovePlayer(Direction.Up);
+            }
+            else if (Input.GetKeyDown(KeyCode.A))
+            {
+                MovePlayer(Direction.Left);
+            }
+            else if (Input.GetKeyDown(KeyCode.S))
+            {
+                MovePlayer(Direction.Down);
+            }
+            else if (Input.GetKeyDown(KeyCode.D))
+            {
+                MovePlayer(Direction.Right);
+            }
+#endif
+*/
         }
 
         private void UpdateInputHintVisibility()
@@ -222,6 +244,8 @@ namespace Controllers
 
         private void MovePlayer(Direction direction)
         {
+            GameController.Instance.PlayerHasMoved = true;
+
             var directionVector = direction.ToVector2Int();
             var player = ActorCache.Instance.Player;
             player.Entity.GetComponent<GridPositionComponent>().Position += directionVector;
@@ -252,6 +276,8 @@ namespace Controllers
             {
                 _requiredLootWord.Remove(word);
             }
+
+            spellHint.Disable();
         }
 
         private void OnPlayerEnterLootArea(Chest chest)

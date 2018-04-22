@@ -23,6 +23,8 @@ namespace ECS.Systems
     using System;
     using System.Linq;
 
+    using Controllers;
+
     using ECS.Components;
     using ECS.Components.Type;
     using ECS.Entities;
@@ -41,6 +43,8 @@ namespace ECS.Systems
 
         public void Execute()
         {
+            if (!GameController.Instance.PlayerHasMoved) return;
+
             var turnComponents = ComponentCache.Instance.GetCached(ComponentType.Turn);
 
             if (_currentTurnIndex >= turnComponents.Count) _currentTurnIndex = 0;

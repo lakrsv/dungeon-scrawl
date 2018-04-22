@@ -23,5 +23,10 @@ namespace Utilities
     public static class Constants
     {
         public const int RandomSeed = 1234;
+
+        public static int GetRandomSeed()
+        {
+            return System.DateTime.UtcNow.Millisecond;
+        }
     }
 }

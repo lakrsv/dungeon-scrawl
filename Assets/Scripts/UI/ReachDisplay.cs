@@ -22,12 +22,23 @@ namespace UI
 {
     using System.Collections.Generic;
 
+    using ECS.Components.Type;
+    using ECS.Entities.Blueprint;
+
     using UnityEngine;
 
     public class ReachDisplay : MonoBehaviour
     {
         [SerializeField]
         private List<GameResource> _reach = new List<GameResource>();
+
+        private void Start()
+        {
+            var playerReach = Player.GetSavedStat(ComponentType.Reach);
+            if (playerReach == Player.DefaultValues[ComponentType.Reach]) return;
+
+            SetReachCount(playerReach);
+        }
 
         public void SetReachCount(int fireballs)
         {

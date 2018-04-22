@@ -22,12 +22,23 @@ namespace UI
 {
     using System.Collections.Generic;
 
+    using ECS.Components.Type;
+    using ECS.Entities.Blueprint;
+
     using UnityEngine;
 
     public class FovDisplay : MonoBehaviour
     {
         [SerializeField]
         private List<GameResource> _fov = new List<GameResource>();
+
+        private void Start()
+        {
+            var playerFov = Player.GetSavedStat(ComponentType.FieldOfView);
+            if (playerFov == Player.DefaultValues[ComponentType.FieldOfView]) return;
+
+            SetFov(playerFov);
+        }
 
         public void SetFov(int fov)
         {

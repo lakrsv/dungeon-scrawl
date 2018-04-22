@@ -23,6 +23,8 @@ namespace ECS.Systems
     using System;
     using System.Collections.Generic;
 
+    using Controllers;
+
     using DG.Tweening;
 
     using ECS.Components;
@@ -184,6 +186,10 @@ namespace ECS.Systems
                 if (turnComponent != null) targetHealth.Owner.RemoveComponent(turnComponent);
 
                 // IF Player, Game Over
+                if (targetHealth.Owner == ActorCache.Instance.Player.Entity)
+                {
+                    GameController.Instance.GameOver();
+                }
             }
         }
 

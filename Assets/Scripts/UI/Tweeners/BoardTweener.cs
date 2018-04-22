@@ -1,5 +1,5 @@
 ﻿// // --------------------------------------------------------------------------------------------------------------------
-// // <copyright file="HealthDisplay.cs" author="Lars" company="None">
+// // <copyright file="BoardTweener.cs" author="Lars" company="None">
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), 
 // to deal in the Software without restriction, including without limitation the rights
@@ -18,45 +18,35 @@
 // // </summary>
 // // --------------------------------------------------------------------------------------------------------------------
 
-namespace UI
+namespace UI.Tweeners
 {
-    using System.Collections.Generic;
+    using System.Collections;
 
-    using ECS.Components.Type;
-    using ECS.Entities.Blueprint;
+    using DG.Tweening;
+
+    using ECS.Components;
 
     using UnityEngine;
 
-    public class HealthDisplay : MonoBehaviour
-    {
-        [SerializeField]
-        private List<GameResource> _hearts = new List<GameResource>();
+    using Utilities.Camera;
+    using Utilities.Game.ECSCache;
 
-        private void Start()
+    public class BoardTweener : MonoBehaviour
+    {
+        public IEnumerator BoardAppear()
         {
-            SetHealth(Player.GetSavedStat(ComponentType.Health));
+            transform.DOMove(new Vector3(0, -10f, 0), 1.0f).From().SetEase(Ease.OutCubic).OnStart(() => gameObject.SetActive(true));
+            yield return new WaitForSeconds(1.0f);
         }
 
-        public void SetHealth(int health)
+        public IEnumerator BoardDisappear()
         {
-            if (health <= 0)
-            {
-                for (var i = 0; i < _hearts.Count; i++)
-                {
-                    _hearts[i].Disable();
-                }
-                return;
-            }
-
-            for (var i = 0; i < health; i++)
-            {
-                _hearts[i].Enable();
-            }
-
-            for (var i = health; i < _hearts.Count; i++)
-            {           
-                _hearts[i].Disable();
-            }
+            var playerPos = ActorCache.Instance.Player.Entity.GetComponent<GridPositionComponent>();
+            Camera.main.transform.DOMove(new Vector3(playerPos.Position.x, playerPos.Position.y, -10), 1.0f).SetEase(Ease.OutBack);
+            yield return new WaitForSeconds(1.0f);
+            Camera.main.DOOrthoSize(0f, 2.0f).SetEase(Ease.InBounce);
+            ////transform.DOMove(new Vector3(0, -100, 0), 1.0f);
+            yield return new WaitForSeconds(2.0f);
         }
     }
 }

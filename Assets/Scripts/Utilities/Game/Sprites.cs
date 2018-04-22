@@ -45,7 +45,7 @@ namespace Utilities.Game
 
         public Sprite GetDeathSprite()
         {
-            if (_random == null) _random = new Random(Constants.RandomSeed);
+            if (_random == null) _random = new Random(Constants.GetRandomSeed());
             var index = _random.Next(0, _deathSprites.Length);
 
             return _deathSprites[index];
@@ -53,7 +53,7 @@ namespace Utilities.Game
 
         public Sprite GetDemonSprite()
         {
-            if (_random == null) _random = new Random(Constants.RandomSeed);
+            if (_random == null) _random = new Random(Constants.GetRandomSeed());
             var index = _random.Next(0, _demonSprites.Length);
 
             return _demonSprites[index];
@@ -61,7 +61,7 @@ namespace Utilities.Game
 
         public Sprite GetPestSprite()
         {
-            if (_random == null) _random = new Random(Constants.RandomSeed);
+            if (_random == null) _random = new Random(Constants.GetRandomSeed());
             var index = _random.Next(0, _pestSprites.Length);
 
             return _pestSprites[index];
@@ -69,7 +69,7 @@ namespace Utilities.Game
 
         public Sprite GetSlimeSprite()
         {
-            if (_random == null) _random = new Random(Constants.RandomSeed);
+            if (_random == null) _random = new Random(Constants.GetRandomSeed());
             var index = _random.Next(0, _slimeSprites.Length);
 
             return _slimeSprites[index];
@@ -77,7 +77,7 @@ namespace Utilities.Game
 
         public Sprite GetChestSprite()
         {
-            if (_random == null) _random = new Random(Constants.RandomSeed);
+            if (_random == null) _random = new Random(Constants.GetRandomSeed());
             var index = _random.Next(0, _chestSprites.Length);
 
             return _chestSprites[index];

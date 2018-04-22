@@ -394,8 +394,10 @@
     <Compile Include="Assets\Imported\ShaderWeaver\Tutorials\Tutorial14 - Refract Node\SWSimpleCameraFollow.cs" />
     <Compile Include="Assets\Imported\ShaderWeaver\Tutorials\Tutorial7 - Alpha Node\AlphaControl.cs" />
     <Compile Include="Assets\Scripts\Chest.cs" />
+    <Compile Include="Assets\Scripts\Controllers\GameController.cs" />
     <Compile Include="Assets\Scripts\Controllers\InputController.cs" />
     <Compile Include="Assets\Scripts\Controllers\InventoryController.cs" />
+    <Compile Include="Assets\Scripts\Door.cs" />
     <Compile Include="Assets\Scripts\ECS\Components\BooleanComponent.cs" />
     <Compile Include="Assets\Scripts\ECS\Components\ChaseTargetComponent.cs" />
     <Compile Include="Assets\Scripts\ECS\Components\ComponentBase.cs" />
@@ -441,6 +443,7 @@
     <Compile Include="Assets\Scripts\UI\Notification\IPopupNotification.cs" />
     <Compile Include="Assets\Scripts\UI\Notification\TextPopup.cs" />
     <Compile Include="Assets\Scripts\UI\ReachDisplay.cs" />
+    <Compile Include="Assets\Scripts\UI\Tweeners\BoardTweener.cs" />
     <Compile Include="Assets\Scripts\Utilities\Camera\CameraMovement.cs" />
     <Compile Include="Assets\Scripts\Utilities\Constants.cs" />
     <Compile Include="Assets\Scripts\Utilities\Extensions.cs" />

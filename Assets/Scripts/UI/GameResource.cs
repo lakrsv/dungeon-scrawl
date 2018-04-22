@@ -44,6 +44,8 @@ namespace UI
 
         private Color _badColor = Color.red;
 
+        private Sequence _currentSequence = null;
+
         public void Enable()
         {
             if (_image.sprite == _enabledSprite) return;
@@ -62,9 +64,17 @@ namespace UI
 
         private void PlayAnimation(bool damage)
         {
-            var sequence = DOTween.Sequence();
-            sequence.Append(transform.DOScale(_scaleAmount, _animationDuration).SetRelative().SetEase(_ease));
-            sequence.Append(transform.DOScale(-_scaleAmount, _animationDuration).SetRelative().SetEase(_ease));
+            if (_currentSequence != null)
+            {
+                if (_currentSequence.IsPlaying())
+                {
+                    _currentSequence.Kill();
+                    _currentSequence = null;
+                }
+            }
+            _currentSequence = DOTween.Sequence();
+            _currentSequence.Append(transform.DOScale(_scaleAmount, _animationDuration).SetRelative().SetEase(_ease));
+            _currentSequence.Append(transform.DOScale(-_scaleAmount, _animationDuration).SetRelative().SetEase(_ease));
 
             if (damage)
             {
