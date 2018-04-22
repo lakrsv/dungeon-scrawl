@@ -35,6 +35,8 @@ namespace UI.Hint
     {
         private readonly List<Tween> _currentTweens = new List<Tween>();
 
+        private readonly List<Sequence> _currentSequences = new List<Sequence>();
+
         private readonly Vector2 _followOffset = new Vector2(0f, 1.0f);
 
         [SerializeField]
@@ -65,7 +67,10 @@ namespace UI.Hint
 
         public void Disable()
         {
-            if (!gameObject.activeInHierarchy) return;
+            if (!gameObject.activeInHierarchy)
+            {
+                return;
+            }
 
             if (HintCache.Instance.Contains(this)) HintCache.Instance.Remove(this);
 
@@ -81,12 +86,18 @@ namespace UI.Hint
 
         public void Enable()
         {
-            if (IsEnabled) return;
+            if (gameObject.activeInHierarchy)
+            {
+                return;
+            }
 
             IsEnabled = true;
 
             _text.SetText(string.Empty);
             gameObject.SetActive(true);
+
+            _text.color = Color.black;
+            _text.transform.localScale = Vector3.one;
 
             if (_canvas == null)
             {
@@ -189,20 +200,50 @@ namespace UI.Hint
 
         private void DoCompleteWordAnimation(float duration)
         {
+            if (_currentSequences.Count > 0)
+            {
+                foreach (var sequence in _currentSequences)
+                {
+                    sequence.Kill();
+                    sequence.Rewind(false);
+                }
+
+                _currentSequences.Clear();
+
+                _text.transform.localScale = Vector3.one;
+                _text.color = Color.black;
+            }
+
             var scaleSequence = DOTween.Sequence();
             scaleSequence.Append(_text.transform.DOScale(0.25f, duration).SetRelative().SetEase(Ease.OutBack));
             scaleSequence.Append(_text.transform.DOScale(-0.25f, duration).SetRelative().SetEase(Ease.OutBack));
 
+            _currentSequences.Add(scaleSequence);
+
             var colorSequence = DOTween.Sequence();
             colorSequence.Append(_text.DOColor(Color.yellow, duration).SetEase(Ease.OutBack));
             colorSequence.Append(_text.DOColor(Color.black, duration).SetEase(Ease.OutBack));
+
+            _currentSequences.Add(colorSequence);
         }
 
         private void KillCurrentTweens()
         {
-            foreach (var tween in _currentTweens) if (tween.IsPlaying()) DOTween.Kill(tween.id, true);
+            foreach (var tween in _currentTweens)
+                if (tween.IsPlaying())
+                {
+                    tween.Kill(false);
+                    tween.Rewind(false);
+                }
+
+            foreach (var sequence in _currentSequences)
+            {
+                sequence.Kill(false);
+                sequence.Rewind(false);
+            }
 
             _currentTweens.Clear();
+            _currentSequences.Clear();
         }
 
         private void LateUpdate()

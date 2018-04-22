@@ -167,10 +167,14 @@ namespace Controllers
         {
             if (!GameController.Instance.IsPlaying) return;
 
+            UpdateMovementType();
+
             if (_requiredDirectionWord.Count == 0)
             {
-                SetMovementWords();
+                UpdateInputHints();
             }
+
+            UpdateInputHintVisibility();
 
             foreach (var c in Input.inputString.ToLower())
                 switch (c)
@@ -208,6 +212,22 @@ namespace Controllers
 */
         }
 
+        private void UpdateInputHints()
+        {
+            for (var i = 0; i < 4; i++)
+            {
+                var direction = (Direction)i;
+                var player = ActorCache.Instance.Player;
+                var nextPos = player.Entity.GetComponent<GridPositionComponent>().Position;
+                var directionVector = direction.ToVector2Int();
+
+                if (MapSystem.Instance.IsWalkable(nextPos + directionVector))
+                {
+                    CreateMovementHint(direction);
+                }
+            }
+        }
+
         private void UpdateInputHintVisibility()
         {
             for (var i = 0; i < 4; i++)
@@ -217,27 +237,9 @@ namespace Controllers
                 var nextPos = player.Entity.GetComponent<GridPositionComponent>().Position;
                 var directionVector = direction.ToVector2Int();
 
-                if (_requiredDirectionWord.ContainsValue(direction))
+                if (!MapSystem.Instance.IsWalkable(nextPos + directionVector) && _requiredDirectionWord.ContainsValue(direction))
                 {
-                    if (!MapSystem.Instance.IsWalkable(nextPos + directionVector))
-                    {
-                        var moveHintWord = _moveHints.GetHint(direction).Word;
-                        _moveHints.SetHint(direction, false);
-
-                        if (moveHintWord != null) _requiredDirectionWord.Remove(moveHintWord);
-                    }
-                }
-                else
-                {
-                    if (MapSystem.Instance.IsWalkable(nextPos + directionVector))
-                    {
-                        var requiredWord = _movingSimple ? GetLetterNonConflicting() : GetWordNonConflicting(_movementDifficulty);
-                        if (!_requiredDirectionWord.ContainsKey(requiredWord))
-                        {
-                            _requiredDirectionWord.Add(requiredWord, direction);
-                            _moveHints.SetHint(direction, true, requiredWord);
-                        }
-                    }
+                    RemoveMovementHint(direction);
                 }
             }
         }
@@ -268,41 +270,6 @@ namespace Controllers
             {
                 _movingSimple = shouldMoveSimple;
                 _requiredDirectionWord.Clear();
-                SetMovementWords();                
-            }
-        }
-
-        private void SetMovementWords()
-        {
-            for (var i = 0; i < 4; i++)
-            {
-                var direction = (Direction)i;
-
-                var player = ActorCache.Instance.Player;
-                var nextPos = player.Entity.GetComponent<GridPositionComponent>().Position;
-
-                var directionVector = direction.ToVector2Int();
-                if (!MapSystem.Instance.IsWalkable(nextPos + directionVector))
-                {
-                    var hintToDisable = _moveHints.GetHint(direction);
-                    _moveHints.SetHint(direction, false);
-
-                    if (hintToDisable.Word == null) continue;
-
-                    if (_requiredDirectionWord.ContainsKey(hintToDisable.Word))
-                    {
-                        _requiredDirectionWord.Remove(hintToDisable.Word);
-                    }
-                    continue;
-                }
-
-
-                var requiredWord = _movingSimple ? GetLetterNonConflicting() : GetWordNonConflicting(_movementDifficulty);
-                if (!_requiredDirectionWord.ContainsKey(requiredWord))
-                {
-                    _requiredDirectionWord.Add(requiredWord, direction);
-                    _moveHints.SetHint(direction, true, requiredWord);
-                }
             }
         }
 
@@ -324,9 +291,6 @@ namespace Controllers
 
             _itemSystem.OnPlayerEnterLootArea += OnPlayerEnterLootArea;
             _itemSystem.OnPlayerLeaveLootArea += OnPlayerLeaveLootArea;
-
-            InvokeRepeating("UpdateInputHintVisibility", 0.25f, 0.25f);
-            InvokeRepeating("UpdateMovementType", 0.25f, 0.25f);
         }
 
         private void OnPlayerLeaveLootArea(Chest chest)
@@ -396,6 +360,23 @@ namespace Controllers
                 spellHint.Disable();
                 _entitySpellHints.Remove(entity);
             }
+        }
+
+        private void CreateMovementHint(Direction direction)
+        {
+            var requiredWord =
+                _movingSimple ? GetLetterNonConflicting() : GetWordNonConflicting(_movementDifficulty);
+            if (_requiredDirectionWord.ContainsKey(requiredWord)) return;
+
+            _requiredDirectionWord.Add(requiredWord, direction);
+            _moveHints.SetHint(direction, true, requiredWord);
+        }
+
+        private void RemoveMovementHint(Direction direction)
+        {
+            var moveWord = _moveHints.GetHint(direction).Word;
+            _requiredDirectionWord.Remove(moveWord);
+            _moveHints.SetHint(direction, false);
         }
 
         private string GetWordNonConflicting(int length)

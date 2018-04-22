@@ -55,7 +55,7 @@ namespace UI.Hint
                 hint.Enable();
                 hint.Initialize(null, word);
             }
-            else if (!enabled)
+            else
             {
                 hint.Disable();
             }
