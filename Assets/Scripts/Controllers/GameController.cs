@@ -97,11 +97,14 @@ namespace Controllers
             SceneManager.LoadScene("Game");
         }
 
-        private IEnumerator Start()
+        private void Awake()
         {
             PlayerHasMoved = false;
             IsPlaying = false;
+        }
 
+        private IEnumerator Start()
+        {
             yield return null;
 
             _board.gameObject.SetActive(false);
@@ -115,5 +118,6 @@ namespace Controllers
             yield return _board.BoardAppear();
             IsPlaying = true;
         }
+
     }
 }
