@@ -65,7 +65,7 @@ namespace Controllers
         [SerializeField]
         private MoveHints _moveHints;
 
-        private int _attackDifficulty = WordSystem.MinWordLength + 1;
+        private int _attackDifficulty = WordSystem.MinWordLength + GameController.CurrentLevel;
 
         private int _movementDifficulty = WordSystem.MinWordLength;
 
@@ -94,6 +94,20 @@ namespace Controllers
         {
             if (_currentInputWord.Length == 0) return;
             _currentInputWord.Length -= 1;
+
+            var invalid = true;
+            HintCache.Instance.GetCached().ForEach(x =>
+                {
+                    x.OnWordTyped(_currentInputWord.ToString());
+                    if (!x.WordWasInvalid) invalid = false;
+
+                    if (x.WordComplete)
+                    {
+                        SubmitInput();
+                    }
+                });
+
+            if (invalid) _currentInputWord.Length = 0;
         }
 
         private void SubmitInput()

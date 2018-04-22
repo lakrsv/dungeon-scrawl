@@ -35,15 +35,15 @@ namespace ECS.Systems
 
     public class ItemSystem : MonoBehaviour, IInitializeSystem, IExecuteSystem
     {
-        private const int MaxFireballPerLevel = 4;
+        private const int MaxFireballPerLevel = 3;
 
         private const int MinFireballPerLevel = 1;
 
-        private const int MaxHealthPerLevel = 10;
+        private const int MaxHealthPerLevel = 6;
 
-        private const int MinHealthPerLevel = 4;
+        private const int MinHealthPerLevel = 2;
 
-        private const int MaxFovPerLevel = 4;
+        private const int MaxFovPerLevel = 3;
 
         private const int MinFovPerLevel = 2;
 

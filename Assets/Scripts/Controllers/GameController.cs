@@ -99,6 +99,9 @@ namespace Controllers
 
         private void Awake()
         {
+            PlayerPrefs.DeleteAll();
+            PlayerPrefs.Save();
+
             PlayerHasMoved = false;
             IsPlaying = false;
         }
