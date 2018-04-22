@@ -39,6 +39,8 @@ namespace ECS.Systems
 
         private void Awake()
         {
+            Debug.Log("System awake");
+
             var initializeSystems = new List<IInitializeSystem>();
             var executeSystems = new List<IExecuteSystem>();
 

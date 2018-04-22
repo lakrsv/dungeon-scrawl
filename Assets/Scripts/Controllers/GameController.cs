@@ -72,7 +72,7 @@ namespace Controllers
 
         public void GameOver()
         {
-            CurrentLevel = 0;
+            CurrentLevel = 1;
             IsPlaying = false;
             _renderSystem.Execute();
             Player.ClearPlayerStats();

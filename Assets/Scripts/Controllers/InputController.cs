@@ -238,8 +238,11 @@ namespace Controllers
 
 
                 var requiredWord = _wordSystem.GetNextWord(_movementDifficulty);
-                _requiredDirectionWord.Add(requiredWord, direction);
-                _moveHints.SetHint(direction, true, requiredWord);
+                if (!_requiredDirectionWord.ContainsKey(requiredWord))
+                {
+                    _requiredDirectionWord.Add(requiredWord, direction);
+                    _moveHints.SetHint(direction, true, requiredWord);
+                }
             }
         }
 

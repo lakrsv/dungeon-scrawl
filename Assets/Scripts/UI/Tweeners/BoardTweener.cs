@@ -54,9 +54,9 @@ namespace UI.Tweeners
             var playerPos = ActorCache.Instance.Player.Entity.GetComponent<GridPositionComponent>();
             Camera.main.transform.DOMove(new Vector3(playerPos.Position.x, playerPos.Position.y, -10), 1.0f).SetEase(Ease.OutBack);
             yield return new WaitForSeconds(1.0f);
-            Camera.main.DOOrthoSize(300f, 3.0f).SetEase(Ease.InQuart);
+            Camera.main.DOOrthoSize(300f, 2.0f).SetEase(Ease.InQuart);
             ////transform.DOMove(new Vector3(0, -100, 0), 1.0f);
-            yield return new WaitForSeconds(3.0f);
+            yield return new WaitForSeconds(2.0f);
         }
     }
 }
