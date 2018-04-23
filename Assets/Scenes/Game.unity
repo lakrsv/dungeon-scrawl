@@ -3435,13 +3435,11 @@ MonoBehaviour:
   _deathSprites:
   - {fileID: 21300000, guid: 65cce76731f9fd0479cf91f41e35d3ab, type: 3}
   _demonSprites:
-  - {fileID: 21300000, guid: 78e308b9c1d3e8843a24bbfcb1258d56, type: 3}
-  - {fileID: 21300000, guid: aaf820c88422b71459e3db74619ebf8d, type: 3}
-  - {fileID: 21300000, guid: 076814a334463fa42b0dbb9604431d24, type: 3}
   - {fileID: 21300000, guid: 3167011185ccadc468c7f1a5656d1940, type: 3}
   - {fileID: 21300000, guid: bb31a71b26301ac4ba25efc7523a60ac, type: 3}
+  - {fileID: 21300000, guid: 076814a334463fa42b0dbb9604431d24, type: 3}
+  - {fileID: 21300000, guid: 78e308b9c1d3e8843a24bbfcb1258d56, type: 3}
   _slimeSprites:
-  - {fileID: 21300000, guid: 5224b3d9946bdbe4e91f7680fec06c2d, type: 3}
   - {fileID: 21300000, guid: 1392496dd35d37d4296f14ce45746140, type: 3}
   - {fileID: 21300000, guid: 4c4d29b4d152c5041b078816fade4e22, type: 3}
   - {fileID: 21300000, guid: 99c34a341a00bbe47b67facab74f8652, type: 3}
