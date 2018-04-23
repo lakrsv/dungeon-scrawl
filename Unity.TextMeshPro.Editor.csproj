@@ -409,7 +409,6 @@
     <Compile Include="C:\ProgramData\Unity\cache\packages\packages.unity.com\com.unity.textmeshpro@1.2.2\Scripts\Editor\TMPro_TexturePostProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Imported\DawnLike\README.txt" />
     <None Include="Assets\Imported\Demigiant\DOTween\DOTween.XML" />
     <None Include="Assets\Imported\Demigiant\DOTween\DOTween43.xml" />
     <None Include="Assets\Imported\Demigiant\DOTween\DOTween46.xml" />

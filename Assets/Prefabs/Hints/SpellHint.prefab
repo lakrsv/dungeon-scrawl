@@ -281,8 +281,8 @@ MonoBehaviour:
   _movementSpeed: 2.5
   _text: {fileID: 114378729855237418}
   _icon: {fileID: 114331304650291322}
-  _chestIcon: {fileID: 21300002, guid: c326d233dcb0eca4ab1934018149dbf7, type: 3}
-  _attackIcon: {fileID: 21300000, guid: b40b9d64ada632047b1293c4e6f08d05, type: 3}
+  _chestIcon: {fileID: 21300000, guid: d27d418cbe5a0864486d9c67544d0a35, type: 3}
+  _attackIcon: {fileID: 21300000, guid: 94cbdaa6a3c448c499e457a3dee44bfa, type: 3}
 --- !u!114 &114619304058821736
 MonoBehaviour:
   m_ObjectHideFlags: 1

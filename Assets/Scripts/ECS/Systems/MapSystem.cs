@@ -50,6 +50,9 @@ namespace ECS.Systems
         [SerializeField]
         private RuleTile _wallTile;
 
+        [SerializeField]
+        private RuleTile _bottomTile;
+
         [Header("Generation Rules")]
         [SerializeField]
         private int _mapWidth;
@@ -173,6 +176,18 @@ namespace ECS.Systems
                     _map.SetTile(tilePosition, _wallTile);
                     _map.SetColor(tilePosition, Visibility.Invisible);
                     _map.RefreshTile(tilePosition);
+                }
+                else
+                {
+                    if (y >= _mapHeight - 1) continue;
+
+                    var cellAbove = Map.GetCell(x, y + 1);
+                    if (cellAbove != null && cellAbove.IsWalkable)
+                    {
+                        _map.SetTile(tilePosition, _bottomTile);
+                        _map.SetColor(tilePosition, Visibility.Invisible);
+                        _map.RefreshTile(tilePosition);
+                    }
                 }
             }
         }
