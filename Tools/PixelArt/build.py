@@ -59,9 +59,10 @@ def build_idle():
 
 
 def build_menus():
-    sheet = Sheet("Menus", cell=(menus.WIDTH, menus.HEIGHT), columns=1, padding=2)
+    sheet = Sheet("Menus", cell=(menus.WIDTH, menus.HEIGHT), columns=2, padding=2)
     sheet.add("MenuBackdrop", menus.main_menu())
     sheet.add("GameOverBackdrop", menus.game_over())
+    sheet.add("VictoryBackdrop", menus.victory())
     sheet.add("MenuButton", menus.button(), border=menus.BUTTON_BORDER)
     return sheet
 
@@ -71,6 +72,7 @@ def build_menu_icons():
     for name, glyph in (("Music", menus.MUSIC_GLYPH), ("Sound", menus.SOUND_GLYPH)):
         for level in range(menus.VOLUME_LEVELS + 1):
             sheet.add("%s%d" % (name, level), menus.volume_icon(glyph, level))
+    sheet.add("Moves", menus.move_icon())
     return sheet
 
 

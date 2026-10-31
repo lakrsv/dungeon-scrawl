@@ -172,6 +172,7 @@ namespace ECS.Systems
                 (-damage.Value).ToString(),
                 targetPosition.Position + Vector2.up,
                 1.0f);
+            var wasAlive = targetHealth.Value > 0;
             targetHealth.Value -= damage.Value;
 
             AudioPlayer.Instance.PlayAudio(AudioPlayer.Type.Damage);
@@ -202,6 +203,7 @@ namespace ECS.Systems
                     Sprites.Instance.SmokeFrames,
                     targetHealth.Owner.GameObject.transform.position);
                 AudioPlayer.Instance.PlayAudio(AudioPlayer.Type.Death);
+                if (wasAlive && !targetIsPlayer) RunStats.Kill();
 
                 var turnComponent = targetHealth.Owner.GetComponent<BooleanComponent>(ComponentType.Turn);
                 if (turnComponent != null) targetHealth.Owner.RemoveComponent(turnComponent);

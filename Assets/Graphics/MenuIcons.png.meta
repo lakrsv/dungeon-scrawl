@@ -151,7 +151,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 2
-        y: 20
+        y: 52
         width: 14
         height: 10
       alignment: 9
@@ -173,7 +173,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 20
-        y: 20
+        y: 52
         width: 14
         height: 10
       alignment: 9
@@ -195,7 +195,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 38
-        y: 20
+        y: 52
         width: 14
         height: 10
       alignment: 9
@@ -217,7 +217,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 56
-        y: 20
+        y: 52
         width: 14
         height: 10
       alignment: 9
@@ -239,7 +239,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 2
-        y: 6
+        y: 38
         width: 12
         height: 10
       alignment: 9
@@ -261,7 +261,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 20
-        y: 6
+        y: 38
         width: 12
         height: 10
       alignment: 9
@@ -283,7 +283,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 38
-        y: 6
+        y: 38
         width: 12
         height: 10
       alignment: 9
@@ -305,7 +305,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 56
-        y: 6
+        y: 38
         width: 12
         height: 10
       alignment: 9
@@ -318,6 +318,28 @@ TextureImporter:
       bones: []
       spriteID: 6735c8949d3b0e84cb4c87ea6fe761ad
       internalID: 1052032109
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Moves
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 22
+        width: 11
+        height: 12
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9f7219babc470fd47b2bd47210017d7f
+      internalID: 1558326700
       vertices: []
       indices: 
       edges: []
@@ -336,6 +358,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
+      Moves: 1558326700
       Music0: -63489257
       Music1: 993607606
       Music2: 1853267626

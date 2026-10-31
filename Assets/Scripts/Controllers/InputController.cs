@@ -76,6 +76,19 @@ namespace Controllers
 
         private bool _movingSimple;
 
+        // With nothing hostile in sight the move prompts are single keys (WASD or letters, see MoveKeys). Those keys
+        // are steering, not typing.
+        private bool QuickMovesUp
+        {
+            get { return _requiredDirectionWord.Keys.Any(x => x.Length == 1); }
+        }
+
+        // Whether this letter comes from a key being held down (the OS repeats it) rather than a fresh press.
+        private static bool IsHeldRepeat(char c)
+        {
+            return c >= 'a' && c <= 'z' && !Input.GetKeyDown((KeyCode)c);
+        }
+
         private void AppendLetter(char c)
         {
             var before = _currentInputWord.ToString();
@@ -98,19 +111,27 @@ namespace Controllers
 
             if (invalid) _currentInputWord.Length = 0;
 
+            // A one-letter move, or a stray key while no word is under way, counts towards neither the typing speed
+            // nor the accuracy.
+            var steering = before.Length == 0 && QuickMovesUp;
+
             // Every key answers: a finished word chimes, a letter that fits blips a step higher than the last and
             // bumps the words it fits, and a wrong one buzzes and shakes off the words it broke.
             if (completed)
             {
+                if (before.Length > 0) RunStats.Letter(true);
+                RunStats.Word(before.Length + 1);
                 AudioPlayer.Instance.PlayAudio(AudioPlayer.Type.Word);
             }
             else if (invalid)
             {
+                if (!steering) RunStats.Mistake();
                 AudioPlayer.Instance.PlayAudio(AudioPlayer.Type.Typo);
                 if (before.Length > 0) ForEachHintStartingWith(before, x => x.Reject());
             }
             else
             {
+                RunStats.Letter(before.Length > 0);
                 AudioPlayer.Instance.PlayLetter(_currentInputWord.Length - 1);
                 ForEachHintStartingWith(_currentInputWord.ToString(), x => x.Bump());
             }
@@ -188,6 +209,7 @@ namespace Controllers
 
                 var chest = _requiredLootWord[inputWord];
                 _itemSystem.ChestPickup(chest);
+                RunStats.Chest();
                 chest.Open();
 
                 _requiredLootWord.Remove(inputWord);
@@ -229,6 +251,9 @@ namespace Controllers
                         SubmitInput();
                         break;
                     default:
+                        // Quick moves go by presses: while their prompts are up and no word is under way, the
+                        // repeats of a held key are ignored, so holding W doesn't walk you down a corridor.
+                        if (_currentInputWord.Length == 0 && QuickMovesUp && IsHeldRepeat(c)) break;
                         AppendLetter(c);
                         break;
                 }
@@ -416,8 +441,9 @@ namespace Controllers
 
         private void CreateMovementHint(Direction direction)
         {
-            var requiredWord =
-                _movingSimple ? GetLetterNonConflicting() : GetWordNonConflicting(_movementDifficulty);
+            string requiredWord;
+            if (!_movingSimple) requiredWord = GetWordNonConflicting(_movementDifficulty, false);
+            else requiredWord = MoveKeys.Wasd ? MoveKeys.For(direction) : GetLetterNonConflicting();
             if (_requiredDirectionWord.ContainsKey(requiredWord))
             {
                 // Hide the prompt rather than leave the previous word up: it would no longer map to anything.
@@ -436,7 +462,9 @@ namespace Controllers
             _moveHints.SetHint(direction, false);
         }
 
-        private string GetWordNonConflicting(int length)
+        // Attack and loot words also keep clear of the WASD keys when those are on (see MoveKeys.Blocks). Move words
+        // needn't: they are only words while the WASD keys are not in use.
+        private string GetWordNonConflicting(int length, bool clearOfMoveKeys = true)
         {
             string word;
             var maxIterations = 30;
@@ -448,7 +476,8 @@ namespace Controllers
                 currentIterations++;
             }
             while ((_requiredDirectionWord.ContainsKey(word) || _requiredAttackWord.ContainsKey(word)
-                   || _requiredLootWord.ContainsKey(word)) && currentIterations < maxIterations);
+                   || _requiredLootWord.ContainsKey(word) || (clearOfMoveKeys && MoveKeys.Blocks(word)))
+                   && currentIterations < maxIterations);
 
             return word;
         }

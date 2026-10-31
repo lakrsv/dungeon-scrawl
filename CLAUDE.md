@@ -28,7 +28,7 @@ The Unity Test Framework package is installed, but there are no test assemblies 
 - `Tools/Audio/` generates the typing, footstep, death and menu sounds, the two music themes and the cave ambience as code (a small chiptune synthesizer in plain Python) into `Assets/Audio/`. See its README. The other effects in `Assets/Audio/` are the hand-made originals.
 - `Assets/Resources/Words/{adjectives,nouns,verbs}.txt` are the word lists, loaded via `Resources.Load`.
 - `PR/` holds the screenshots and GIFs used by `README.md`. It sits outside `Assets/`, so Unity doesn't import it.
-- Build scene order: `SplashScreen` → `MainMenu` → `Game` → `GameOver`. Scenes are loaded by string name via `SceneManager.LoadScene`.
+- Build scene order: `SplashScreen` → `MainMenu` → `Game` → `GameOver` / `Victory`. Scenes are loaded by string name via `SceneManager.LoadScene`. `Victory` started as a copy of `GameOver` and shares its layout (title, run report, two buttons side by side), so change both together.
 
 ## Architecture
 
@@ -52,7 +52,7 @@ The Unity Test Framework package is installed, but there are no test assemblies 
 - Each typed letter goes to every `SpellHint` in `HintCache`. A hint that reports `WordComplete` submits the input. If every hint reports `WordWasInvalid`, the input buffer resets.
 - Every key answers. A letter that fits blips one step higher than the last (`AudioPlayer.PlayLetter`) and hops the prompts it fits (`SpellHint.Bump`). A finished word chimes. A wrong letter buzzes, and the prompts it broke flash red and shake (`SpellHint.Reject`).
 - `InputController` maps words to actions in three dictionaries: movement (four directions, shown by `MoveHints`), attack (one word per enemy), and loot (per chest).
-- Word lengths: movement 3, attack `3 + CurrentLevel`, loot 9. `WordSystem` buckets the word lists by length (3–9) and recycles words once a bucket runs out.
+- Word lengths: movement 3, attack `3 + CurrentLevel`, loot 9. With nothing hostile in sight (`UpdateMovementType`), the move prompts become single keys: W/A/S/D by default, or a random letter per direction. The player picks with the button in the main menu's bottom-left corner (`MoveKeys`, saved under `"MoveKeys"`). With WASD on, attack and loot words never start with W, A, S or D (`MoveKeys.Blocks`), so a quick move can't swallow the first letter of a word. Quick moves go by presses: `InputController` ignores the OS repeats of a held key while their prompts are up and no word is under way. `WordSystem` buckets the word lists by length (3–9) and recycles words once a bucket runs out.
 - Turn model: the player has **no** `Turn` component and can act at any time. The player's first action sets `GameController.PlayerHasMoved`, which is only reset at level end. From then on, `TurnSystem` cycles enemy `Turn` flags on a timer (`0.4s / difficulty`), so play is effectively real-time after the first move.
 - `MapSystem` generates the level with RogueSharp `RandomRoomsMapCreationStrategy`, paints the `Tilemap` with `FloorTile` and `CliffTile`, and provides walkability checks and pathfinding (`GetMoveDirection`) for the chase AI in `MoveSystem`.
 
@@ -65,10 +65,15 @@ The Unity Test Framework package is installed, but there are no test assemblies 
 
 ### State across scenes
 
-- The `Game` scene is reloaded for each level. `GameController.CurrentLevel` is a static field that survives the reload. There are 5 levels, and finishing level 5 wins the game.
-- Player stats carry over between levels through `PlayerPrefs`, keyed by the `ComponentType` name (see `Player.SavePlayerStats` / `ClearPlayerStats`). `PlayButton` stores difficulty under the `"Difficulty"` key. `SplashScreenTweener` resets both at the start of every run, but leaves the volume settings (`Sound.Volume`, keys `"MusicVolume"` and `"SoundVolume"`) alone. Don't go back to `PlayerPrefs.DeleteAll()`.
+- The `Game` scene is reloaded for each level. `GameController.CurrentLevel` is a static field that survives the reload. There are 5 levels, and finishing level 5 wins the game: a "-CONGRATULATIONS-" popup, then the `Victory` scene.
+- `RunStats` is static for the same reason. `GameController` starts it on level 1 and finishes it on death or the win; `InputController` and `AttackSystem` feed it letters, mistakes, words, chests and kills. Typing speed only counts the gaps between letters of a word, and drops gaps over 1.5s. The single-letter move prompts shown when nothing hostile is in sight are steering, not typing: those keys, and stray keys while they're up and no word is under way, count towards neither speed nor accuracy. The score is (letters of finished words + 25 per kill + 50 per chest + 250 per level cleared) times the difficulty; the best is kept in `PlayerPrefs` under `"BestScore"`. `UI.RunReport` tallies it all up on the game over and victory screens.
+- Player stats carry over between levels through `PlayerPrefs`, keyed by the `ComponentType` name (see `Player.SavePlayerStats` / `ClearPlayerStats`). `PlayButton` stores difficulty under the `"Difficulty"` key. `SplashScreenTweener` resets both at the start of every run, but leaves the volume settings (`Sound.Volume`, keys `"MusicVolume"` and `"SoundVolume"`) and the best score alone. Don't go back to `PlayerPrefs.DeleteAll()`.
 - `Sound.Jukebox` is the one object that outlives a scene. Each scene has a `Jukebox` naming its music and ambience; the first to wake persists (`DontDestroyOnLoad`), and later ones hand it their tracks and destroy themselves, so music never cuts on a scene load or level reload. `GameController` fades the music out on game over and over to the title theme on a win.
 - `Constants.GetRandomSeed()` returns the current UTC millisecond, so map and word generation differ every run. The `Constants.RandomSeed` constant is unused. For reproducible runs, change `GetRandomSeed()`.
+
+### Testing shortcuts
+
+In the Editor and development builds (`Debug.isDebugBuild`), while a level is being played, F9 wins the run on the spot and F10 loses it (`GameController.Update`). The stats so far go to the victory or game over screen.
 
 ## Conventions
 

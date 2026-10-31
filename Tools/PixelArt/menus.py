@@ -1,6 +1,8 @@
-"""Backdrops and the button frame for the splash screen, main menu and game over screen.
+"""Backdrops and the button frame for the splash screen, main menu, game over and victory screens.
 
 The splash screen and the main menu share one backdrop, so moving from one to the other never changes the scene.
+The game over and victory screens share a layout: their run report covers the middle, so the story is told in the
+rooms to either side and in the one that shows between the two buttons.
 
 Each is a small scene built from the game's own tiles and original sprites, lit by torchlight and fading into
 the dark at the edges. They are 480x270, drawn at 4x on a 1920x1080 screen.
@@ -28,7 +30,9 @@ def _sprite(name):
         "knight": "Resources/Sprites/Player.png",
         "bones": "Graphics/DeathSprite.png",
         "chest": "Graphics/Items/Chest1.png",
+        "chest2": "Graphics/Items/Chest2.png",
         "door": "Graphics/Items/Door.psd",
+        "money": "Graphics/Items/Money.png",
     }
     for kind in ("Zombie", "Demon", "Slime"):
         for i in range(1, 5):
@@ -164,8 +168,9 @@ def main_menu():
     return img
 
 
-# Game over: what is left of the knight, and the things that got him, under a red glow.
-GAME_OVER_MAP = [
+# Game over and victory: rooms to either side of the run report, and one below it. Only one sprite's width of
+# that one shows, between the two buttons, at tile x 14.5.
+RESULTS_MAP = [
     "..............................",
     "..............................",
     "..............................",
@@ -174,30 +179,50 @@ GAME_OVER_MAP = [
     "..............................",
     "..#####..................####.",
     "..#####..................####.",
-    "..##########......########.##.",
-    "..#####....#......#.....#####.",
-    "..#####....##########...####..",
-    "...........###########........",
-    "...........###########........",
-    "..............................",
-    "..............................",
-    "..............................",
+    "..##########......###########.",
+    "..#####....#......#......####.",
+    "..#####....#......#......####.",
+    "...........#......#...........",
+    "...........#......#...........",
+    "..........##########..........",
+    "..........##########..........",
+    "..........##########..........",
     "..............................",
     "..............................",
 ]
 
 
+# Game over: what is left of the knight, and the things that got him, under a red glow.
 def game_over():
-    img = _paint_dungeon(GAME_OVER_MAP, 9)
-    _place(img, _sprite("bones"), 15, 11.8, shadow=False)
-    _place(img, _sprite("bones"), 13.4, 12.1, shadow=False)
-    _place(img, _sprite("demon1"), 4, 7.5, flip=True)
-    _place(img, _sprite("zombie2"), 3, 9)
+    img = _paint_dungeon(RESULTS_MAP, 9)
+    _place(img, _sprite("bones"), 14.5, 14.6, shadow=False)
+    _place(img, _sprite("demon1"), 4, 7.3, flip=True)
+    _place(img, _sprite("zombie2"), 2.8, 9.2)
+    _place(img, _sprite("slime4"), 5.2, 9.6, flip=True)
     _place(img, _sprite("demon4"), 26, 7)
-    _place(img, _sprite("zombie4"), 27, 9, flip=False)
-    _place(img, _sprite("slime4"), 17.6, 11.9)
-    _light(img, [(15.5, 11.5, 4.5, 0.9), (4.0, 8.5, 3.5, 0.6), (26.5, 8.0, 3.5, 0.6)],
+    _place(img, _sprite("zombie4"), 27, 9)
+    _light(img, [(15.0, 15.0, 4.0, 0.9), (4.0, 8.5, 3.5, 0.6), (26.5, 8.0, 3.5, 0.6)],
            gloom=(0.20, 0.16, 0.24), tint=(1.0, 0.62, 0.66))
+    img = _crop(img, 0, 24)
+    _vignette(img, 1.1)
+    return img
+
+
+# Victory: the knight among the spoils, the way out shining on the far side, and the bones of the things that
+# tried to stop him, all in a warm gold light.
+def victory():
+    img = _paint_dungeon(RESULTS_MAP, 11)
+    _place(img, _sprite("chest"), 2.6, 6.6)
+    _place(img, _sprite("chest2"), 5.4, 6.7)
+    _place(img, _sprite("money"), 2.4, 9.6)
+    _place(img, _sprite("money"), 5.6, 9.8)
+    _place(img, _sprite("knight"), 4.0, 8.4, flip=True)
+    _place(img, _sprite("door"), 26.5, 7.0, shadow=False)
+    _place(img, _sprite("money"), 25.4, 9.4)
+    _place(img, _sprite("bones"), 27.4, 9.7, shadow=False)
+    _place(img, _sprite("money"), 14.5, 14.6)
+    _light(img, [(4.5, 8.8, 4.5, 1.0), (27.0, 7.8, 4.0, 1.0), (15.0, 15.0, 4.0, 0.85)],
+           gloom=(0.22, 0.20, 0.30), tint=(1.0, 0.90, 0.68))
     img = _crop(img, 0, 24)
     _vignette(img, 1.1)
     return img
@@ -273,10 +298,39 @@ def volume_icon(glyph, level):
         for y in range(height - 3 * (i + 1), height):
             img.putpixel((x, y), _hex(BUTTON_LEGEND["Y"] if i < level else "#442434"))
 
-    # A one-pixel ink drop shadow, like the button labels'.
+    return _drop_shadow(img)
+
+
+# The quick-move keys button: a four-way arrow, beside the keys it is set to.
+MOVE_GLYPH = [
+    ".....C.....",
+    "....CCC....",
+    "...CCCCC...",
+    "..C..C..C..",
+    ".CC..C..CC.",
+    "CCCCCCCCCCC",
+    ".CC..C..CC.",
+    "..C..C..C..",
+    "...CCCCC...",
+    "....CCC....",
+    ".....C.....",
+]
+
+
+def move_icon():
+    img = Image.new("RGBA", (len(MOVE_GLYPH[0]), len(MOVE_GLYPH) + 1), (0, 0, 0, 0))
+    for y, row in enumerate(MOVE_GLYPH):
+        for x, ch in enumerate(row):
+            if ch == "C":
+                img.putpixel((x, y), _hex(BUTTON_LEGEND["C"]))
+    return _drop_shadow(img)
+
+
+def _drop_shadow(img):
+    """A one-pixel ink drop shadow, like the button labels'. The image needs a free row at the bottom."""
     shadow = Image.new("RGBA", img.size, (0, 0, 0, 0))
-    for y in range(height):
-        for x in range(width):
+    for y in range(img.size[1] - 1):
+        for x in range(img.size[0]):
             if img.getpixel((x, y))[3] and not img.getpixel((x, y + 1))[3]:
                 shadow.putpixel((x, y + 1), _hex(BUTTON_LEGEND["k"]))
     shadow.alpha_composite(img)

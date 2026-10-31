@@ -68,9 +68,11 @@ namespace Controllers
         {
             PlayerHasMoved = false;
             IsPlaying = false;
+            RunStats.LevelCleared();
 
-            if (CurrentLevel == 5)
+            if (CurrentLevel == RunStats.Levels)
             {
+                RunStats.Finish(true, CurrentLevel);
                 CurrentLevel = 1;
                 IsPlaying = false;
                 _renderSystem.Execute();
@@ -89,6 +91,7 @@ namespace Controllers
 
         public void GameOver()
         {
+            RunStats.Finish(false, CurrentLevel);
             CurrentLevel = 1;
             IsPlaying = false;
             Jukebox.PlayMusic(null);
@@ -115,13 +118,9 @@ namespace Controllers
             ObjectPools.Instance.GetPooledObject<TextPopup>().Enable("-CONGRATULATIONS-", new Vector2(_cameraMovement.transform.position.x, _cameraMovement.transform.position.y), 5.0f);
             Camera.main.orthographicSize = PixelPerfect.OrthographicSize;
             yield return new WaitForSeconds(5.0f);
-            ObjectPools.Instance.GetPooledObject<TextPopup>().Enable("SIT BACK...", new Vector2(_cameraMovement.transform.position.x, _cameraMovement.transform.position.y), 2.0f);
-            yield return new WaitForSeconds(2.0f);
-            ObjectPools.Instance.GetPooledObject<TextPopup>().Enable("RELAX...", new Vector2(_cameraMovement.transform.position.x, _cameraMovement.transform.position.y), 2.0f);
-            yield return new WaitForSeconds(2.0f);
-            ObjectPools.Instance.GetPooledObject<TextPopup>().Enable("IT'S DONE", new Vector2(_cameraMovement.transform.position.x, _cameraMovement.transform.position.y), 2.0f);
-            yield return new WaitForSeconds(2.0f);
-            SceneManager.LoadScene("SplashScreen");
+
+            // The victory screen says the rest: sit back, relax, it's done.
+            SceneManager.LoadScene("Victory");
         }
 
         private IEnumerator GoToNextLevel()
@@ -141,6 +140,27 @@ namespace Controllers
         {
             PlayerHasMoved = false;
             IsPlaying = false;
+            if (CurrentLevel == 1) RunStats.Begin(GetDifficulty());
+        }
+
+        private void Update()
+        {
+            if (!IsPlaying) return;
+            RunStats.Tick(Time.deltaTime);
+
+            // Testing shortcuts, in the Editor and development builds only: F9 wins the run on the spot, F10 loses
+            // it. The run's numbers so far go to the victory or game over screen. Function keys type nothing, so
+            // they can't get mixed up with the words.
+            if (!Debug.isDebugBuild) return;
+            if (Input.GetKeyDown(KeyCode.F9))
+            {
+                CurrentLevel = RunStats.Levels;
+                EndLevel();
+            }
+            else if (Input.GetKeyDown(KeyCode.F10))
+            {
+                GameOver();
+            }
         }
 
         private IEnumerator Start()
