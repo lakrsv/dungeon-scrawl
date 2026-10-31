@@ -14,9 +14,12 @@
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // // </copyright>
 // // <summary>
-// //   TODO - Insert file description
+// //   Every creature sprite, their idle animations, and the effect frames.
 // // </summary>
 // // --------------------------------------------------------------------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
 
 using UnityEngine;
 
@@ -41,7 +44,58 @@ namespace Utilities.Game
         [SerializeField]
         private Sprite[] _chestSprites;
 
+        // Idle loops. Each starts with a creature's own sprite, which actors keep as their identity.
+        [SerializeField]
+        private IdleAnimation[] _animations;
+
+        [SerializeField]
+        private float _animationFramesPerSecond = 2f;
+
+        [SerializeField]
+        private Sprite[] _hitFrames;
+
+        [SerializeField]
+        private Sprite[] _smokeFrames;
+
+        private Dictionary<Sprite, Sprite[]> _framesBySprite;
+
         private Random _random;
+
+        public Sprite[] HitFrames
+        {
+            get
+            {
+                return _hitFrames;
+            }
+        }
+
+        public Sprite[] SmokeFrames
+        {
+            get
+            {
+                return _smokeFrames;
+            }
+        }
+
+        /// <summary>
+        /// The frame to draw for a sprite at a point in time. Sprites without an animation are drawn as they are.
+        /// </summary>
+        public Sprite GetFrame(Sprite sprite, float time)
+        {
+            if (sprite == null) return null;
+
+            if (_framesBySprite == null)
+            {
+                _framesBySprite = new Dictionary<Sprite, Sprite[]>();
+                foreach (var animation in _animations) _framesBySprite[animation.Frames[0]] = animation.Frames;
+            }
+
+            Sprite[] frames;
+            if (!_framesBySprite.TryGetValue(sprite, out frames)) return sprite;
+
+            var index = Mathf.FloorToInt(time * _animationFramesPerSecond) % frames.Length;
+            return frames[index];
+        }
 
         public Sprite GetDeathSprite()
         {
@@ -81,6 +135,12 @@ namespace Utilities.Game
             var index = _random.Next(0, _chestSprites.Length);
 
             return _chestSprites[index];
+        }
+
+        [Serializable]
+        public class IdleAnimation
+        {
+            public Sprite[] Frames;
         }
     }
 }

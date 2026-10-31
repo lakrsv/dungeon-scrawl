@@ -128,6 +128,9 @@ namespace ECS.Systems
 
         private void MoveEntity(Entity entity, Vector3 position)
         {
+            var render = entity.GetComponent<RenderComponent>();
+            if (render != null) render.Face(position.x - entity.GameObject.transform.position.x);
+
             entity.GameObject.transform.DOMove(position, MovementDuration).SetEase(Ease.OutBack)
                 .OnComplete(() =>
                     {

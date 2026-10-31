@@ -37,6 +37,7 @@ namespace ECS.Systems
 
     using UnityEngine;
 
+    using Utilities.Camera;
     using Utilities.Game;
     using Utilities.Game.ECSCache;
     using Utilities.Game.ObjectPool;
@@ -52,6 +53,9 @@ namespace ECS.Systems
 
         [SerializeField]
         private HealthDisplay _healthDisplay;
+
+        [SerializeField]
+        private CameraMovement _cameraMovement;
 
         public event Action<Entity, SpellHint> OnEntityLeaveAttackRange;
 
@@ -69,6 +73,9 @@ namespace ECS.Systems
 
             var direction = ((Vector2)targetPosition.Position - entityPosition.Position).normalized;
             var distance = Vector2.Distance(entityPosition.Position, targetPosition.Position);
+
+            var render = entity.GetComponent<RenderComponent>();
+            if (render != null) render.Face(direction.x);
 
             var damage = entity.GetComponent<IntegerComponent>(ComponentType.Damage);
             if (damage == null) return;
@@ -106,6 +113,9 @@ namespace ECS.Systems
 
             var direction = ((Vector2)targetPosition.Position - entityPosition.Position).normalized;
             var distance = Vector2.Distance(entityPosition.Position, targetPosition.Position);
+
+            var render = entity.GetComponent<RenderComponent>();
+            if (render != null) render.Face(direction.x);
 
             var damage = entity.GetComponent<IntegerComponent>(ComponentType.Damage);
             if (damage == null) return;
@@ -156,6 +166,8 @@ namespace ECS.Systems
             IntegerComponent damage,
             IntegerComponent targetHealth)
         {
+            var targetIsPlayer = ActorCache.Instance.Player.Entity == targetHealth.Owner;
+
             ObjectPools.Instance.GetPooledObject<TextPopup>().Enable(
                 (-damage.Value).ToString(),
                 targetPosition.Position + Vector2.up,
@@ -163,8 +175,9 @@ namespace ECS.Systems
             targetHealth.Value -= damage.Value;
 
             AudioPlayer.Instance.PlayAudio(AudioPlayer.Type.Damage);
+            ShowHit(targetHealth.Owner, targetIsPlayer);
 
-            if (ActorCache.Instance.Player.Entity == targetHealth.Owner)
+            if (targetIsPlayer)
             {
                 _healthDisplay.SetHealth(targetHealth.Value);
             }
@@ -182,7 +195,12 @@ namespace ECS.Systems
                 {
                     render.Sprite = Sprites.Instance.GetDeathSprite();
                     render.Renderer.sortingOrder = SortOrder.DeadActor;
+                    render.ShowShadow = false;
                 }
+
+                ObjectPools.Instance.GetPooledObject<Effect>().Play(
+                    Sprites.Instance.SmokeFrames,
+                    targetHealth.Owner.GameObject.transform.position);
 
                 var turnComponent = targetHealth.Owner.GetComponent<BooleanComponent>(ComponentType.Turn);
                 if (turnComponent != null) targetHealth.Owner.RemoveComponent(turnComponent);
@@ -193,6 +211,26 @@ namespace ECS.Systems
                     GameController.Instance.GameOver();
                 }
             }
+        }
+
+        // Hit feedback: a white blink, a jolt, a spark, and a camera shake when it's the player who got hurt.
+        private void ShowHit(Entity target, bool targetIsPlayer)
+        {
+            var render = target.GetComponent<RenderComponent>();
+            if (render != null)
+            {
+                if (render.Flash != null) render.Flash.Flash();
+
+                var sprite = render.Renderer.transform;
+                sprite.DOKill(true);
+                sprite.DOShakePosition(0.25f, 0.15f, 30);
+            }
+
+            ObjectPools.Instance.GetPooledObject<Effect>().Play(
+                Sprites.Instance.HitFrames,
+                target.GameObject.transform.position);
+
+            if (targetIsPlayer) _cameraMovement.Shake(0.3f, 0.2f);
         }
 
         private void UpdateAI()

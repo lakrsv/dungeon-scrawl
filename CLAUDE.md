@@ -23,7 +23,8 @@ The Unity Test Framework package is installed, but there are no test assemblies 
 
 - `Assets/Scripts/` holds the game code. Namespaces mirror the folder path, e.g. `ECS.Systems`, `Utilities.Game.ECSCache`, `UI.Hint`.
 - `Assets/Imported/` holds third-party code: RogueSharp as source (re-namespaced to `Imported.RogueSharp`) and DOTween (`DG.Tweening`) as DLLs.
-- `Assets/Scripts/Tiles/Rule Tile/` is a vendored copy of `RuleTile` (namespace `Tiles.Rule_Tile.Scripts`). It is used instead of the 2D Tilemap Extras package.
+- `Assets/Scripts/Tiles/` holds the two autotiles the dungeon is painted with: `FloorTile` (47-case blob autotiling with slab variants) and `CliffTile` (the rock face under a floor's south edge). Their assets are in `Assets/Prefabs/Tiles/`.
+- `Tools/PixelArt/` generates the tiles, the hit/death effects, the creatures' idle frames, and the menu backdrops and button frame as code (Python + PIL), and slices them in the open Editor. See its README. Every other sprite is hand-made art under `Assets/Graphics/` and `Assets/Resources/Sprites/`.
 - `Assets/Resources/Words/{adjectives,nouns,verbs}.txt` are the word lists, loaded via `Resources.Load`.
 - `PR/` holds the screenshots and GIFs used by `README.md`. It sits outside `Assets/`, so Unity doesn't import it.
 - Build scene order: `SplashScreen` → `MainMenu` → `Game` → `GameOver`. Scenes are loaded by string name via `SceneManager.LoadScene`.
@@ -42,7 +43,7 @@ The Unity Test Framework package is installed, but there are no test assemblies 
   `InitializeSystem` (DOTween init) → `WordSystem` → `MapSystem` → `ActorSpawnerSystem` → `TurnSystem` → `MoveSystem` → `RenderSystem` → `AttackSystem` → `ItemSystem`.
   Blueprints call `MapSystem.GetRandomAvailableTile()`, so the map must exist before spawning. `TurnSystem.Initialize` needs the spawned `Turn` components to exist already. To add a system, add a child GameObject in the scene at the right position.
 - **Singletons**: `MonoSingleton<T>` finds the scene instance lazily with `FindAnyObjectByType` and logs an error if there is none. `MonoSingletonCreateIfNull<T>` creates the instance instead. Both are scene-scoped. `ComponentCache`, `ActorCache`, `MapSystem`, `GameController`, `HintCache`, and `ObjectPools` are all singletons.
-- **Pooling**: `ObjectPools.Instance.GetPooledObject<T>()` keys pools by type, and the pools are configured in the inspector. Actors and `TextPopup`s are pooled.
+- **Pooling**: `ObjectPools.Instance.GetPooledObject<T>()` keys pools by type, and the pools are configured in the inspector. Actors, `TextPopup`s, fireballs, explosions, and `Effect`s (hit sparks, death puffs) are pooled.
 
 ### Gameplay loop
 
@@ -51,7 +52,14 @@ The Unity Test Framework package is installed, but there are no test assemblies 
 - `InputController` maps words to actions in three dictionaries: movement (four directions, shown by `MoveHints`), attack (one word per enemy), and loot (per chest).
 - Word lengths: movement 3, attack `3 + CurrentLevel`, loot 9. `WordSystem` buckets the word lists by length (3–9) and recycles words once a bucket runs out.
 - Turn model: the player has **no** `Turn` component and can act at any time. The player's first action sets `GameController.PlayerHasMoved`, which is only reset at level end. From then on, `TurnSystem` cycles enemy `Turn` flags on a timer (`0.4s / difficulty`), so play is effectively real-time after the first move.
-- `MapSystem` generates the level with RogueSharp `RandomRoomsMapCreationStrategy`, paints the `Tilemap` with the RuleTiles, and provides walkability checks and pathfinding (`GetMoveDirection`) for the chase AI in `MoveSystem`.
+- `MapSystem` generates the level with RogueSharp `RandomRoomsMapCreationStrategy`, paints the `Tilemap` with `FloorTile` and `CliffTile`, and provides walkability checks and pathfinding (`GetMoveDirection`) for the chase AI in `MoveSystem`.
+
+### Rendering
+
+- **Pixel scale**: `PixelPerfect` picks whole-number zooms from the screen height: `Zoom` for the world (about 10 tiles tall; 7x at 1080p) and `UiZoom` for the HUD (4x at 1080p, as it was laid out). `PixelCamera` sizes the camera only when the screen size changes, so the level transitions can still tween `orthographicSize`. `PixelCanvas` scales the HUD and menu canvases, which are laid out at 4 canvas units per art pixel (1920x1080). The menus' Munro fonts import as hinted raster, so they stay hard-edged, and their sizes are multiples of 10.24 (one font pixel per 10.24 points).
+- **Light**: the player carries the light. `MapSystem.GetLight(cell, position)` returns a warm colour fading with distance for cells in view, a dim blue for explored cells, and clear for unexplored ones. `RenderSystem` moves the light with the player's sprite (with a slight flicker), fades tiles toward their light in `MapSystem.UpdateTileLighting`, and tints actors. `Chest` and `Door` tint themselves the same way. Alpha 0 still means "not drawn", which the Scrawler bot relies on.
+- **Idle animation**: `RenderComponent.Sprite` is a creature's identity sprite. `RenderSystem` draws the current frame of its loop from `Sprites.GetFrame`, using the `_animations` list on the `Sprites` object. Classify creatures by `RenderComponent.Sprite`, not `Renderer.sprite`.
+- **Feedback**: `AttackSystem` blinks the target white (`SpriteFlash`, which needs the `DungeonScrawl/Sprite Flash` shader on the actor material), jolts its sprite, spawns a hit spark, puffs smoke on death, and shakes the camera (`CameraMovement.Shake`) when the player is hurt. Creatures face the way they move; sprites are drawn facing left.
 
 ### State across scenes
 

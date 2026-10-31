@@ -105,7 +105,7 @@ namespace Controllers
             HintCache.Instance.GetCached().ForEach(x => x.gameObject.SetActive(false));
 
             ObjectPools.Instance.GetPooledObject<TextPopup>().Enable("-CONGRATULATIONS-", new Vector2(_cameraMovement.transform.position.x, _cameraMovement.transform.position.y), 5.0f);
-            Camera.main.orthographicSize = 5;
+            Camera.main.orthographicSize = PixelPerfect.OrthographicSize;
             yield return new WaitForSeconds(5.0f);
             ObjectPools.Instance.GetPooledObject<TextPopup>().Enable("SIT BACK...", new Vector2(_cameraMovement.transform.position.x, _cameraMovement.transform.position.y), 2.0f);
             yield return new WaitForSeconds(2.0f);
@@ -124,7 +124,7 @@ namespace Controllers
             HintCache.Instance.GetCached().ForEach(x => x.gameObject.SetActive(false));
             ObjectPools.Instance.GetPooledObject<TextPopup>().Enable(string.Format("-LEVEL {0}-", CurrentLevel), new Vector2(_cameraMovement.transform.position.x, _cameraMovement.transform.position.y), 3.0f);
             AudioPlayer.Instance.PlayAudio(AudioPlayer.Type.LevelText);
-            Camera.main.orthographicSize = 5;
+            Camera.main.orthographicSize = PixelPerfect.OrthographicSize;
             yield return new WaitForSeconds(3.0f);
             SceneManager.LoadScene("Game");
         }

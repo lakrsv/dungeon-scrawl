@@ -14,7 +14,7 @@
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // // </copyright>
 // // <summary>
-// //   TODO - Insert file description
+// //   Generates the dungeon, paints it, and lights it.
 // // </summary>
 // // --------------------------------------------------------------------------------------------------------------------
 
@@ -32,8 +32,6 @@ namespace ECS.Systems
     using Imported.RogueSharp.MapCreation;
     using Imported.RogueSharp.Random;
 
-    using Tiles.Rule_Tile.Scripts;
-
     using UnityEngine;
     using UnityEngine.Tilemaps;
 
@@ -47,10 +45,14 @@ namespace ECS.Systems
         private Tilemap _map;
 
         [SerializeField]
-        private RuleTile _wallTile;
+        private TileBase _floorTile;
 
         [SerializeField]
-        private RuleTile _bottomTile;
+        private TileBase _cliffTile;
+
+        // How fast tiles fade between light levels, in colour units per second.
+        [SerializeField]
+        private float _lightFadeSpeed = 4f;
 
         [Header("Generation Rules")]
         [SerializeField]
@@ -74,7 +76,17 @@ namespace ECS.Systems
 
         private List<Vector3Int> _currentFov = new List<Vector3Int>();
 
+        // Tiles in view, plus tiles still fading after they left it.
+        private readonly HashSet<Vector3Int> _changingTiles = new HashSet<Vector3Int>();
+
+        private readonly List<Vector3Int> _settledTiles = new List<Vector3Int>();
+
         public Map Map { get; private set; }
+
+        // Where the player's light is and how far it reaches. The RenderSystem moves it every frame.
+        public Vector2 LightPosition { get; set; }
+
+        public float LightRadius { get; set; }
 
         public void Initialize()
         {
@@ -142,7 +154,46 @@ namespace ECS.Systems
             // Computed on the main thread: Map.ComputeFov clears and refills the FOV set that Map.IsInFov reads
             // every frame, so running it on a worker thread raced with those reads. It costs well under a millisecond.
             var fovCells = Map.ComputeFov(xOrigin, yOrigin, radius, lightWalls);
-            SetTileVisibilities(fovCells.Select(c => new Vector3Int(c.X, c.Y, 0)).ToList());
+
+            _currentFov = fovCells.Select(c => new Vector3Int(c.X, c.Y, 0)).Where(p => _map.HasTile(p)).ToList();
+            foreach (var cell in fovCells) Map.SetCellExplored(cell.X, cell.Y, true);
+        }
+
+        /// <summary>
+        /// The light falling on a position. In view, the player's light fades with distance; explored places out of
+        /// view keep a dim, cold memory; unexplored places are not drawn at all.
+        /// </summary>
+        public Color GetLight(Vector2Int cell, Vector2 position)
+        {
+            if (Map.IsInFov(cell.x, cell.y))
+            {
+                var t = Mathf.Clamp01(Vector2.Distance(position, LightPosition) / (LightRadius + 1f));
+                return Visibility.Lit(t);
+            }
+
+            return Map.IsExplored(cell.x, cell.y) ? Visibility.ExploredInvisible : Visibility.Invisible;
+        }
+
+        /// <summary>
+        /// Eases every tile toward the light falling on it, so the dungeon fades in and out of view.
+        /// </summary>
+        public void UpdateTileLighting(float deltaTime)
+        {
+            foreach (var pos in _currentFov) _changingTiles.Add(pos);
+
+            _settledTiles.Clear();
+            var step = deltaTime * _lightFadeSpeed;
+            foreach (var pos in _changingTiles)
+            {
+                var target = GetLight(new Vector2Int(pos.x, pos.y), new Vector2(pos.x, pos.y));
+                var current = _map.GetColor(pos);
+                var next = (Color)Vector4.MoveTowards(current, target, step);
+                if (next != current) _map.SetColor(pos, next);
+
+                if (next == target && !Map.IsInFov(pos.x, pos.y)) _settledTiles.Add(pos);
+            }
+
+            foreach (var pos in _settledTiles) _changingTiles.Remove(pos);
         }
 
         private void CreateDefaultMap()
@@ -169,9 +220,8 @@ namespace ECS.Systems
 
                 if (cell.IsWalkable)
                 {
-                    _map.SetTile(tilePosition, _wallTile);
+                    _map.SetTile(tilePosition, _floorTile);
                     _map.SetColor(tilePosition, Visibility.Invisible);
-                    _map.RefreshTile(tilePosition);
                 }
                 else
                 {
@@ -180,34 +230,11 @@ namespace ECS.Systems
                     var cellAbove = Map.GetCell(x, y + 1);
                     if (cellAbove != null && cellAbove.IsWalkable)
                     {
-                        _map.SetTile(tilePosition, _bottomTile);
+                        _map.SetTile(tilePosition, _cliffTile);
                         _map.SetColor(tilePosition, Visibility.Invisible);
-                        _map.RefreshTile(tilePosition);
                     }
                 }
             }
-        }
-
-        private void SetTileVisibilities(List<Vector3Int> visiblePositions)
-        {
-            foreach (var pos in _currentFov)
-            {
-                _map.SetColor(
-                    pos,
-                    Map.IsExplored(pos.x, pos.y) ? Visibility.ExploredInvisible : Visibility.Invisible);
-
-                _map.RefreshTile(pos);
-            }
-
-            foreach (var pos in visiblePositions)
-            {
-                Map.SetCellExplored(pos.x, pos.y, true);
-
-                _map.SetColor(pos, Visibility.Visible);
-                _map.RefreshTile(pos);
-            }
-
-            _currentFov = visiblePositions;
         }
     }
 }

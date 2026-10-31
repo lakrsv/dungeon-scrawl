@@ -24,6 +24,8 @@ namespace Utilities.Camera
 {
     using Controllers;
 
+    using DG.Tweening;
+
     using Utilities.Game.ECSCache;
 
     public class CameraMovement : MonoBehaviour
@@ -31,6 +33,10 @@ namespace Utilities.Camera
         private const float MovementSpeed = 5.0f;
 
         private Transform _followTarget;
+
+        private Vector3 _position;
+
+        private Vector3 _shake;
 
         private void LateUpdate()
         {
@@ -42,20 +48,30 @@ namespace Utilities.Camera
                 if (player == null) return;
 
                 _followTarget = player.Entity.GameObject.transform;
-                transform.position = new Vector3(_followTarget.position.x, _followTarget.position.y, -10);
+                _position = new Vector3(_followTarget.position.x, _followTarget.position.y, -10);
             }
 
-            var newPos = Vector3.Lerp(
-                transform.position,
+            // Follow without the shake, then add it on top, so shaking never drags the camera off course.
+            _position = Vector3.Lerp(
+                _position,
                 new Vector3(_followTarget.position.x, _followTarget.position.y, -10),
                 MovementSpeed * Time.deltaTime);
 
-            transform.position = newPos;
+            transform.position = _position + _shake;
         }
 
         public void SetPosition(Vector2 position)
         {
-            transform.position = new Vector3(position.x, position.y, -10);
+            _position = new Vector3(position.x, position.y, -10);
+            transform.position = _position;
+        }
+
+        public void Shake(float strength, float duration)
+        {
+            DOTween.Kill(this);
+            DOTween.Shake(() => _shake, x => _shake = x, duration, new Vector3(strength, strength, 0), 25)
+                .SetTarget(this)
+                .OnComplete(() => _shake = Vector3.zero);
         }
     }
 }

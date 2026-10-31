@@ -31,13 +31,15 @@ using UI;
 
 using UnityEngine;
 
-using Utilities.Game;
 using Utilities.Game.ECSCache;
 
 public class Chest : MonoBehaviour
 {
     [SerializeField]
     private SpriteRenderer _renderer;
+
+    [SerializeField]
+    private SpriteRenderer _shadow;
 
     [SerializeField]
     private GameObject _healthPickup;
@@ -152,17 +154,7 @@ public class Chest : MonoBehaviour
 
     private void Update()
     {
-        if (MapSystem.Instance.Map.IsInFov(_position.x, _position.y))
-        {
-            _renderer.color = Visibility.Visible;
-        }
-        else if (MapSystem.Instance.Map.IsExplored(_position.x, _position.y))
-        {
-            _renderer.color = Visibility.ExploredInvisible;
-        }
-        else
-        {
-            _renderer.color = Visibility.Invisible;
-        }
+        _renderer.color = MapSystem.Instance.GetLight(_position, transform.position);
+        _shadow.enabled = _renderer.enabled && _renderer.color.a > 0f;
     }
 }

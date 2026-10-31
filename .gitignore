@@ -55,3 +55,6 @@ crashlytics-build.properties
 # Project-specific
 /Assets/Imported/ShaderWeaver/
 /Assets/Imported/ShaderWeaver.meta
+
+# Python bytecode from Tools/
+__pycache__/

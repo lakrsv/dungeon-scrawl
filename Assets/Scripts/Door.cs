@@ -22,7 +22,6 @@ using ECS.Systems;
 
 using UnityEngine;
 
-using Utilities.Game;
 
 public class Door : MonoBehaviour
 {
@@ -43,8 +42,6 @@ public class Door : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if (MapSystem.Instance.Map.IsInFov(_xPos, _yPos)) _renderer.color = Visibility.Visible;
-        else if (MapSystem.Instance.Map.IsExplored(_xPos, _yPos)) _renderer.color = Visibility.ExploredInvisible;
-        else _renderer.color = Visibility.Invisible;
+        _renderer.color = MapSystem.Instance.GetLight(new Vector2Int(_xPos, _yPos), transform.position);
     }
 }

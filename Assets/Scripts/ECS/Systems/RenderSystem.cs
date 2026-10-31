@@ -20,26 +20,32 @@
 
 namespace ECS.Systems
 {
-    using System.Collections.Generic;
-
     using ECS.Components;
     using ECS.Components.Type;
-    using ECS.Entities;
-
-    using UI.Hint;
 
     using UnityEngine;
 
+    using Utilities.Game;
     using Utilities.Game.ECSCache;
 
     public class RenderSystem : MonoBehaviour, IInitializeSystem, IExecuteSystem
     {
+        // How much the light's reach wavers, in tiles, like a flame.
+        [SerializeField]
+        private float _flicker = 0.35f;
+
         private Vector2Int _lastFovPosition;
+
+        // The first pass happens before the board slides in, while systems are paused, so it lights at once.
+        private bool _lit;
 
         public void Execute()
         {
             CalculateFov();
+            UpdateLight();
+            MapSystem.Instance.UpdateTileLighting(_lit ? Time.deltaTime : float.MaxValue);
             UpdateVisibilities();
+            _lit = true;
         }
 
         public void Initialize()
@@ -68,6 +74,20 @@ namespace ECS.Systems
             MapSystem.Instance.ComputeFov(_lastFovPosition.x, _lastFovPosition.y, fieldOfView.Value);
         }
 
+        private void UpdateLight()
+        {
+            var player = ActorCache.Instance.Player;
+            if (player == null) return;
+
+            var fieldOfView = player.Entity.GetComponent<IntegerComponent>(ComponentType.FieldOfView);
+            if (fieldOfView == null) return;
+
+            // The light rides on the player's sprite, so it glides with them between tiles.
+            MapSystem.Instance.LightPosition = player.Entity.GameObject.transform.position;
+            MapSystem.Instance.LightRadius =
+                fieldOfView.Value + (Mathf.PerlinNoise(Time.time * 2.5f, 0.37f) - 0.5f) * 2f * _flicker;
+        }
+
         private void UpdateVisibilities()
         {
             var renderComponents = ComponentCache.Instance.GetCached<RenderComponent>();
@@ -81,7 +101,16 @@ namespace ECS.Systems
                 var visible = MapSystem.Instance.Map.IsInFov(position.Position.x, position.Position.y);
 
                 render.Renderer.enabled = visible;
-                render.Renderer.sprite = render.Sprite;
+                render.Renderer.sprite = Sprites.Instance.GetFrame(render.Sprite, Time.time + render.AnimationOffset);
+
+                if (visible)
+                {
+                    render.Renderer.color = MapSystem.Instance.GetLight(
+                        position.Position,
+                        render.Owner.GameObject.transform.position);
+                }
+
+                if (render.Shadow != null) render.Shadow.enabled = visible && render.ShowShadow;
             }
         }
     }

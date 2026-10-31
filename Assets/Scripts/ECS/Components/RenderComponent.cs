@@ -35,14 +35,44 @@ namespace ECS.Components
 
         public SpriteRenderer Renderer { get; private set; }
 
+        public SpriteRenderer Shadow { get; private set; }
+
+        public SpriteFlash Flash { get; private set; }
+
+        // The logical sprite. What is drawn is the current frame of its idle animation.
         public Sprite Sprite { get; set; }
+
+        // Offsets the idle animation so creatures don't all bob in step.
+        public float AnimationOffset { get; private set; }
+
+        public bool ShowShadow { get; set; }
 
         public override void OnAdd()
         {
             Renderer = Owner.GameObject.GetComponentInChildren<SpriteRenderer>();
             Renderer.sprite = Sprite;
             Renderer.sortingOrder = SortOrder.ActorDefault;
+
+            // Actors are pooled: clear whatever the last creature left behind.
+            Renderer.flipX = false;
+            Renderer.color = Color.white;
+
+            var shadow = Owner.GameObject.transform.Find("Shadow");
+            Shadow = shadow != null ? shadow.GetComponent<SpriteRenderer>() : null;
+            ShowShadow = true;
+
+            Flash = Renderer.GetComponent<SpriteFlash>();
+            AnimationOffset = Random.value * 10f;
             base.OnAdd();
+        }
+
+        /// <summary>
+        /// Turns the sprite to face along a horizontal direction. Sprites are drawn facing left.
+        /// </summary>
+        public void Face(float directionX)
+        {
+            if (directionX > 0.01f) Renderer.flipX = true;
+            else if (directionX < -0.01f) Renderer.flipX = false;
         }
     }
 }

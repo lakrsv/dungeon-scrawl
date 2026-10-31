@@ -72,9 +72,10 @@ namespace UI
                     _currentSequence = null;
                 }
             }
+            // Absolute scales: an interrupted pop must still land back on exactly 1, or the pixel art warps.
             _currentSequence = DOTween.Sequence();
-            _currentSequence.Append(transform.DOScale(_scaleAmount, _animationDuration).SetRelative().SetEase(_ease));
-            _currentSequence.Append(transform.DOScale(-_scaleAmount, _animationDuration).SetRelative().SetEase(_ease));
+            _currentSequence.Append(transform.DOScale(1f + _scaleAmount, _animationDuration).SetEase(_ease));
+            _currentSequence.Append(transform.DOScale(1f, _animationDuration).SetEase(_ease));
 
             if (damage)
             {

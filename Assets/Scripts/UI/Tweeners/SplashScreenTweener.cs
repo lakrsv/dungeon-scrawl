@@ -30,16 +30,25 @@ namespace UI.Tweeners
 
     public class SplashScreenTweener : MonoBehaviour
     {
+        // How long the hand-over to the main menu takes.
+        private const float LeaveDuration = 0.35f;
+
         [SerializeField]
         private Text _title;
 
         [SerializeField]
         private Text _continueText;
 
+        private Sequence _titleSequence;
+
+        private Sequence _flashText;
+
+        private bool _leaving;
 
         private IEnumerator DoTitleTweenSequence()
         {
             var appearSequence = DOTween.Sequence().OnStart(() => _title.gameObject.SetActive(true));
+            _titleSequence = appearSequence;
 
             var titleAppear = _title.rectTransform.DOScale(new Vector3(1.75f, 1.75f, 1.75f), 0.75f)
                 .From()
@@ -67,6 +76,27 @@ namespace UI.Tweeners
             flashText.Append(_continueText.DOText("Press any key to Continue", 0f));
             flashText.AppendInterval(0.5f);
             flashText.SetLoops(-1);
+            _flashText = flashText;
+        }
+
+        // The main menu shows the same backdrop and the same title in the same place. Settle the title there and
+        // fade the prompt out, and the menu takes over without a cut.
+        private IEnumerator GoToMainMenu()
+        {
+            _leaving = true;
+            if (_titleSequence != null) _titleSequence.Kill();
+            if (_flashText != null) _flashText.Kill();
+            _continueText.DOKill();
+
+            _title.gameObject.SetActive(true);
+            _title.rectTransform.DOScale(Vector3.one, LeaveDuration).SetEase(Ease.OutQuad);
+            _title.rectTransform.DOAnchorPos(Vector2.zero, LeaveDuration).SetEase(Ease.OutQuad);
+
+            foreach (var text in _continueText.GetComponentsInChildren<Text>()) text.DOFade(0f, LeaveDuration);
+            foreach (var fade in FindObjectsByType<FadeIn>(FindObjectsSortMode.None)) fade.Finish(LeaveDuration);
+
+            yield return new WaitForSeconds(LeaveDuration);
+            SceneManager.LoadScene("MainMenu");
         }
 
         private IEnumerator Start()
@@ -94,9 +124,11 @@ namespace UI.Tweeners
                 return;
             }
 
-            if (Input.anyKeyDown)
+            if (Input.anyKeyDown && !_leaving)
             {
-                SceneManager.LoadScene("MainMenu");
+                // Stop the intro coroutines so nothing starts typing again while the screen hands over.
+                StopAllCoroutines();
+                StartCoroutine(GoToMainMenu());
             }
         }
     }

@@ -399,7 +399,8 @@ public static class Scrawler
 
             if (!m.VisibleSince.ContainsKey(id)) m.VisibleSince[id] = Time.time;
 
-            var sprite = r.Renderer.sprite;
+            // The creature's own sprite; the renderer shows whichever frame of its idle animation is current.
+            var sprite = r.Sprite;
             if (_chest.Contains(sprite)) { v.ChestLooking.Add(new KeyValuePair<Vector2Int, Transform>(pos, t)); continue; }
 
             Kind kind;
