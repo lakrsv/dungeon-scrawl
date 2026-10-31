@@ -31,7 +31,7 @@ namespace Utilities.Game
         {
             if (IsUnique)
             {
-                var gameObjects = FindObjectsOfType<GameObject>().Where(x => x.name == gameObject.name).ToArray();
+                var gameObjects = FindObjectsByType<GameObject>().Where(x => x.name == gameObject.name).ToArray();
                 if (gameObjects.Length > 1)
                     if (!DestroyOriginal)
                     {

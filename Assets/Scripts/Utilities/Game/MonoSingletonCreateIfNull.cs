@@ -31,7 +31,7 @@ namespace Utilities.Game
             {
                 if (instance == null)
                 {
-                    instance = (T)FindObjectOfType(typeof(T));
+                    instance = (T)FindAnyObjectByType(typeof(T));
 
                     if (instance == null)
                     {
