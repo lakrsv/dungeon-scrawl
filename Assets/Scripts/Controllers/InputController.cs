@@ -111,6 +111,21 @@ namespace Controllers
 
             if (invalid) _currentInputWord.Length = 0;
 
+            // Switching targets: a letter that breaks the word under way but starts another one begins that word,
+            // instead of being thrown away. Never a single-key move, though: mid-word, that key is far more likely a
+            // slip, and walking off by accident is worse than a buzz. Only longer words can start here, so nothing
+            // completes, and the hints can be told directly.
+            var switched = false;
+            var letter = c.ToString();
+            if (invalid && before.Length > 0 && !_requiredDirectionWord.ContainsKey(letter)
+                && HintCache.Instance.GetCached().Any(x => x.Word != null && x.Word.Length > 1 && x.Word.StartsWith(letter)))
+            {
+                _currentInputWord.Append(c);
+                foreach (var hint in HintCache.Instance.GetCached()) hint.OnWordTyped(letter);
+                invalid = false;
+                switched = true;
+            }
+
             // A one-letter move, or a stray key while no word is under way, counts towards neither the typing speed
             // nor the accuracy.
             var steering = before.Length == 0 && QuickMovesUp;
@@ -131,7 +146,7 @@ namespace Controllers
             }
             else
             {
-                RunStats.Letter(before.Length > 0);
+                RunStats.Letter(before.Length > 0 && !switched);
                 AudioPlayer.Instance.PlayLetter(_currentInputWord.Length - 1);
                 ForEachHintStartingWith(_currentInputWord.ToString(), x => x.Bump());
             }
