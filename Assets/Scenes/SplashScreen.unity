@@ -120,6 +120,57 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &368627423
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 368627425}
+  - component: {fileID: 368627424}
+  m_Layer: 0
+  m_Name: Jukebox
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &368627424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 368627423}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4502388e5d2a4748905a2782384797a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Sound.Jukebox
+  _music: {fileID: 8300000, guid: d6724e35d6778704cb5328b77ce26811, type: 3}
+  _ambience: {fileID: 0}
+  _musicVolume: 0.35
+  _ambienceVolume: 0.4
+  _hover: {fileID: 8300000, guid: 960a1afcaa656a440aea0ba85f2fd439, type: 3}
+  _select: {fileID: 8300000, guid: e1d7a3c7a9ac78f45b11e7f3697253d2, type: 3}
+  _menuVolume: 0.4
+--- !u!4 &368627425
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 368627423}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1048915273
 GameObject:
   m_ObjectHideFlags: 0
@@ -842,3 +893,4 @@ SceneRoots:
   - {fileID: 1804472149}
   - {fileID: 1048915277}
   - {fileID: 2119654918}
+  - {fileID: 368627425}

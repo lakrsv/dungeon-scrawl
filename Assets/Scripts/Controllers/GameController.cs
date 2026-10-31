@@ -26,6 +26,8 @@ namespace Controllers
     using ECS.Entities.Blueprint;
     using ECS.Systems;
 
+    using Sound;
+
     using UI.Hint;
     using UI.Notification;
     using UI.Tweeners;
@@ -58,6 +60,10 @@ namespace Controllers
         [SerializeField]
         private MoveHints _moveHints;
 
+        // Plays under the ending, and carries on into the splash screen.
+        [SerializeField]
+        private AudioClip _victoryMusic;
+
         public void EndLevel()
         {
             PlayerHasMoved = false;
@@ -85,6 +91,7 @@ namespace Controllers
         {
             CurrentLevel = 1;
             IsPlaying = false;
+            Jukebox.PlayMusic(null);
             _renderSystem.Execute();
             Player.ClearPlayerStats();
 
@@ -99,6 +106,7 @@ namespace Controllers
 
         private IEnumerator GameDone()
         {
+            Jukebox.PlayMusic(_victoryMusic);
             yield return _board.BoardDisappear();
             _board.gameObject.SetActive(false);
             _moveHints.gameObject.SetActive(false);

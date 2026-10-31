@@ -228,3 +228,61 @@ BUTTON_BORDER = (4, 4, 4, 4)
 
 def button():
     return grid(BUTTON, BUTTON_LEGEND)
+
+
+# The volume buttons' icons: a note for the music and a speaker for the sound, then three rising bars lit up to the
+# level. At level 0 the glyph greys out and every bar is dark.
+MUSIC_GLYPH = [
+    "..CCCCC",
+    "..C...C",
+    "..C...C",
+    "..C...C",
+    "..C...C",
+    "..C...C",
+    ".CC..CC",
+    "CCC.CCC",
+    ".C...C.",
+]
+
+SOUND_GLYPH = [
+    "....C",
+    "...CC",
+    "..CCC",
+    "CCCCC",
+    "CCCCC",
+    "CCCCC",
+    "..CCC",
+    "...CC",
+    "....C",
+]
+
+VOLUME_LEVELS = 3
+
+
+def volume_icon(glyph, level):
+    width = len(glyph[0]) + 2 + 2 * VOLUME_LEVELS - 1
+    height = len(glyph)
+    img = Image.new("RGBA", (width, height + 1), (0, 0, 0, 0))
+    lit = BUTTON_LEGEND["C"] if level else BUTTON_LEGEND["S"]
+    for y, row in enumerate(glyph):
+        for x, ch in enumerate(row):
+            if ch == "C":
+                img.putpixel((x, y), _hex(lit))
+    for i in range(VOLUME_LEVELS):
+        x = len(glyph[0]) + 2 + 2 * i
+        for y in range(height - 3 * (i + 1), height):
+            img.putpixel((x, y), _hex(BUTTON_LEGEND["Y"] if i < level else "#442434"))
+
+    # A one-pixel ink drop shadow, like the button labels'.
+    shadow = Image.new("RGBA", img.size, (0, 0, 0, 0))
+    for y in range(height):
+        for x in range(width):
+            if img.getpixel((x, y))[3] and not img.getpixel((x, y + 1))[3]:
+                shadow.putpixel((x, y + 1), _hex(BUTTON_LEGEND["k"]))
+    shadow.alpha_composite(img)
+    return shadow
+
+
+def _hex(value):
+    value = value.lstrip("#")
+    return (int(value[0:2], 16), int(value[2:4], 16), int(value[4:6], 16), 255)

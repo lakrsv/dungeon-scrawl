@@ -66,7 +66,15 @@ def build_menus():
     return sheet
 
 
-SHEETS = [build_tiles, build_effects, build_idle, build_menus]
+def build_menu_icons():
+    sheet = Sheet("MenuIcons", cell=(16, 12), columns=4, padding=2)
+    for name, glyph in (("Music", menus.MUSIC_GLYPH), ("Sound", menus.SOUND_GLYPH)):
+        for level in range(menus.VOLUME_LEVELS + 1):
+            sheet.add("%s%d" % (name, level), menus.volume_icon(glyph, level))
+    return sheet
+
+
+SHEETS = [build_tiles, build_effects, build_idle, build_menus, build_menu_icons]
 
 
 def main():

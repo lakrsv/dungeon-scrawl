@@ -201,6 +201,7 @@ namespace ECS.Systems
                 ObjectPools.Instance.GetPooledObject<Effect>().Play(
                     Sprites.Instance.SmokeFrames,
                     targetHealth.Owner.GameObject.transform.position);
+                AudioPlayer.Instance.PlayAudio(AudioPlayer.Type.Death);
 
                 var turnComponent = targetHealth.Owner.GetComponent<BooleanComponent>(ComponentType.Turn);
                 if (turnComponent != null) targetHealth.Owner.RemoveComponent(turnComponent);

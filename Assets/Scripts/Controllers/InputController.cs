@@ -78,10 +78,12 @@ namespace Controllers
 
         private void AppendLetter(char c)
         {
+            var before = _currentInputWord.ToString();
             _currentInputWord.Append(c);
 
             // Iterate a copy: SubmitInput can disable a hint, which removes it from the cache mid-loop.
             var invalid = true;
+            var completed = false;
             HintCache.Instance.GetCached().ToList().ForEach(x =>
                 {
                     x.OnWordTyped(_currentInputWord.ToString());
@@ -89,17 +91,42 @@ namespace Controllers
 
                     if (x.WordComplete)
                     {
+                        completed = true;
                         SubmitInput();
                     }
                 });
 
             if (invalid) _currentInputWord.Length = 0;
+
+            // Every key answers: a finished word chimes, a letter that fits blips a step higher than the last and
+            // bumps the words it fits, and a wrong one buzzes and shakes off the words it broke.
+            if (completed)
+            {
+                AudioPlayer.Instance.PlayAudio(AudioPlayer.Type.Word);
+            }
+            else if (invalid)
+            {
+                AudioPlayer.Instance.PlayAudio(AudioPlayer.Type.Typo);
+                if (before.Length > 0) ForEachHintStartingWith(before, x => x.Reject());
+            }
+            else
+            {
+                AudioPlayer.Instance.PlayLetter(_currentInputWord.Length - 1);
+                ForEachHintStartingWith(_currentInputWord.ToString(), x => x.Bump());
+            }
+        }
+
+        private static void ForEachHintStartingWith(string letters, Action<SpellHint> action)
+        {
+            foreach (var hint in HintCache.Instance.GetCached())
+                if (hint.Word != null && hint.Word.StartsWith(letters)) action(hint);
         }
 
         private void RemoveLetter()
         {
             if (_currentInputWord.Length == 0) return;
             _currentInputWord.Length -= 1;
+            AudioPlayer.Instance.PlayLetter(_currentInputWord.Length, 0.5f);
 
             var invalid = true;
             HintCache.Instance.GetCached().ToList().ForEach(x =>

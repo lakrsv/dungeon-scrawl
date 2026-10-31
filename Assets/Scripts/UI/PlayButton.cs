@@ -22,6 +22,8 @@ namespace UI
 {
     using DG.Tweening;
 
+    using Sound;
+
     using UnityEngine;
     using UnityEngine.EventSystems;
     using UnityEngine.SceneManagement;
@@ -46,11 +48,13 @@ namespace UI
             PlayerPrefs.Save();
 
             _button.interactable = false;
+            Jukebox.Select();
             _canvas.DOFade(0f, 0.5f).SetEase(Ease.OutCirc).OnComplete(() => SceneManager.LoadScene("Game"));
         }
 
         public void OnPointerEnter(PointerEventData eventData)
         {
+            if (_button.interactable) Jukebox.Hover();
             DOTween.To(
                 () => _button.transform.localScale,
                 x => _button.transform.localScale = x,

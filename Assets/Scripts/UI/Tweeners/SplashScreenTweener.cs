@@ -24,6 +24,10 @@ namespace UI.Tweeners
 
     using DG.Tweening;
 
+    using ECS.Entities.Blueprint;
+
+    using Sound;
+
     using UnityEngine;
     using UnityEngine.SceneManagement;
     using UnityEngine.UI;
@@ -109,7 +113,9 @@ namespace UI.Tweeners
 
         private void Awake()
         {
-            PlayerPrefs.DeleteAll();
+            // Every run starts fresh, but the player's settings (the volume) are kept.
+            Player.ClearPlayerStats();
+            PlayerPrefs.DeleteKey("Difficulty");
             PlayerPrefs.Save();
 
             _title.gameObject.SetActive(false);
@@ -128,6 +134,7 @@ namespace UI.Tweeners
             {
                 // Stop the intro coroutines so nothing starts typing again while the screen hands over.
                 StopAllCoroutines();
+                Jukebox.Select();
                 StartCoroutine(GoToMainMenu());
             }
         }

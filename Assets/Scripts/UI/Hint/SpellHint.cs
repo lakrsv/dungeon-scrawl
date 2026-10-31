@@ -40,6 +40,9 @@ namespace UI.Hint
             Chest
         }
 
+        // The palette's red, for a word that a wrong letter broke.
+        private static readonly Color RejectColor = new Color(0.816f, 0.275f, 0.282f);
+
         private readonly List<Tween> _currentTweens = new List<Tween>();
 
         private readonly List<Sequence> _currentSequences = new List<Sequence>();
@@ -74,6 +77,13 @@ namespace UI.Hint
         private Sprite _attackIcon;
 
         private Vector2 _originalLocalPosition;
+
+        // Where the word sits in its box when nothing is jolting it.
+        private Vector3 _wordPosition;
+
+        private Tween _jolt;
+
+        private Tween _flash;
 
         public bool IsEnabled { get; private set; }
 
@@ -117,6 +127,8 @@ namespace UI.Hint
 
             transform.localPosition = _originalLocalPosition;
 
+            StopJolt();
+            if (_flash != null) _flash.Kill();
             _text.color = Color.black;
             _text.transform.localScale = Vector3.one;
 
@@ -152,6 +164,34 @@ namespace UI.Hint
             }
         }
 
+        /// <summary>
+        /// A letter of this word was typed: the word hops.
+        /// </summary>
+        public void Bump()
+        {
+            StopJolt();
+            _jolt = _text.transform.DOPunchPosition(new Vector3(0f, 1.5f * ArtPixel(), 0f), 0.15f, 1, 0f);
+        }
+
+        /// <summary>
+        /// This word was being typed and a wrong letter broke it: it flashes red and shakes its head.
+        /// </summary>
+        public void Reject()
+        {
+            StopJolt();
+            _jolt = _text.transform.DOShakePosition(0.3f, new Vector3(2f * ArtPixel(), 0f, 0f), 30, 0f);
+
+            // The colour belongs to the word-complete flash while that plays.
+            foreach (var sequence in _currentSequences)
+                if (sequence.IsActive() && sequence.IsPlaying()) return;
+
+            if (_flash != null) _flash.Kill();
+            _flash = DOTween.Sequence()
+                .Append(_text.DOColor(RejectColor, 0.05f))
+                .AppendInterval(0.15f)
+                .Append(_text.DOColor(Color.black, 0.2f));
+        }
+
         public void OnWordTyped(string letters)
         {
             WordWasInvalid = false;
@@ -171,6 +211,7 @@ namespace UI.Hint
 
             if (string.Equals(letters, word))
             {
+                if (_flash != null) _flash.Kill();
                 DoCompleteWordAnimation(_wordCompleteAnimationDuration);
                 WordComplete = true;
                 newText = string.Format("<u>{0}</u>", word);
@@ -271,6 +312,22 @@ namespace UI.Hint
             _currentSequences.Add(colorSequence);
         }
 
+        // One pixel of the game's art (1/16 of a world unit), in the word's own units. The hints are world-space
+        // canvases, and the move hints sit under a scaled parent.
+        private float ArtPixel()
+        {
+            var parentScale = transform.parent != null ? transform.parent.lossyScale.y : 1f;
+            return 1f / 16f / parentScale;
+        }
+
+        private void StopJolt()
+        {
+            if (_jolt == null) return;
+            _jolt.Kill();
+            _jolt = null;
+            _text.transform.localPosition = _wordPosition;
+        }
+
         private void KillCurrentTweens()
         {
             foreach (var tween in _currentTweens)
@@ -294,6 +351,11 @@ namespace UI.Hint
                 _movementSpeed * Time.deltaTime);
 
             transform.position = newPos;
+        }
+
+        private void Awake()
+        {
+            _wordPosition = _text.transform.localPosition;
         }
 
         private void Start()

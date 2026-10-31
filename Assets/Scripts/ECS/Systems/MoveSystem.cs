@@ -131,6 +131,9 @@ namespace ECS.Systems
             var render = entity.GetComponent<RenderComponent>();
             if (render != null) render.Face(position.x - entity.GameObject.transform.position.x);
 
+            var player = ActorCache.Instance.Player;
+            if (player != null && player.Entity == entity) AudioPlayer.Instance.PlayAudio(AudioPlayer.Type.Step);
+
             entity.GameObject.transform.DOMove(position, MovementDuration).SetEase(Ease.OutBack)
                 .OnComplete(() =>
                     {

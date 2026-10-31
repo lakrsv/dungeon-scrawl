@@ -24,7 +24,8 @@ The Unity Test Framework package is installed, but there are no test assemblies 
 - `Assets/Scripts/` holds the game code. Namespaces mirror the folder path, e.g. `ECS.Systems`, `Utilities.Game.ECSCache`, `UI.Hint`.
 - `Assets/Imported/` holds third-party code: RogueSharp as source (re-namespaced to `Imported.RogueSharp`) and DOTween (`DG.Tweening`) as DLLs.
 - `Assets/Scripts/Tiles/` holds the two autotiles the dungeon is painted with: `FloorTile` (47-case blob autotiling with slab variants) and `CliffTile` (the rock face under a floor's south edge). Their assets are in `Assets/Prefabs/Tiles/`.
-- `Tools/PixelArt/` generates the tiles, the hit/death effects, the creatures' idle frames, and the menu backdrops and button frame as code (Python + PIL), and slices them in the open Editor. See its README. Every other sprite is hand-made art under `Assets/Graphics/` and `Assets/Resources/Sprites/`.
+- `Tools/PixelArt/` generates the tiles, the hit/death effects, the creatures' idle frames, and the menu backdrops, button frame and volume icons as code (Python + PIL), and slices them in the open Editor. See its README. Every other sprite is hand-made art under `Assets/Graphics/` and `Assets/Resources/Sprites/`.
+- `Tools/Audio/` generates the typing, footstep, death and menu sounds, the two music themes and the cave ambience as code (a small chiptune synthesizer in plain Python) into `Assets/Audio/`. See its README. The other effects in `Assets/Audio/` are the hand-made originals.
 - `Assets/Resources/Words/{adjectives,nouns,verbs}.txt` are the word lists, loaded via `Resources.Load`.
 - `PR/` holds the screenshots and GIFs used by `README.md`. It sits outside `Assets/`, so Unity doesn't import it.
 - Build scene order: `SplashScreen` → `MainMenu` → `Game` → `GameOver`. Scenes are loaded by string name via `SceneManager.LoadScene`.
@@ -49,6 +50,7 @@ The Unity Test Framework package is installed, but there are no test assemblies 
 
 - `InputController` reads `Input.inputString`, which belongs to the **legacy Input Manager** (`activeInputHandler: 0`). Switching to the new Input System alone would break typing.
 - Each typed letter goes to every `SpellHint` in `HintCache`. A hint that reports `WordComplete` submits the input. If every hint reports `WordWasInvalid`, the input buffer resets.
+- Every key answers. A letter that fits blips one step higher than the last (`AudioPlayer.PlayLetter`) and hops the prompts it fits (`SpellHint.Bump`). A finished word chimes. A wrong letter buzzes, and the prompts it broke flash red and shake (`SpellHint.Reject`).
 - `InputController` maps words to actions in three dictionaries: movement (four directions, shown by `MoveHints`), attack (one word per enemy), and loot (per chest).
 - Word lengths: movement 3, attack `3 + CurrentLevel`, loot 9. `WordSystem` buckets the word lists by length (3–9) and recycles words once a bucket runs out.
 - Turn model: the player has **no** `Turn` component and can act at any time. The player's first action sets `GameController.PlayerHasMoved`, which is only reset at level end. From then on, `TurnSystem` cycles enemy `Turn` flags on a timer (`0.4s / difficulty`), so play is effectively real-time after the first move.
@@ -64,7 +66,8 @@ The Unity Test Framework package is installed, but there are no test assemblies 
 ### State across scenes
 
 - The `Game` scene is reloaded for each level. `GameController.CurrentLevel` is a static field that survives the reload. There are 5 levels, and finishing level 5 wins the game.
-- Player stats carry over between levels through `PlayerPrefs`, keyed by the `ComponentType` name (see `Player.SavePlayerStats` / `ClearPlayerStats`). `PlayButton` stores difficulty under the `"Difficulty"` key, and `SplashScreenTweener` calls `PlayerPrefs.DeleteAll()`.
+- Player stats carry over between levels through `PlayerPrefs`, keyed by the `ComponentType` name (see `Player.SavePlayerStats` / `ClearPlayerStats`). `PlayButton` stores difficulty under the `"Difficulty"` key. `SplashScreenTweener` resets both at the start of every run, but leaves the volume settings (`Sound.Volume`, keys `"MusicVolume"` and `"SoundVolume"`) alone. Don't go back to `PlayerPrefs.DeleteAll()`.
+- `Sound.Jukebox` is the one object that outlives a scene. Each scene has a `Jukebox` naming its music and ambience; the first to wake persists (`DontDestroyOnLoad`), and later ones hand it their tracks and destroy themselves, so music never cuts on a scene load or level reload. `GameController` fades the music out on game over and over to the title theme on a win.
 - `Constants.GetRandomSeed()` returns the current UTC millisecond, so map and word generation differ every run. The `Constants.RandomSeed` constant is unused. For reproducible runs, change `GetRandomSeed()`.
 
 ## Conventions
