@@ -106,6 +106,7 @@ namespace UI.Hint
         {
             IsEnabled = true;
 
+            Word = null;
             _text.SetText(string.Empty);
             gameObject.SetActive(true);
 
@@ -156,7 +157,16 @@ namespace UI.Hint
             WordWasInvalid = false;
             WordComplete = false;
 
-            var word = _text.GetParsedText();
+            // Match against Word, not _text.GetParsedText(): TMP only re-parses at the next canvas rebuild,
+            // so after Initialize() the parsed text is the previous word until the end of the frame, and
+            // writing it back below would leave the prompt showing a word that no longer maps to anything.
+            var word = Word;
+            if (word == null)
+            {
+                WordWasInvalid = true;
+                return;
+            }
+
             var newText = word;
 
             if (string.Equals(letters, word))

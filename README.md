@@ -25,7 +25,3 @@ Traverse deeper, and fight dangerous enemies!
 Can you get to the end of the dungeon? (Hint: It's at level 5)
 
 ![The end of the dungeon](PR/EndOfDungeon.gif)
-
-# Known Bugs
-
-There is a bug where sometimes the prompts are displaying, but when typing a word nothing happens. Usually walking in the opposite direction fixes it. If it doesn't, I'm sorry.

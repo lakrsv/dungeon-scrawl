@@ -23,7 +23,6 @@ namespace ECS.Systems
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading;
 
     using ECS.Components;
     using ECS.Components.Type;
@@ -140,13 +139,10 @@ namespace ECS.Systems
 
         public void ComputeFov(int xOrigin, int yOrigin, int radius, bool lightWalls = true)
         {
-            ThreadPool.QueueUserWorkItem(
-                state =>
-                    {
-                        var fovCells = Map.ComputeFov(xOrigin, yOrigin, radius, lightWalls);
-                        var exploredPositions = fovCells.Select(c => new Vector3Int(c.X, c.Y, 0)).ToList();
-                        RoutineDispatcher.Instance.ExecuteOnMainThread(() => SetTileVisibilities(exploredPositions));
-                    });
+            // Computed on the main thread: Map.ComputeFov clears and refills the FOV set that Map.IsInFov reads
+            // every frame, so running it on a worker thread raced with those reads. It costs well under a millisecond.
+            var fovCells = Map.ComputeFov(xOrigin, yOrigin, radius, lightWalls);
+            SetTileVisibilities(fovCells.Select(c => new Vector3Int(c.X, c.Y, 0)).ToList());
         }
 
         private void CreateDefaultMap()

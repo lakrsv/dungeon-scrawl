@@ -80,8 +80,9 @@ namespace Controllers
         {
             _currentInputWord.Append(c);
 
+            // Iterate a copy: SubmitInput can disable a hint, which removes it from the cache mid-loop.
             var invalid = true;
-            HintCache.Instance.GetCached().ForEach(x =>
+            HintCache.Instance.GetCached().ToList().ForEach(x =>
                 {
                     x.OnWordTyped(_currentInputWord.ToString());
                     if (!x.WordWasInvalid) invalid = false;
@@ -101,7 +102,7 @@ namespace Controllers
             _currentInputWord.Length -= 1;
 
             var invalid = true;
-            HintCache.Instance.GetCached().ForEach(x =>
+            HintCache.Instance.GetCached().ToList().ForEach(x =>
                 {
                     x.OnWordTyped(_currentInputWord.ToString());
                     if (!x.WordWasInvalid) invalid = false;
@@ -390,7 +391,12 @@ namespace Controllers
         {
             var requiredWord =
                 _movingSimple ? GetLetterNonConflicting() : GetWordNonConflicting(_movementDifficulty);
-            if (_requiredDirectionWord.ContainsKey(requiredWord)) return;
+            if (_requiredDirectionWord.ContainsKey(requiredWord))
+            {
+                // Hide the prompt rather than leave the previous word up: it would no longer map to anything.
+                _moveHints.SetHint(direction, false);
+                return;
+            }
 
             _requiredDirectionWord.Add(requiredWord, direction);
             _moveHints.SetHint(direction, true, requiredWord);
@@ -431,7 +437,8 @@ namespace Controllers
                 letter = _wordSystem.GetNextLetter();
                 currentIterations++;
             }
-            while (currentIterations < maxIterations && (_requiredAttackWord.Any(x => x.Key.StartsWith(letter))
+            while (currentIterations < maxIterations && (_requiredDirectionWord.ContainsKey(letter)
+                                                         || _requiredAttackWord.Any(x => x.Key.StartsWith(letter))
                                                          || _requiredLootWord.Any(x => x.Key.StartsWith(letter))));
 
             return letter;
