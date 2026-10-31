@@ -9,7 +9,9 @@ Then slice and import them in the open Editor (see README.md).
 import os
 import sys
 
+import fonts
 import fx
+import hud
 import idle
 import menus
 import tiles
@@ -76,7 +78,14 @@ def build_menu_icons():
     return sheet
 
 
-SHEETS = [build_tiles, build_effects, build_idle, build_menus, build_menu_icons]
+def build_interface():
+    sheet = Sheet("Interface", cell=(16, 16), columns=8, padding=2)
+    for name, img, border in hud.all_sprites():
+        sheet.add(name, img, border=border)
+    return sheet
+
+
+SHEETS = [build_tiles, build_effects, build_idle, build_menus, build_menu_icons, build_interface]
 
 
 def main():
@@ -99,6 +108,9 @@ def main():
 
     with open(os.path.join(HERE, "manifest.tsv"), "w", newline="\n") as f:
         f.write("\n".join(lines) + "\n")
+
+    fonts.build()
+    print("Font       MunroSmallPixel.png and font.tsv")
 
     if "--preview" in sys.argv:
         os.makedirs(PREVIEW_DIR, exist_ok=True)

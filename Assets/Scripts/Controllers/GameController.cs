@@ -48,6 +48,11 @@ namespace Controllers
 
         public bool PlayerHasMoved { get; set; }
 
+        /// <summary>
+        /// Gets a value indicating whether the pause menu is open. Time stands still meanwhile, and typing is ignored.
+        /// </summary>
+        public bool IsPaused { get; private set; }
+
         [SerializeField]
         private BoardTweener _board;
 
@@ -89,6 +94,29 @@ namespace Controllers
             }
         }
 
+        public void SetPaused(bool paused)
+        {
+            IsPaused = paused;
+            Time.timeScale = paused ? 0f : 1f;
+        }
+
+        // Time must never stay stopped past the level, whatever ends it.
+        private void OnDestroy()
+        {
+            if (IsPaused) Time.timeScale = 1f;
+        }
+
+        /// <summary>
+        /// Gives up the run from the pause menu: the next one starts on level 1 with fresh stats.
+        /// </summary>
+        public void AbandonRun()
+        {
+            SetPaused(false);
+            IsPlaying = false;
+            CurrentLevel = 1;
+            Player.ClearPlayerStats();
+        }
+
         public void GameOver()
         {
             RunStats.Finish(false, CurrentLevel);
@@ -115,7 +143,7 @@ namespace Controllers
             _moveHints.gameObject.SetActive(false);
             HintCache.Instance.GetCached().ForEach(x => x.gameObject.SetActive(false));
 
-            ObjectPools.Instance.GetPooledObject<TextPopup>().Enable("-CONGRATULATIONS-", new Vector2(_cameraMovement.transform.position.x, _cameraMovement.transform.position.y), 5.0f);
+            ObjectPools.Instance.GetPooledObject<TextPopup>().Enable("-CONGRATULATIONS-", new Vector2(_cameraMovement.transform.position.x, _cameraMovement.transform.position.y), 5.0f, 2f);
             Camera.main.orthographicSize = PixelPerfect.OrthographicSize;
             yield return new WaitForSeconds(5.0f);
 
@@ -129,7 +157,7 @@ namespace Controllers
             _board.gameObject.SetActive(false);
             _moveHints.gameObject.SetActive(false);
             HintCache.Instance.GetCached().ForEach(x => x.gameObject.SetActive(false));
-            ObjectPools.Instance.GetPooledObject<TextPopup>().Enable(string.Format("-LEVEL {0}-", CurrentLevel), new Vector2(_cameraMovement.transform.position.x, _cameraMovement.transform.position.y), 3.0f);
+            ObjectPools.Instance.GetPooledObject<TextPopup>().Enable(string.Format("-LEVEL {0}-", CurrentLevel), new Vector2(_cameraMovement.transform.position.x, _cameraMovement.transform.position.y), 3.0f, 2f);
             AudioPlayer.Instance.PlayAudio(AudioPlayer.Type.LevelText);
             Camera.main.orthographicSize = PixelPerfect.OrthographicSize;
             yield return new WaitForSeconds(3.0f);
@@ -145,7 +173,7 @@ namespace Controllers
 
         private void Update()
         {
-            if (!IsPlaying) return;
+            if (!IsPlaying || IsPaused) return;
             RunStats.Tick(Time.deltaTime);
 
             // Testing shortcuts, in the Editor and development builds only: F9 wins the run on the spot, F10 loses

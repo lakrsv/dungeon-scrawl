@@ -40,7 +40,26 @@ namespace UI.Hint
             Chest
         }
 
-        // The palette's red, for a word that a wrong letter broke.
+        // One art pixel, in the prompts' units (a world unit is 16).
+        private const float Px = 1f / 16f;
+
+        // The plaque round a word: its frame is 3 wide at the sides, and the word sits 2 in from that. An icon takes
+        // 7 more, and 2 between it and the word.
+        private const int Frame = 3;
+
+        private const int Margin = 2;
+
+        private const int IconWidth = 7;
+
+        private const int IconGap = 2;
+
+        // The palette: cream letters, gold for the ones typed so far, red for a word that a wrong letter broke.
+        private const string TypedColor = "#dad45e";
+
+        private static readonly Color TextColor = new Color(0.871f, 0.933f, 0.839f);
+
+        private static readonly Color CompleteColor = new Color(0.855f, 0.831f, 0.369f);
+
         private static readonly Color RejectColor = new Color(0.816f, 0.275f, 0.282f);
 
         private readonly List<Tween> _currentTweens = new List<Tween>();
@@ -129,7 +148,7 @@ namespace UI.Hint
 
             StopJolt();
             if (_flash != null) _flash.Kill();
-            _text.color = Color.black;
+            _text.color = TextColor;
             _text.transform.localScale = Vector3.one;
 
             if (_canvas == null)
@@ -149,6 +168,7 @@ namespace UI.Hint
             _text.SetText(word);
 
             Word = word;
+            FitBox();
         }
 
         public void SetIcon(IconType icon)
@@ -189,7 +209,7 @@ namespace UI.Hint
             _flash = DOTween.Sequence()
                 .Append(_text.DOColor(RejectColor, 0.05f))
                 .AppendInterval(0.15f)
-                .Append(_text.DOColor(Color.black, 0.2f));
+                .Append(_text.DOColor(TextColor, 0.2f));
         }
 
         public void OnWordTyped(string letters)
@@ -214,12 +234,12 @@ namespace UI.Hint
                 if (_flash != null) _flash.Kill();
                 DoCompleteWordAnimation(_wordCompleteAnimationDuration);
                 WordComplete = true;
-                newText = string.Format("<u>{0}</u>", word);
+                newText = string.Format("<color={0}>{1}</color>", TypedColor, word);
             }
             else if (word.StartsWith(letters))
             {
                 var firstPart = word.Substring(0, letters.Length);
-                newText = string.Format("<u>{0}</u>{1}", firstPart, word.Substring(letters.Length));
+                newText = string.Format("<color={0}>{1}</color>{2}", TypedColor, firstPart, word.Substring(letters.Length));
             }
             else
             {
@@ -296,7 +316,7 @@ namespace UI.Hint
                 _currentSequences.Clear();
 
                 _text.transform.localScale = Vector3.one;
-                _text.color = Color.black;
+                _text.color = TextColor;
             }
 
             var scaleSequence = DOTween.Sequence();
@@ -306,10 +326,24 @@ namespace UI.Hint
             _currentSequences.Add(scaleSequence);
 
             var colorSequence = DOTween.Sequence();
-            colorSequence.Append(_text.DOColor(Color.yellow, duration).SetEase(Ease.OutBack));
-            colorSequence.Append(_text.DOColor(Color.black, duration).SetEase(Ease.OutBack));
+            colorSequence.Append(_text.DOColor(CompleteColor, duration).SetEase(Ease.OutBack));
+            colorSequence.Append(_text.DOColor(TextColor, duration).SetEase(Ease.OutBack));
 
             _currentSequences.Add(colorSequence);
+        }
+
+        // Sizes the plaque to hug its word, on whole art pixels, with the icon (if any) inside it on the left.
+        private void FitBox()
+        {
+            var box = (RectTransform)_text.transform.parent;
+
+            // The preferred width ends with the spacing after the last letter, one pixel.
+            var textWidth = Mathf.Round(_text.GetPreferredValues(Word).x / Px) - 1;
+            var left = Frame + Margin + (_icon != null ? IconWidth + IconGap : 0);
+            box.sizeDelta = new Vector2((left + textWidth + Margin + Frame) * Px, box.sizeDelta.y);
+
+            var text = _text.rectTransform;
+            text.anchoredPosition = new Vector2(left * Px, text.anchoredPosition.y);
         }
 
         // One pixel of the game's art (1/16 of a world unit), in the word's own units. The hints are world-space

@@ -157,3 +157,18 @@ sprite	Sound1	20	38	12	10	0.5	0.5	0	0	0	0
 sprite	Sound2	38	38	12	10	0.5	0.5	0	0	0	0
 sprite	Sound3	56	38	12	10	0.5	0.5	0	0	0	0
 sprite	Moves	2	22	11	12	0.5	0.5	0	0	0	0
+sheet	Assets/Graphics/Interface.png
+sprite	PromptFrame	2	48	10	14	0.5	0.5	3	4	3	3
+sprite	ScrollIcon	20	55	7	7	0.5	0.5	0	0	0	0
+sprite	ChestIcon	38	55	7	7	0.5	0.5	0	0	0	0
+sprite	PowerIcon	56	53	9	9	0.5	0.5	0	0	0	0
+sprite	LanternIcon	74	53	9	9	0.5	0.5	0	0	0	0
+sprite	HeartFull	92	56	7	6	0.5	0.5	0	0	0	0
+sprite	HeartEmpty	110	56	7	6	0.5	0.5	0	0	0	0
+sprite	GemPower	128	55	7	7	0.5	0.5	0	0	0	0
+sprite	GemLight	2	37	7	7	0.5	0.5	0	0	0	0
+sprite	GemEmpty	20	37	7	7	0.5	0.5	0	0	0	0
+sprite	ArrowUp	38	37	7	7	0.5	0.5	0	0	0	0
+sprite	ArrowDown	56	37	7	7	0.5	0.5	0	0	0	0
+sprite	ArrowLeft	74	37	7	7	0.5	0.5	0	0	0	0
+sprite	ArrowRight	92	37	7	7	0.5	0.5	0	0	0	0

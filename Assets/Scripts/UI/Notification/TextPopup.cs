@@ -10,6 +10,7 @@
 namespace UI.Notification
 {
     using System.Collections;
+    using System.Collections.Generic;
 
     using DG.Tweening;
 
@@ -22,8 +23,17 @@ namespace UI.Notification
     [RequireComponent(typeof(TextMeshPro))]
     public class TextPopup : MonoBehaviour, IPopupNotification, IPoolable
     {
+        // The outline is the palette's ink.
+        private static readonly Color Ink = new Color(0.078f, 0.047f, 0.11f);
+
+        private static readonly Vector2[] OutlineOffsets = { Vector2.up, Vector2.down, Vector2.left, Vector2.right };
+
+        private readonly List<TextMeshPro> _outline = new List<TextMeshPro>();
+
         [SerializeField]
         private TextMeshPro _text;
+
+        private float _baseSize;
 
         public bool IsEnabled { get; private set; }
 
@@ -31,13 +41,22 @@ namespace UI.Notification
         {
             IsEnabled = false;
             _text.SetText(string.Empty);
+            foreach (var copy in _outline) copy.SetText(string.Empty);
             gameObject.SetActive(false);
         }
 
         public void Enable(string message, Vector2 position, float duration)
         {
+            Enable(message, position, duration, 1f);
+        }
+
+        /// <summary>
+        /// Shows a message. Size 1 draws its letters a pixel to the art's pixel; announcements use 2.
+        /// </summary>
+        public void Enable(string message, Vector2 position, float duration, float size)
+        {
             IsEnabled = true;
-            _text.SetText(message);
+            SetText(message, size);
             transform.position = position;
             transform.localScale = Vector3.zero;
 
@@ -47,6 +66,45 @@ namespace UI.Notification
         public void Enable()
         {
             gameObject.SetActive(true);
+        }
+
+        // An ink outline one font pixel round the letters, so they read over the dungeon: four copies of the text,
+        // drawn behind it. The pixel font has no outline of its own.
+        private void Awake()
+        {
+            _baseSize = _text.fontSize;
+            var renderer = _text.GetComponent<MeshRenderer>();
+            foreach (var unused in OutlineOffsets)
+            {
+                var copy = new GameObject("Outline").AddComponent<TextMeshPro>();
+                copy.transform.SetParent(_text.transform, false);
+                copy.font = _text.font;
+                copy.fontSharedMaterial = _text.fontSharedMaterial;
+                copy.alignment = _text.alignment;
+                copy.textWrappingMode = _text.textWrappingMode;
+                copy.overflowMode = _text.overflowMode;
+                copy.rectTransform.sizeDelta = _text.rectTransform.sizeDelta;
+                copy.color = Ink;
+                var copyRenderer = copy.GetComponent<MeshRenderer>();
+                copyRenderer.sortingLayerID = renderer.sortingLayerID;
+                copyRenderer.sortingOrder = renderer.sortingOrder - 1;
+                _outline.Add(copy);
+            }
+        }
+
+        private void SetText(string message, float size)
+        {
+            _text.fontSize = _baseSize * size;
+            _text.SetText(message);
+
+            // World-space text is a tenth of a unit per point: one font pixel is a sixteenth of the size.
+            var pixel = _text.fontSize * 0.1f / 16f;
+            for (var i = 0; i < _outline.Count; i++)
+            {
+                _outline[i].fontSize = _text.fontSize;
+                _outline[i].SetText(message);
+                _outline[i].transform.localPosition = OutlineOffsets[i] * pixel;
+            }
         }
 
         private void DoAppearAnimation(float duration)

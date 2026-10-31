@@ -1,0 +1,1339 @@
+fileFormatVersion: 2
+guid: b89f22b9581d47048b1fa23a397a1545
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -5041304600751110084
+    second: MunroSmallPixel_0
+  - first:
+      213: 6891327932643576428
+    second: MunroSmallPixel_1
+  - first:
+      213: -4805562323944859076
+    second: MunroSmallPixel_2
+  - first:
+      213: -4706544483707109399
+    second: MunroSmallPixel_3
+  - first:
+      213: 6215831194604430046
+    second: MunroSmallPixel_4
+  - first:
+      213: -9131910597901775713
+    second: MunroSmallPixel_5
+  - first:
+      213: 8589247429350499398
+    second: MunroSmallPixel_6
+  - first:
+      213: -4044747623567247070
+    second: MunroSmallPixel_7
+  - first:
+      213: -6325537215102239007
+    second: MunroSmallPixel_8
+  - first:
+      213: -7597430159510444885
+    second: MunroSmallPixel_9
+  - first:
+      213: 2181345158469372243
+    second: MunroSmallPixel_10
+  - first:
+      213: 5087609380921748653
+    second: MunroSmallPixel_11
+  - first:
+      213: -2900356698354900255
+    second: MunroSmallPixel_12
+  - first:
+      213: -7088944853834364641
+    second: MunroSmallPixel_13
+  - first:
+      213: 8522747122581902966
+    second: MunroSmallPixel_14
+  - first:
+      213: -7147956456694575031
+    second: MunroSmallPixel_15
+  - first:
+      213: 2126393462623042656
+    second: MunroSmallPixel_16
+  - first:
+      213: 5483802442687275383
+    second: MunroSmallPixel_17
+  - first:
+      213: 8904368568611999460
+    second: MunroSmallPixel_18
+  - first:
+      213: -3039395653198481064
+    second: MunroSmallPixel_19
+  - first:
+      213: -7287205935361118735
+    second: MunroSmallPixel_20
+  - first:
+      213: -3703358266127313019
+    second: MunroSmallPixel_21
+  - first:
+      213: -7985754369357996780
+    second: MunroSmallPixel_22
+  - first:
+      213: -6103541222707632428
+    second: MunroSmallPixel_23
+  - first:
+      213: 7178387742717020376
+    second: MunroSmallPixel_24
+  - first:
+      213: 8187518523325279247
+    second: MunroSmallPixel_25
+  - first:
+      213: 762435882684908122
+    second: MunroSmallPixel_26
+  - first:
+      213: -1161887727717699958
+    second: MunroSmallPixel_27
+  - first:
+      213: 3048877404497232588
+    second: MunroSmallPixel_28
+  - first:
+      213: 4329210140265118199
+    second: MunroSmallPixel_29
+  - first:
+      213: 1537462956328414510
+    second: MunroSmallPixel_30
+  - first:
+      213: 5677001671398207212
+    second: MunroSmallPixel_31
+  - first:
+      213: 9188100918863776750
+    second: MunroSmallPixel_32
+  - first:
+      213: 4023418422681986637
+    second: MunroSmallPixel_33
+  - first:
+      213: 4876790001789305748
+    second: MunroSmallPixel_34
+  - first:
+      213: -4643494644716753060
+    second: MunroSmallPixel_35
+  - first:
+      213: -8205823909668630632
+    second: MunroSmallPixel_36
+  - first:
+      213: -762613010749745951
+    second: MunroSmallPixel_37
+  - first:
+      213: -8392403733704287841
+    second: MunroSmallPixel_38
+  - first:
+      213: -4639873073949382065
+    second: MunroSmallPixel_39
+  - first:
+      213: 5006335613198874968
+    second: MunroSmallPixel_40
+  - first:
+      213: 2942765055431396708
+    second: MunroSmallPixel_41
+  - first:
+      213: 2694893064052050212
+    second: MunroSmallPixel_42
+  - first:
+      213: 3211735503523261198
+    second: MunroSmallPixel_43
+  - first:
+      213: 8670493070059482666
+    second: MunroSmallPixel_44
+  - first:
+      213: -6396927554478806230
+    second: MunroSmallPixel_45
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WindowsStoreApps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: MunroSmallPixel_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 57
+        width: 13
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c3800b3fc20b90ab0800000000000000
+      internalID: -5041304600751110084
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_1
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 49
+        width: 6
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6a82ff2e3ae2af50800000000000000
+      internalID: 6891327932643576428
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_2
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 57
+        width: 9
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c3a144ff6863f4db0800000000000000
+      internalID: -4805562323944859076
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_3
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 55
+        width: 12
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ef30197abefeaeb0800000000000000
+      internalID: -4706544483707109399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_4
+      rect:
+        serializedVersion: 2
+        x: 35
+        y: 55
+        width: 33
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ed26032e981134650800000000000000
+      internalID: 6215831194604430046
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_5
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 57
+        width: 18
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f9c8073b1bfe44180800000000000000
+      internalID: -9131910597901775713
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_6
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 57
+        width: 10
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 644af5a7703233770800000000000000
+      internalID: 8589247429350499398
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_7
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 57
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2293b23677b2ed7c0800000000000000
+      internalID: -4044747623567247070
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_8
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 57
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ee3150ca6d2738a0800000000000000
+      internalID: -6325537215102239007
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_9
+      rect:
+        serializedVersion: 2
+        x: 105
+        y: 57
+        width: 15
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ba46a88d581809690800000000000000
+      internalID: -7597430159510444885
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_10
+      rect:
+        serializedVersion: 2
+        x: 119
+        y: 57
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 359c5174dd1b54e10800000000000000
+      internalID: 2181345158469372243
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_11
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 47
+        width: 13
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dac29c1d6c1da9640800000000000000
+      internalID: 5087609380921748653
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 41
+        width: 11
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e2a1a813fcdfb7d0800000000000000
+      internalID: -2900356698354900255
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_13
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 33
+        width: 8
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f198edad6320f9d90800000000000000
+      internalID: -7088944853834364641
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_14
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 49
+        width: 10
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6761aff3a51e64670800000000000000
+      internalID: 8522747122581902966
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_15
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 33
+        width: 7
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 94092c0697b5dcc90800000000000000
+      internalID: -7147956456694575031
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_16
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 39
+        width: 17
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 06cfb509697728d10800000000000000
+      internalID: 2126393462623042656
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_17
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 49
+        width: 10
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7716bc664416a1c40800000000000000
+      internalID: 5483802442687275383
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_18
+      rect:
+        serializedVersion: 2
+        x: 35
+        y: 49
+        width: 10
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ee8549290ca29b70800000000000000
+      internalID: 8904368568611999460
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_19
+      rect:
+        serializedVersion: 2
+        x: 36
+        y: 41
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 859fc3fb1c5e1d5d0800000000000000
+      internalID: -3039395653198481064
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_20
+      rect:
+        serializedVersion: 2
+        x: 37
+        y: 31
+        width: 14
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1fdaea1afc4aeda90800000000000000
+      internalID: -7287205935361118735
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_21
+      rect:
+        serializedVersion: 2
+        x: 44
+        y: 49
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 587997737470b9cc0800000000000000
+      internalID: -3703358266127313019
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_22
+      rect:
+        serializedVersion: 2
+        x: 50
+        y: 41
+        width: 10
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 41d94ee16b6ec2190800000000000000
+      internalID: -7985754369357996780
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_23
+      rect:
+        serializedVersion: 2
+        x: 51
+        y: 49
+        width: 13
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d6ee8c889ddb4ba0800000000000000
+      internalID: -6103541222707632428
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_24
+      rect:
+        serializedVersion: 2
+        x: 59
+        y: 41
+        width: 10
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d88aa88e91ce9360800000000000000
+      internalID: 7178387742717020376
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_25
+      rect:
+        serializedVersion: 2
+        x: 63
+        y: 49
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f0cebb6b7b8ef9170800000000000000
+      internalID: 8187518523325279247
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_26
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 41
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a52027f4567b49a00800000000000000
+      internalID: 762435882684908122
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_27
+      rect:
+        serializedVersion: 2
+        x: 69
+        y: 49
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a8e2080844520efe0800000000000000
+      internalID: -1161887727717699958
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_28
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 49
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc2c5c288d9cf4a20800000000000000
+      internalID: 3048877404497232588
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_29
+      rect:
+        serializedVersion: 2
+        x: 75
+        y: 41
+        width: 13
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7f975887fa1741c30800000000000000
+      internalID: 4329210140265118199
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_30
+      rect:
+        serializedVersion: 2
+        x: 79
+        y: 49
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e2de647b96a265510800000000000000
+      internalID: 1537462956328414510
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_31
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 49
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cee2dfc21f2c8ce40800000000000000
+      internalID: 5677001671398207212
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_32
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 41
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eebc055ea11b28f70800000000000000
+      internalID: 9188100918863776750
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_33
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 49
+        width: 10
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d46e8ba0dbd06d730800000000000000
+      internalID: 4023418422681986637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_34
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 41
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49304d41ba6dda340800000000000000
+      internalID: 4876790001789305748
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_35
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 49
+        width: 10
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c5faa31193efe8fb0800000000000000
+      internalID: -4643494644716753060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_36
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 41
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 89f4bc661ae0f1e80800000000000000
+      internalID: -8205823909668630632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_37
+      rect:
+        serializedVersion: 2
+        x: 103
+        y: 41
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e49b29d187aa65f0800000000000000
+      internalID: -762613010749745951
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_38
+      rect:
+        serializedVersion: 2
+        x: 107
+        y: 49
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f99d4e0e441388b80800000000000000
+      internalID: -8392403733704287841
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_39
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 41
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f4ae858b50cdb9fb0800000000000000
+      internalID: -4639873073949382065
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_40
+      rect:
+        serializedVersion: 2
+        x: 113
+        y: 49
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8593b1b27b31a7540800000000000000
+      internalID: 5006335613198874968
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_41
+      rect:
+        serializedVersion: 2
+        x: 113
+        y: 41
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46dcb6af93dc6d820800000000000000
+      internalID: 2942765055431396708
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_42
+      rect:
+        serializedVersion: 2
+        x: 118
+        y: 41
+        width: 9
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4298c7ea6fe266520800000000000000
+      internalID: 2694893064052050212
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_43
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 33
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0ba3088c60629c20800000000000000
+      internalID: 3211735503523261198
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_44
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 33
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a2ea16c4287c35870800000000000000
+      internalID: 8670493070059482666
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MunroSmallPixel_45
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 31
+        width: 15
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a2be165184c8937a0800000000000000
+      internalID: -6396927554478806230
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      MunroSmallPixel_0: -5041304600751110084
+      MunroSmallPixel_1: 6891327932643576428
+      MunroSmallPixel_10: 2181345158469372243
+      MunroSmallPixel_11: 5087609380921748653
+      MunroSmallPixel_12: -2900356698354900255
+      MunroSmallPixel_13: -7088944853834364641
+      MunroSmallPixel_14: 8522747122581902966
+      MunroSmallPixel_15: -7147956456694575031
+      MunroSmallPixel_16: 2126393462623042656
+      MunroSmallPixel_17: 5483802442687275383
+      MunroSmallPixel_18: 8904368568611999460
+      MunroSmallPixel_19: -3039395653198481064
+      MunroSmallPixel_2: -4805562323944859076
+      MunroSmallPixel_20: -7287205935361118735
+      MunroSmallPixel_21: -3703358266127313019
+      MunroSmallPixel_22: -7985754369357996780
+      MunroSmallPixel_23: -6103541222707632428
+      MunroSmallPixel_24: 7178387742717020376
+      MunroSmallPixel_25: 8187518523325279247
+      MunroSmallPixel_26: 762435882684908122
+      MunroSmallPixel_27: -1161887727717699958
+      MunroSmallPixel_28: 3048877404497232588
+      MunroSmallPixel_29: 4329210140265118199
+      MunroSmallPixel_3: -4706544483707109399
+      MunroSmallPixel_30: 1537462956328414510
+      MunroSmallPixel_31: 5677001671398207212
+      MunroSmallPixel_32: 9188100918863776750
+      MunroSmallPixel_33: 4023418422681986637
+      MunroSmallPixel_34: 4876790001789305748
+      MunroSmallPixel_35: -4643494644716753060
+      MunroSmallPixel_36: -8205823909668630632
+      MunroSmallPixel_37: -762613010749745951
+      MunroSmallPixel_38: -8392403733704287841
+      MunroSmallPixel_39: -4639873073949382065
+      MunroSmallPixel_4: 6215831194604430046
+      MunroSmallPixel_40: 5006335613198874968
+      MunroSmallPixel_41: 2942765055431396708
+      MunroSmallPixel_42: 2694893064052050212
+      MunroSmallPixel_43: 3211735503523261198
+      MunroSmallPixel_44: 8670493070059482666
+      MunroSmallPixel_45: -6396927554478806230
+      MunroSmallPixel_5: -9131910597901775713
+      MunroSmallPixel_6: 8589247429350499398
+      MunroSmallPixel_7: -4044747623567247070
+      MunroSmallPixel_8: -6325537215102239007
+      MunroSmallPixel_9: -7597430159510444885
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

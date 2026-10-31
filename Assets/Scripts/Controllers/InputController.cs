@@ -238,7 +238,7 @@ namespace Controllers
         // Update is called once per frame
         private void Update()
         {
-            if (!GameController.Instance.IsPlaying) return;
+            if (!GameController.Instance.IsPlaying || GameController.Instance.IsPaused) return;
 
             UpdateMovementType();
 
