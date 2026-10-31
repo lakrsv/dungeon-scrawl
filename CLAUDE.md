@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 DungeonScrawl is a typing roguelike, originally built for Ludum Dare. The player moves, attacks, and loots by typing words shown next to directions, enemies, and chests. It is a 2D Unity project on **Unity 6000.4.10f1** (see `ProjectSettings/ProjectVersion.txt`).
 
+**Start with `NEXT_STEPS.md`**: where the work stands, what still needs checking by hand, and what to do next. Keep it up to date as work lands.
+
 ## Commands
 
 The `unity` CLI is installed, and the project includes `com.unity.pipeline`, which lets the CLI drive a running Editor.
@@ -28,6 +30,7 @@ The Unity Test Framework package is installed, but there are no test assemblies 
 - `Tools/Audio/` generates the typing, footstep, death and menu sounds, the two music themes and the cave ambience as code (a small chiptune synthesizer in plain Python) into `Assets/Audio/`. See its README. The other effects in `Assets/Audio/` are the hand-made originals.
 - `Assets/Resources/Words/{adjectives,nouns,verbs}.txt` are the word lists, loaded via `Resources.Load`.
 - `PR/` holds the screenshots and GIFs used by `README.md`. It sits outside `Assets/`, so Unity doesn't import it.
+- `Tools/Probe/` inspects and drives a playing Editor from the command line (scene, music, prompts, typing, win/lose, pause menu, screenshots). See its README, including the clean-up after testing.
 - Build scene order: `SplashScreen` → `MainMenu` → `Game` → `GameOver` / `Victory`. Scenes are loaded by string name via `SceneManager.LoadScene`. `Victory` started as a copy of `GameOver` and shares its layout (title, run report, two buttons side by side), so change both together.
 
 ## Architecture
