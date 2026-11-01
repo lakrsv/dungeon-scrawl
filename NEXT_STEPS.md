@@ -12,7 +12,7 @@ The Ludum Dare game has been brought up to a polished state, in this order (see 
 4. **Fixes** (`de09249`, `fe14ebe`): the congratulations popup on one line; a letter that starts another word switches targets instead of being thrown away.
 5. **Interface** (`00f62c5`): prompts, status panel and floating text in the menus' style with a true pixel font (`MunroSmall Pixel`), plus pause and options menus.
 6. **Checked by hand and built** (2026-11-01, by the user): the keyboard in the pause and options menus, per-press quick moves, F9/F10, the audio, and a real build.
-7. **The Scrawl** (2026-11-01, not yet committed): level 5 is now a bridge over the void and a boss fight, with its own art, theme and effects. Design, balance and how to test it are in `BOSS.md`. F8 jumps to it.
+7. **The Scrawl** (`81a4c63`): level 5 is now a bridge over the void and a boss fight, with its own art, theme and effects. Design, balance and how to test it are in `BOSS.md`. F8 jumps to it.
 
 ## Next up
 
