@@ -45,6 +45,8 @@ namespace Controllers
 
         private const int PointsPerLevel = 250;
 
+        private const int PointsForTheScrawl = 1000;
+
         private static int _keystrokes;
 
         private static float _typingTime;
@@ -81,6 +83,8 @@ namespace Controllers
 
         public static bool Won { get; private set; }
 
+        public static bool BeatTheScrawl { get; private set; }
+
         /// <summary>
         /// Gets the time spent playing, without the level transitions.
         /// </summary>
@@ -112,7 +116,7 @@ namespace Controllers
         {
             Difficulty = Mathf.Max(1, difficulty);
             Letters = Mistakes = WordLetters = Kills = Chests = LevelsCleared = LevelReached = 0;
-            Won = NewBest = false;
+            Won = NewBest = BeatTheScrawl = false;
             Seconds = 0f;
             Score = 0;
             _keystrokes = 0;
@@ -156,6 +160,11 @@ namespace Controllers
             Chests++;
         }
 
+        public static void ScrawlBeaten()
+        {
+            BeatTheScrawl = true;
+        }
+
         public static void LevelCleared()
         {
             LevelsCleared++;
@@ -174,7 +183,8 @@ namespace Controllers
             Won = won;
             LevelReached = level;
             Score = Mathf.Max(1, Difficulty) * (WordLetters * PointsPerLetter + Kills * PointsPerKill
-                                                + Chests * PointsPerChest + LevelsCleared * PointsPerLevel);
+                                                + Chests * PointsPerChest + LevelsCleared * PointsPerLevel
+                                                + (BeatTheScrawl ? PointsForTheScrawl : 0));
 
             Best = PlayerPrefs.GetInt(BestKey, 0);
             NewBest = Score > Best;

@@ -38,6 +38,11 @@ namespace Utilities.Camera
 
         private Vector3 _shake;
 
+        /// <summary>
+        /// Gets or sets a point to hold the camera on instead of following the player: the boss fight's framing.
+        /// </summary>
+        public Vector2? Focus { get; set; }
+
         private void LateUpdate()
         {
             if (!GameController.Instance.IsPlaying) return;
@@ -52,10 +57,8 @@ namespace Utilities.Camera
             }
 
             // Follow without the shake, then add it on top, so shaking never drags the camera off course.
-            _position = Vector3.Lerp(
-                _position,
-                new Vector3(_followTarget.position.x, _followTarget.position.y, -10),
-                MovementSpeed * Time.deltaTime);
+            var target = Focus ?? (Vector2)_followTarget.position;
+            _position = Vector3.Lerp(_position, new Vector3(target.x, target.y, -10), MovementSpeed * Time.deltaTime);
 
             transform.position = _position + _shake;
         }

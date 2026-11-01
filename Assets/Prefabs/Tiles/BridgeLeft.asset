@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f2158917e32bc24ca73785b75a090f6, type: 3}
+  m_Name: BridgeLeft
+  m_EditorClassIdentifier: Assembly-CSharp::Tiles.BridgeTile
+  _sprites:
+  - {fileID: 649317089, guid: da96a7b4791bb8b44a2110e380b3f6bd, type: 3}
+  - {fileID: 651897581, guid: da96a7b4791bb8b44a2110e380b3f6bd, type: 3}

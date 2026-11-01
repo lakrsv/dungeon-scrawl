@@ -46,12 +46,13 @@ public class Fireball : MonoBehaviour, IPoolable
         gameObject.SetActive(true);
     }
 
-    public void Animate(Vector2Int from, Vector2Int to, float duration, Action onCompleted)
+    // Grid cells convert to these, so creatures and the boss's parts (which sit between cells) both work.
+    public void Animate(Vector2 from, Vector2 to, float duration, Action onCompleted)
     {
         AudioPlayer.Instance.PlayAudio(AudioPlayer.Type.Shoot);
 
-        gameObject.transform.position = (Vector2)from;
-        gameObject.transform.DOMove((Vector2)to, duration).SetEase(Ease.InBack).OnComplete(() =>
+        gameObject.transform.position = from;
+        gameObject.transform.DOMove(to, duration).SetEase(Ease.InBack).OnComplete(() =>
             {
                 onCompleted();
                 ExplodeThenDisable();

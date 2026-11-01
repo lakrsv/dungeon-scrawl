@@ -144,6 +144,121 @@ public static class Probe
         return action + ": " + State();
     }
 
+    /// <summary>
+    /// Jumps straight to a level. To 5, the bridge and the Scrawl, the knight goes kitted out like F8 does it.
+    /// </summary>
+    public static string Level(string level)
+    {
+        var game = Object.FindAnyObjectByType<GameController>();
+        if (int.Parse(level) == RunStats.Levels) ECS.Entities.Blueprint.Player.SavePlayerStats(8, 5, 5, 6);
+        if (game != null) game.IsPlaying = false;
+        GameController.CurrentLevel = int.Parse(level);
+        SceneManager.LoadScene("Game");
+        return "loading level " + level;
+    }
+
+    /// <summary>
+    /// Sets the knight's hearts (up to 10) and damage, e.g. to test the Scrawl without a whole run behind you.
+    /// </summary>
+    public static string Knight(string health, string damage)
+    {
+        var player = Utilities.Game.ECSCache.ActorCache.Instance.Player;
+        player.Entity.GetComponent<ECS.Components.IntegerComponent>(ECS.Components.Type.ComponentType.Health).Value = int.Parse(health);
+        player.Entity.GetComponent<ECS.Components.IntegerComponent>(ECS.Components.Type.ComponentType.Damage).Value = int.Parse(damage);
+        var hearts = Object.FindAnyObjectByType<UI.HealthDisplay>();
+        if (hearts != null) hearts.SetHealth(int.Parse(health));
+        return "knight: " + health + " hearts, damage " + damage;
+    }
+
+    /// <summary>
+    /// The fight with the Scrawl: where the knight stands, and what is left of each part.
+    /// </summary>
+    public static string Fight()
+    {
+        var log = new StringBuilder();
+        var player = Utilities.Game.ECSCache.ActorCache.Instance.Player;
+        if (player != null)
+        {
+            var at = player.Entity.GetComponent<ECS.Components.GridPositionComponent>().Position;
+            var health = player.Entity.GetComponent<ECS.Components.IntegerComponent>(ECS.Components.Type.ComponentType.Health);
+            var damage = player.Entity.GetComponent<ECS.Components.IntegerComponent>(ECS.Components.Type.ComponentType.Damage);
+            log.AppendLine(string.Format("knight at {0}  lane {1}  health {2}  damage {3}", at, at.x - ECS.Systems.MapSystem.BridgeX, health != null ? health.Value : -1, damage != null ? damage.Value : -1));
+        }
+
+        foreach (var hand in Object.FindObjectsByType<global::Boss.ScrawlHand>(FindObjectsInactive.Include))
+            log.AppendLine(string.Format("  {0}: {1}/{2}  active {3}  at {4}", hand.name, hand.Health, hand.MaxHealth, hand.gameObject.activeSelf, hand.transform.position));
+        foreach (var head in Object.FindObjectsByType<global::Boss.ScrawlHead>(FindObjectsInactive.Include))
+            log.AppendLine(string.Format("  head: {0}/{1}  active {2}  at {3}", head.Health, head.MaxHealth, head.gameObject.activeSelf, head.transform.position));
+        log.Append(Hints());
+        return log.ToString();
+    }
+
+    private static float _busyUntil;
+
+    /// <summary>
+    /// Fights the Scrawl for a while, typing a letter every `gap` seconds: the safe dodge when one is offered, else a
+    /// resting hand's word, else the head's. Mode `safe` plays like that; `unsafe` takes the wrong dodge, to test
+    /// getting hit; `hands` leaves the head alone until both hands are broken, to reach the last phase.
+    /// </summary>
+    public static string Autopilot(string seconds, string gap, string mode)
+    {
+        var input = Object.FindAnyObjectByType<InputController>();
+        var append = typeof(InputController).GetMethod("AppendLetter", Priv);
+        var interval = float.Parse(gap, System.Globalization.CultureInfo.InvariantCulture);
+        var duration = float.Parse(seconds, System.Globalization.CultureInfo.InvariantCulture);
+        _busyUntil = 0f;
+        var dummy = 0f;
+        DOTween.To(() => dummy, x => dummy = x, 1f, duration).OnUpdate(() =>
+            {
+                if (Time.time < _busyUntil) return;
+                var word = Choose(mode);
+                if (word == null) return;
+                var sequence = DOTween.Sequence();
+                foreach (var c in word)
+                {
+                    var letter = c;
+                    sequence.AppendCallback(() => append.Invoke(input, new object[] { letter }));
+                    sequence.AppendInterval(interval);
+                }
+
+                _busyUntil = Time.time + interval * word.Length + 0.1f;
+            });
+        return "autopilot for " + seconds + "s";
+    }
+
+    private static string Choose(string mode)
+    {
+        var unsafeDodge = mode == "unsafe";
+        var handsLeft = false;
+        foreach (var hand in Object.FindObjectsByType<global::Boss.ScrawlHand>())
+            handsLeft |= hand.Alive;
+        var player = Utilities.Game.ECSCache.ActorCache.Instance.Player;
+        if (player == null) return null;
+        var knight = player.Entity.GetComponent<ECS.Components.GridPositionComponent>().Position;
+        var hints = new System.Collections.Generic.List<SpellHint>();
+        foreach (var hint in HintCache.Instance.GetCached())
+            if (hint.gameObject.activeInHierarchy && !string.IsNullOrEmpty(hint.Word) && hint.Word.Length > 1) hints.Add(hint);
+
+        // A dodge sits beside the knight; the lane shadow shows where the blow will fall.
+        var shadow = GameObject.Find("LaneShadow");
+        var low = shadow.transform.position.x - shadow.transform.localScale.x / 8f;
+        var high = shadow.transform.position.x + shadow.transform.localScale.x / 8f;
+        foreach (var hint in hints)
+        {
+            if (hint.Word.Length != 3 || Mathf.Abs(hint.transform.position.y - knight.y) > 1f) continue;
+            var to = knight.x + (hint.transform.position.x < knight.x ? -1 : 1);
+            var safe = to < low || to > high;
+            if (safe != unsafeDodge) return hint.Word;
+        }
+
+        foreach (var hint in hints)
+            if (hint.Word.Length == 6) return hint.Word;
+        if (mode == "hands" && handsLeft) return null;
+        foreach (var hint in hints)
+            if (hint.Word.Length == 8) return hint.Word;
+        return null;
+    }
+
     public static string Popup(string text, string size)
     {
         var camera = Camera.main.transform.position;

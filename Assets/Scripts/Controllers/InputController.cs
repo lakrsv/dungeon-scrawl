@@ -56,6 +56,11 @@ namespace Controllers
 
         private bool _shouldRemoveMovementWords = false;
 
+        // Words that other systems ask for, each with what typing it does: the boss's dodges and attacks.
+        private readonly Dictionary<string, Action> _requiredCustomWord = new Dictionary<string, Action>();
+
+        private bool _movementLocked;
+
         [SerializeField]
         private WordSystem _wordSystem;
 
@@ -87,6 +92,54 @@ namespace Controllers
         private static bool IsHeldRepeat(char c)
         {
             return c >= 'a' && c <= 'z' && !Input.GetKeyDown((KeyCode)c);
+        }
+
+        /// <summary>
+        /// Gets or sets whether the move prompts are off, as in the boss fight, where the knight only moves by
+        /// dodging.
+        /// </summary>
+        public bool MovementLocked
+        {
+            get
+            {
+                return _movementLocked;
+            }
+
+            set
+            {
+                _movementLocked = value;
+                _requiredDirectionWord.Clear();
+                if (value) _moveHints.SetAllHints(false);
+            }
+        }
+
+        /// <summary>
+        /// Asks for a word of the given length; typing it runs onTyped (once: ask again for another). The word never
+        /// shares its first letter with any other word on screen, so none can be the start of another.
+        /// </summary>
+        public string AddWord(int length, Action onTyped)
+        {
+            string word;
+            var tries = 0;
+            do
+            {
+                word = _wordSystem.GetNextWord(length);
+                tries++;
+            }
+            while (tries < 300 && (MoveKeys.Blocks(word) || ActiveWords().Any(x => x[0] == word[0])));
+
+            _requiredCustomWord[word] = onTyped;
+            return word;
+        }
+
+        public void RemoveWord(string word)
+        {
+            if (word != null) _requiredCustomWord.Remove(word);
+        }
+
+        private IEnumerable<string> ActiveWords()
+        {
+            return _requiredDirectionWord.Keys.Concat(_requiredAttackWord.Keys).Concat(_requiredLootWord.Keys).Concat(_requiredCustomWord.Keys);
         }
 
         private void AppendLetter(char c)
@@ -184,6 +237,15 @@ namespace Controllers
             var inputWord = _currentInputWord.ToString();
             _currentInputWord.Length = 0;
 
+            Action custom;
+            if (_requiredCustomWord.TryGetValue(inputWord, out custom))
+            {
+                _requiredCustomWord.Remove(inputWord);
+                GameController.Instance.PlayerHasMoved = true;
+                custom();
+                return;
+            }
+
             if (_requiredDirectionWord.ContainsKey(inputWord))
             {
                 GameController.Instance.PlayerHasMoved = true;
@@ -240,20 +302,23 @@ namespace Controllers
         {
             if (!GameController.Instance.IsPlaying || GameController.Instance.IsPaused) return;
 
-            UpdateMovementType();
-
-            if (_shouldRemoveMovementWords)
+            if (!_movementLocked)
             {
-                _shouldRemoveMovementWords = false;
-                _requiredDirectionWord.Clear();
-            }
+                UpdateMovementType();
 
-            if (_requiredDirectionWord.Count == 0)
-            {
-                UpdateInputHints();
-            }
+                if (_shouldRemoveMovementWords)
+                {
+                    _shouldRemoveMovementWords = false;
+                    _requiredDirectionWord.Clear();
+                }
 
-            UpdateInputHintVisibility();
+                if (_requiredDirectionWord.Count == 0)
+                {
+                    UpdateInputHints();
+                }
+
+                UpdateInputHintVisibility();
+            }
 
             foreach (var c in Input.inputString.ToLower())
                 switch (c)
@@ -491,7 +556,8 @@ namespace Controllers
                 currentIterations++;
             }
             while ((_requiredDirectionWord.ContainsKey(word) || _requiredAttackWord.ContainsKey(word)
-                   || _requiredLootWord.ContainsKey(word) || (clearOfMoveKeys && MoveKeys.Blocks(word)))
+                   || _requiredLootWord.ContainsKey(word) || _requiredCustomWord.ContainsKey(word)
+                   || (clearOfMoveKeys && MoveKeys.Blocks(word)))
                    && currentIterations < maxIterations);
 
             return word;

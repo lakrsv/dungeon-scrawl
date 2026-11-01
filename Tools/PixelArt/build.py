@@ -9,6 +9,7 @@ Then slice and import them in the open Editor (see README.md).
 import os
 import sys
 
+import boss
 import fonts
 import fx
 import hud
@@ -39,6 +40,8 @@ def build_tiles():
         sheet.add("FloorDecor_%s" % kind, img)
     for i, img in enumerate(tiles.cliff_tiles()):
         sheet.add("Cliff_%d" % i, img)
+    for name, img in sorted(boss.bridge_tiles().items()):
+        sheet.add(name, img)
     return sheet
 
 
@@ -85,7 +88,14 @@ def build_interface():
     return sheet
 
 
-SHEETS = [build_tiles, build_effects, build_idle, build_menus, build_menu_icons, build_interface]
+def build_boss():
+    sheet = Sheet("Boss", cell=(80, 128), columns=4, padding=2)
+    for name, img, pivot in boss.sprites():
+        sheet.add(name, img, pivot=pivot)
+    return sheet
+
+
+SHEETS = [build_tiles, build_effects, build_idle, build_menus, build_menu_icons, build_interface, build_boss]
 
 
 def main():

@@ -74,9 +74,11 @@ It never attacks Slimes, which stay passive unless attacked.
 
 - Levels 1–3: collect chests, explore, then take the exit.
 - Level 4: nearby chests, then the exit.
-- Level 5: straight for the exit.
+- Level 5: north along the bridge to the Scrawl, then the exit once it is dead.
 
 It commits to a target until it is reached or stops being useful.
+
+**The Scrawl.** While its bar is up, the fight comes first. When dodges are offered, it steps away from the hand that is burning red (a slam covers the knight's lane and the lane on that hand's side), or towards the middle when it is the mask charging its beam (which covers only the knight's lane). It drops a half-typed word to dodge, as a person would. Between blows it strikes a resting hand first, since a broken hand's slams are gone for good, then the head.
 
 ## The turn-freeze quirk
 
@@ -98,7 +100,8 @@ Practice runs on IMPOSSIBLE at ~120 WPM, with the final version unless noted:
 |---|---|
 | Full game from level 1 (fresh stats) | 1 of 4 cleared level 1 (8 kills), then died at the start of level 2. Across the last few versions, about 1 in 6 clears level 1. |
 | Level 3 practice (HP 7, damage 5, reach 5, sight 6) | 0 of 4. Survived up to 21 s, with up to 7 free hits during freezes. |
-| Level 5 practice (HP 9, damage 8, reach 6, sight 8) | 0 of 5. An earlier version won 1 of 4 from the same start. Spawning in sight of several Demons is usually fatal within seconds. |
+| Level 5 practice (HP 9, damage 8, reach 6, sight 8) | Before the Scrawl replaced level 5's Demons: 0 of 5. An earlier version won 1 of 4 from the same start. Spawning in sight of several Demons was usually fatal within seconds. |
+| The Scrawl (HP 8, damage 5, reach 5, sight 6, 85 WPM) | Won 1 of 1, in about 70 seconds of fighting, taking one hit (3). |
 
 Official run: _to be filled in._
 
@@ -109,5 +112,5 @@ Official run: _to be filled in._
 
 ## Limitations
 
-- Scrawler reads some private fields by reflection. They include `InputController._currentInputWord`, `SpellHint._text`, `MapSystem` internals, and `Sprites`' sprite arrays. Renaming any of them breaks it.
+- Scrawler reads some private fields by reflection. They include `InputController._currentInputWord`, `SpellHint._text` and its icons, `MapSystem` internals, `Sprites`' sprite arrays, and the Scrawl's `ScrawlHand._body` and `ScrawlHead._mask` (it tells a charging hand or mask by its sprite's name). Renaming any of them breaks it.
 - It handles Pests well. Demons on IMPOSSIBLE remain the hard part: one hit takes most of your health, and a level-5 spawn can be in sight of several of them.

@@ -105,6 +105,9 @@ public static class Scrawler
         public bool IsLoot;
         public Direction Dir;
         public Transform Target;
+
+        // A dodge from the Scrawl's blows: -1 steps left, 1 right.
+        public int Dodge;
     }
 
     private class View
@@ -118,6 +121,12 @@ public static class Scrawler
         public readonly List<KeyValuePair<Vector2Int, Transform>> ChestLooking = new List<KeyValuePair<Vector2Int, Transform>>();
         public readonly List<Prompt> Prompts = new List<Prompt>();
         public Vector2Int? Door;
+
+        // The fight with the Scrawl: its bar is up. Slam is the side of a hand that is burning to strike (-1 left,
+        // 1 right, 0 none); Beam, that the mask is charging.
+        public bool BossFight;
+        public int Slam;
+        public bool Beam;
     }
 
     private class Model
@@ -432,6 +441,8 @@ public static class Scrawler
         var textField = typeof(SpellHint).GetField("_text", Priv);
         var iconField = typeof(SpellHint).GetField("_icon", Priv);
         var attackIcon = typeof(SpellHint).GetField("_attackIcon", Priv);
+        var dodgeLeftIcon = typeof(SpellHint).GetField("_dodgeLeftIcon", Priv);
+        var dodgeRightIcon = typeof(SpellHint).GetField("_dodgeRightIcon", Priv);
         var follow = typeof(SpellHint).GetField("_followTarget", Priv);
         foreach (var hint in HintCache.Instance.GetCached())
         {
@@ -449,11 +460,31 @@ public static class Scrawler
                 p.Target = (Transform)follow.GetValue(hint);
                 if (p.Target == null) continue;
                 var icon = (UnityEngine.UI.Image)iconField.GetValue(hint);
-                if (icon.sprite == (Sprite)attackIcon.GetValue(hint)) p.IsAttack = true;
+                if (icon.sprite == (Sprite)dodgeLeftIcon.GetValue(hint)) p.Dodge = -1;
+                else if (icon.sprite == (Sprite)dodgeRightIcon.GetValue(hint)) p.Dodge = 1;
+                else if (icon.sprite == (Sprite)attackIcon.GetValue(hint)) p.IsAttack = true;
                 else p.IsLoot = true;
             }
 
             v.Prompts.Add(p);
+        }
+
+        // The Scrawl, as drawn: which hand burns red, and whether the mask's mouth glows.
+        var bar = Object.FindAnyObjectByType<global::Boss.BossBar>();
+        v.BossFight = bar != null && bar.gameObject.activeInHierarchy;
+        if (v.BossFight)
+        {
+            var body = typeof(global::Boss.ScrawlHand).GetField("_body", Priv);
+            foreach (var hand in Object.FindObjectsByType<global::Boss.ScrawlHand>())
+            {
+                var sr = (SpriteRenderer)body.GetValue(hand);
+                if (sr != null && sr.sprite != null && sr.sprite.name == "ClawSpreadCharging") v.Slam = sr.flipX ? 1 : -1;
+            }
+
+            var mask = typeof(global::Boss.ScrawlHead).GetField("_mask", Priv);
+            var head = Object.FindAnyObjectByType<global::Boss.ScrawlHead>();
+            var face = head != null ? (SpriteRenderer)mask.GetValue(head) : null;
+            v.Beam = face != null && face.sprite != null && face.sprite.name.EndsWith("Charging");
         }
 
         return v;
@@ -725,6 +756,7 @@ public static class Scrawler
 
     private static Act Decide(View v, Model m)
     {
+        if (v.BossFight) return DecideBoss(v);
         var hostiles = Hostiles(v, m);
         var threats = hostiles.Where(e => Euclid(e.Pos, v.Me) <= Reach(e.Kind, m)).ToList();
         var targets = new List<KeyValuePair<Prompt, Enemy>>();
@@ -829,6 +861,29 @@ public static class Scrawler
 
     // Search escapes up to 6 steps. Each enemy can only strike until the path leaves its reach or sight,
     // so score every path by the strikes each enemy could land before that, plus what can still hit the end tile.
+    // The Scrawl. A slam covers my lane and the lane on the burning hand's side, so step away from that hand (on an
+    // edge lane only one step is offered, and it is safe). A beam covers only my lane: either step will do, so step
+    // towards the middle. Between blows, strike: a resting hand first, since a broken hand's slams are gone for
+    // good, then the head.
+    private static Act DecideBoss(View v)
+    {
+        var dodges = v.Prompts.Where(p => p.Dodge != 0).ToList();
+        if (dodges.Count > 0)
+        {
+            var pick = v.Slam != 0 ? dodges.FirstOrDefault(p => p.Dodge == -v.Slam) : null;
+            if (pick == null) pick = dodges.OrderBy(p => Math.Abs(v.Me.x + p.Dodge - (MapSystem.BridgeX + 1))).First();
+            var from = v.Slam < 0 ? "the left hand" : v.Slam > 0 ? "the right hand" : v.Beam ? "the beam" : "a blow";
+            return new Act { Kind = ActKind.Move, Prompt = pick, Why = "evade: dodge " + (pick.Dodge < 0 ? "left" : "right") + " from " + from };
+        }
+
+        var strikes = v.Prompts.Where(p => p.IsAttack && !Conflicts(p.Word, v)).ToList();
+        var hand = strikes.FirstOrDefault(p => p.Target.GetComponent<global::Boss.ScrawlHand>() != null);
+        if (hand != null) return new Act { Kind = ActKind.Attack, Prompt = hand, Why = "strike the resting hand" };
+        var head = strikes.FirstOrDefault(p => p.Target.GetComponent<global::Boss.ScrawlHead>() != null);
+        if (head != null) return new Act { Kind = ActKind.Attack, Prompt = head, Why = "strike the head" };
+        return null;
+    }
+
     private static Vector2Int? BestEscape(View v, Model m, List<Enemy> hostiles, float horizon, out int steps, out Prompt firstStep, out float expected)
     {
         steps = 0;
@@ -1038,6 +1093,13 @@ public static class Scrawler
             if (act.Kind == ActKind.Loot && !act.Why.Contains("frozen") && m.Latest != null && Hostiles(m.Latest, m).Any(e => Euclid(e.Pos, m.Latest.Me) <= Reach(e.Kind, m)))
             {
                 Log("Loot interrupted: something can hit me");
+                if (buffer.Length > 0) append.Invoke(ic, new object[] { '1' });
+                yield break;
+            }
+
+            if (act.Prompt.Dodge == 0 && m.Latest != null && m.Latest.Prompts.Any(p => p.Dodge != 0))
+            {
+                Log("  dropped '" + word + "': a blow is coming");
                 if (buffer.Length > 0) append.Invoke(ic, new object[] { '1' });
                 yield break;
             }

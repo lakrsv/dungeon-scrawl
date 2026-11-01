@@ -73,7 +73,21 @@ public class AudioPlayer : MonoSingleton<AudioPlayer>
 
         Step,
 
-        Death
+        Death,
+
+        BossRumble,
+
+        BossCharge,
+
+        BossSlam,
+
+        BossBeam,
+
+        BossHit,
+
+        BossSink,
+
+        BossDeath
     }
 
     /// <summary>
@@ -81,7 +95,8 @@ public class AudioPlayer : MonoSingleton<AudioPlayer>
     /// </summary>
     public void PlayAudio(Type type)
     {
-        _audioSource.PlayOneShot(Pick(type));
+        var clip = Pick(type);
+        if (clip != null) _audioSource.PlayOneShot(clip);
     }
 
     /// <summary>
@@ -96,8 +111,8 @@ public class AudioPlayer : MonoSingleton<AudioPlayer>
 
     private AudioClip Pick(Type type)
     {
-        var clips = _audioClips[type];
-        return clips[UnityEngine.Random.Range(0, clips.Count)];
+        List<AudioClip> clips;
+        return _audioClips.TryGetValue(type, out clips) ? clips[UnityEngine.Random.Range(0, clips.Count)] : null;
     }
 
     private void Awake()

@@ -21,6 +21,10 @@ Tools/Probe/probe.sh Win                   # win on the spot (like F9); Die lose
 Tools/Probe/probe.sh Pause open            # also resume, options, back, quit
 Tools/Probe/probe.sh Popup "-LEVEL 2-" 2   # a floating message, at size 1 or 2
 Tools/Probe/probe.sh Load MainMenu         # load a scene, as its buttons would
+Tools/Probe/probe.sh Level 5               # jump to a level; to 5 with F8's kit (8 hearts, power 5, light 6)
+Tools/Probe/probe.sh Knight 10 5           # set the knight's hearts and power
+Tools/Probe/probe.sh Fight                 # the Scrawl fight: the knight's lane, each part's health, the prompts
+Tools/Probe/probe.sh Autopilot 60 0.15 safe   # fight the Scrawl for 60s at a letter every 0.15s (see below)
 Tools/Probe/capture.sh shot.png            # the Game view at 1920x1080
 
 unity command editor.playmode stop --project-path .
@@ -28,9 +32,11 @@ unity command editor.playmode stop --project-path .
 
 The Escape key, the arrow keys and holding a key down can't be sent from outside: try those by hand.
 
+The autopilot takes the safe dodge when one is offered, else strikes a resting hand, else the head. Mode `unsafe` takes the wrong dodge, to test getting hit; `hands` leaves the head alone until both hands are broken, to reach the last phase. To reach the fight, walk north from the bridge's start: `Type "wwwwwwwwwwwwwwwwwww" 0.15` (with WASD quick moves on).
+
 ## Clean up after testing
 
-- A test run that ends saves a best score: `Tools/Probe/probe.sh ClearBest`.
+- A test run that ends saves a best score: `Tools/Probe/probe.sh ClearBest`. If there was a best score before, set it back instead (`PlayerPrefs` key `BestScore`).
 - If a test changed the player's settings, put them back: `Tools/Probe/probe.sh Settings 2 2 true` (music, sound, WASD).
 - Playing modifies `Assets/TextMesh Pro/Resources/Fonts & Materials/Electronic Highway Sign SDF.asset`. Revert it before committing: `git checkout -- "Assets/TextMesh Pro/Resources/Fonts & Materials/Electronic Highway Sign SDF.asset"`.
 

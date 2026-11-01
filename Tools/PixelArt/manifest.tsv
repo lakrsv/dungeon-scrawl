@@ -117,6 +117,12 @@ sprite	Cliff_8	91	77	16	16	0.5	0.5	0	0	0	0
 sprite	Cliff_9	109	77	16	16	0.5	0.5	0	0	0	0
 sprite	Cliff_10	127	77	16	16	0.5	0.5	0	0	0	0
 sprite	Cliff_11	145	77	16	16	0.5	0.5	0	0	0	0
+sprite	BridgeLeft0	163	77	16	16	0.5	0.5	0	0	0	0
+sprite	BridgeLeft1	181	77	16	16	0.5	0.5	0	0	0	0
+sprite	BridgeMid0	199	77	16	16	0.5	0.5	0	0	0	0
+sprite	BridgeMid1	1	59	16	16	0.5	0.5	0	0	0	0
+sprite	BridgeRight0	19	59	16	16	0.5	0.5	0	0	0	0
+sprite	BridgeRight1	37	59	16	16	0.5	0.5	0	0	0	0
 sheet	Assets/Graphics/Effects.png
 sprite	Hit_0	2	46	16	16	0.5	0.5	0	0	0	0
 sprite	Hit_1	20	46	16	16	0.5	0.5	0	0	0	0
@@ -172,3 +178,14 @@ sprite	ArrowUp	38	37	7	7	0.5	0.5	0	0	0	0
 sprite	ArrowDown	56	37	7	7	0.5	0.5	0	0	0	0
 sprite	ArrowLeft	74	37	7	7	0.5	0.5	0	0	0	0
 sprite	ArrowRight	92	37	7	7	0.5	0.5	0	0	0	0
+sheet	Assets/Graphics/Boss.png
+sprite	ClawSpread	2	470	46	40	0.5	0.5	0	0	0	0
+sprite	ClawSpreadCharging	84	466	50	44	0.5	0.5	0	0	0	0
+sprite	ClawGrip	166	476	42	34	0.5	0.5	0	0	0	0
+sprite	Mask	248	434	64	76	0.5	0.5	0	0	0	0
+sprite	MaskCharging	2	302	66	78	0.5	0.5	0	0	0	0
+sprite	MaskCracked	84	304	64	76	0.5	0.5	0	0	0	0
+sprite	MaskCrackedCharging	166	302	66	78	0.5	0.5	0	0	0	0
+sprite	Arm	248	267	85	113	0.8705882352941177	0.9557522123893806	0	0	0	0
+sprite	BeamSegment	2	234	14	16	0.5	0.5	0	0	0	0
+sprite	White	84	246	4	4	0.5	0.5	0	0	0	0

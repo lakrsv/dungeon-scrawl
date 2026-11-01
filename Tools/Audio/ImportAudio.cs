@@ -11,10 +11,13 @@ using UnityEngine;
 
 public static class ImportAudio
 {
-    private static readonly string[] Loops = { "TitleTheme", "DungeonTheme", "DungeonAmbience" };
+    private static readonly string[] Loops = { "TitleTheme", "DungeonTheme", "DungeonAmbience", "ScrawlTheme" };
 
     private static readonly string[] Effects =
-        { "Key", "Word", "Typo", "Death", "Hover", "Select", "Step1", "Step2", "Step3" };
+        {
+            "Key", "Word", "Typo", "Death", "Hover", "Select", "Step1", "Step2", "Step3", "BossRumble", "BossCharge",
+            "BossSlam", "BossBeam", "BossHit", "BossSink", "BossDeath"
+        };
 
     public static string Run()
     {

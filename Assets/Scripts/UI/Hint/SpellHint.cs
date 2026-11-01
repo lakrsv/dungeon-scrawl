@@ -37,7 +37,9 @@ namespace UI.Hint
         public enum IconType
         {
             Attack,
-            Chest
+            Chest,
+            DodgeLeft,
+            DodgeRight
         }
 
         // One art pixel, in the prompts' units (a world unit is 16).
@@ -66,7 +68,9 @@ namespace UI.Hint
 
         private readonly List<Sequence> _currentSequences = new List<Sequence>();
 
-        private readonly Vector2 _followOffset = new Vector2(0f, 1.0f);
+        private static readonly Vector2 AboveTarget = new Vector2(0f, 1.0f);
+
+        private Vector2 _followOffset = AboveTarget;
 
         [SerializeField]
         private float _appearDuration = 0.75f;
@@ -95,6 +99,21 @@ namespace UI.Hint
         [SerializeField]
         private Sprite _attackIcon;
 
+        [SerializeField]
+        private Sprite _dodgeLeftIcon;
+
+        [SerializeField]
+        private Sprite _dodgeRightIcon;
+
+        // A draining bar under the plaque, for a prompt with a deadline (the boss's dodges).
+        [SerializeField]
+        private GameObject _timer;
+
+        [SerializeField]
+        private RectTransform _timerFill;
+
+        private Tween _timerTween;
+
         private Vector2 _originalLocalPosition;
 
         // Where the word sits in its box when nothing is jolting it.
@@ -120,6 +139,7 @@ namespace UI.Hint
             }
 
             if (HintCache.Instance.Contains(this)) HintCache.Instance.Remove(this);
+            if (_timerTween != null) _timerTween.Kill();
 
             DoDisappearAnimation(
                 _appearDuration,
@@ -165,6 +185,8 @@ namespace UI.Hint
         public void Initialize(Transform follow, string word)
         {
             _followTarget = follow;
+            _followOffset = AboveTarget;
+            HideTimer();
             _text.SetText(word);
 
             Word = word;
@@ -181,7 +203,48 @@ namespace UI.Hint
                 case IconType.Chest:
                     _icon.sprite = _chestIcon;
                     break;
+                case IconType.DodgeLeft:
+                    _icon.sprite = _dodgeLeftIcon;
+                    break;
+                case IconType.DodgeRight:
+                    _icon.sprite = _dodgeRightIcon;
+                    break;
             }
+        }
+
+        /// <summary>
+        /// Shows the word at an offset from its target, there at once rather than flying in, and following from
+        /// then on. For the boss fight, where a prompt must appear right where it is needed.
+        /// </summary>
+        public void Initialize(Transform follow, string word, Vector2 offset)
+        {
+            Initialize(follow, word);
+            _followOffset = offset;
+            KillCurrentTweens();
+            transform.position = (Vector2)follow.position + offset;
+            transform.localScale = Vector3.zero;
+            _currentTweens.Add(transform.DOScale(Vector3.one, 0.25f).SetEase(Ease.OutBack));
+            _follow = true;
+        }
+
+        /// <summary>
+        /// Drains the bar under the plaque over the given time, gold, then red as it runs out.
+        /// </summary>
+        public void ShowTimer(float seconds)
+        {
+            if (_timer == null) return;
+            _timer.SetActive(true);
+            var fill = _timerFill.GetComponent<Image>();
+            _timerFill.localScale = Vector3.one;
+            if (_timerTween != null) _timerTween.Kill();
+            _timerTween = _timerFill.DOScaleX(0f, seconds).SetEase(Ease.Linear)
+                .OnUpdate(() => fill.color = _timerFill.localScale.x > 0.35f ? CompleteColor : RejectColor);
+        }
+
+        private void HideTimer()
+        {
+            if (_timerTween != null) _timerTween.Kill();
+            if (_timer != null) _timer.SetActive(false);
         }
 
         /// <summary>

@@ -47,7 +47,8 @@ namespace ECS.Systems
 
             var turnComponents = ComponentCache.Instance.GetCached(ComponentType.Turn);
 
-            if (turnComponents.Count == 0) return;
+            // Nothing takes turns on the bridge to the Scrawl.
+            if (turnComponents == null || turnComponents.Count == 0) return;
             if (_currentTurnIndex >= turnComponents.Count) _currentTurnIndex = 0;
 
             var currentTurnComponent = turnComponents[_currentTurnIndex] as BooleanComponent;
@@ -75,6 +76,7 @@ namespace ECS.Systems
         {
             _currentTurnDelay = 0.4f / GameController.Instance.GetDifficulty();
             var turnComponents = ComponentCache.Instance.GetCached(ComponentType.Turn);
+            if (turnComponents == null || turnComponents.Count == 0) return;
             var currentTurnComponent = turnComponents[_currentTurnIndex] as BooleanComponent;
 
             if (currentTurnComponent == null) throw new InvalidOperationException("Component was invalid!");

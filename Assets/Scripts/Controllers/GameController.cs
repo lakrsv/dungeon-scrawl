@@ -176,11 +176,20 @@ namespace Controllers
             if (!IsPlaying || IsPaused) return;
             RunStats.Tick(Time.deltaTime);
 
-            // Testing shortcuts, in the Editor and development builds only: F9 wins the run on the spot, F10 loses
-            // it. The run's numbers so far go to the victory or game over screen. Function keys type nothing, so
-            // they can't get mixed up with the words.
+            // Testing shortcuts, in the Editor and development builds only: F8 skips to the last level (the bridge
+            // and the Scrawl), F9 wins the run on the spot, F10 loses it. The run's numbers so far go to the victory
+            // or game over screen. Function keys type nothing, so they can't get mixed up with the words.
             if (!Debug.isDebugBuild) return;
-            if (Input.GetKeyDown(KeyCode.F9))
+            if (Input.GetKeyDown(KeyCode.F8))
+            {
+                // The knight arrives as from a run that looted about half the chests on the way: 8 hearts, 5 power
+                // and 6 light. Pressed on the bridge, it starts the fight over.
+                IsPlaying = false;
+                CurrentLevel = RunStats.Levels;
+                Player.SavePlayerStats(8, 5, 5, 6);
+                SceneManager.LoadScene("Game");
+            }
+            else if (Input.GetKeyDown(KeyCode.F9))
             {
                 CurrentLevel = RunStats.Levels;
                 EndLevel();

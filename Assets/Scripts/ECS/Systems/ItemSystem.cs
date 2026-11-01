@@ -25,6 +25,8 @@ namespace ECS.Systems
 
     using Controllers;
 
+    using DG.Tweening;
+
     using ECS.Components;
 
     using UnityEngine;
@@ -59,6 +61,8 @@ namespace ECS.Systems
         private Dictionary<Vector2Int, Chest> _chestsAtPositions = new Dictionary<Vector2Int, Chest>();
 
         private Vector2Int _doorPosition;
+
+        private GameObject _bossDoor;
 
         public event Action<Chest> OnPlayerEnterLootArea;
 
@@ -98,6 +102,17 @@ namespace ECS.Systems
 
         public void Initialize()
         {
+            // The bridge has no chests, and its way out stays shut until the Scrawl is beaten (OpenExit).
+            if (MapSystem.IsBossLevel)
+            {
+                _bossDoor = Instantiate(_door);
+                _bossDoor.transform.position = (Vector2)MapSystem.Instance.BossExit;
+                _bossDoor.transform.SetParent(_board, true);
+                _bossDoor.SetActive(false);
+                _doorPosition = new Vector2Int(int.MinValue, int.MinValue);
+                return;
+            }
+
             var healthForLevel = Random.Range(MinHealthPerLevel, MaxHealthPerLevel + 1);
             var powerForLevel = Random.Range(MinFireballPerLevel, MaxFireballPerLevel + 1);
             var fovForLevel = Random.Range(MinFovPerLevel, MaxFovPerLevel + 1);
@@ -141,6 +156,18 @@ namespace ECS.Systems
             _doorPosition = doorPosition;
 
             door.transform.SetParent(_board, true);
+        }
+
+        /// <summary>
+        /// Opens the way out of the bridge level: the portal swells out of nothing at the far end.
+        /// </summary>
+        public void OpenExit()
+        {
+            if (_bossDoor == null) return;
+            _bossDoor.SetActive(true);
+            _bossDoor.transform.DOScale(0f, 0.8f).From().SetEase(Ease.OutBack);
+            AudioPlayer.Instance.PlayAudio(AudioPlayer.Type.Teleport);
+            _doorPosition = MapSystem.Instance.BossExit;
         }
 
         public void ChestPickup(Chest chest)

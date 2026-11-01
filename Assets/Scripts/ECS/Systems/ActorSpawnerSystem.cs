@@ -151,16 +151,10 @@ namespace ECS.Systems
             }
         }
 
+        // The last level is the bridge, and the only thing on it besides the knight is the Scrawl (BossSystem).
         public void SpawnLevel5Actors()
         {
-            // Spawn Player
             SpawnActor<Player>();
-
-            // Spawn some Demons
-            for (var i = 0; i < 12; i++)
-            {
-                SpawnActor<Demon>();
-            }
         }
     }
 }

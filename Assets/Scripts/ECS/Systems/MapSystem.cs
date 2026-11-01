@@ -24,6 +24,8 @@ namespace ECS.Systems
     using System.Collections.Generic;
     using System.Linq;
 
+    using Controllers;
+
     using ECS.Components;
     using ECS.Components.Type;
     using ECS.Entities;
@@ -41,6 +43,22 @@ namespace ECS.Systems
 
     public class MapSystem : MonoSingleton<MapSystem>, IInitializeSystem
     {
+        // Level 5 is not random (see BOSS.md): a landing, a long drawbridge north over the void, and a far landing
+        // with the way out. The bridge is three lanes wide; the Scrawl rises when the knight reaches BossRow.
+        public const int BridgeLanes = 3;
+
+        public const int BridgeX = 9;
+
+        public const int BossRow = 22;
+
+        private const int BridgeWidth = 21;
+
+        private const int BridgeHeight = 40;
+
+        private const int BridgeStart = 7;
+
+        private const int BridgeEnd = 31;
+
         [SerializeField]
         private Tilemap _map;
 
@@ -49,6 +67,16 @@ namespace ECS.Systems
 
         [SerializeField]
         private TileBase _cliffTile;
+
+        [Header("Level 5")]
+        [SerializeField]
+        private TileBase _bridgeLeft;
+
+        [SerializeField]
+        private TileBase _bridgeMiddle;
+
+        [SerializeField]
+        private TileBase _bridgeRight;
 
         // How fast tiles fade between light levels, in colour units per second.
         [SerializeField]
@@ -83,6 +111,24 @@ namespace ECS.Systems
 
         public Map Map { get; private set; }
 
+        public static bool IsBossLevel
+        {
+            get { return GameController.CurrentLevel == RunStats.Levels; }
+        }
+
+        /// <summary>
+        /// Gets where the player starts, on levels that say so (level 5); otherwise null, and they start anywhere.
+        /// </summary>
+        public Vector2Int? SpawnPoint { get; private set; }
+
+        /// <summary>
+        /// Gets the way out of level 5, at the far end of the bridge. It only opens once the Scrawl is beaten.
+        /// </summary>
+        public Vector2Int BossExit
+        {
+            get { return new Vector2Int(BridgeX + 1, BridgeEnd + 2); }
+        }
+
         // Where the player's light is and how far it reaches. The RenderSystem moves it every frame.
         public Vector2 LightPosition { get; set; }
 
@@ -91,7 +137,8 @@ namespace ECS.Systems
         public void Initialize()
         {
             _random = new DotNetRandom(Constants.GetRandomSeed());
-            CreateDefaultMap();
+            if (IsBossLevel) CreateBridgeMap();
+            else CreateDefaultMap();
         }
 
         public Vector2Int GetMoveDirection(Vector2Int from, Vector2Int to)
@@ -194,6 +241,54 @@ namespace ECS.Systems
             }
 
             foreach (var pos in _settledTiles) _changingTiles.Remove(pos);
+        }
+
+        private void CreateBridgeMap()
+        {
+            _map.ClearAllTiles();
+            Map = new Map(BridgeWidth, BridgeHeight);
+
+            // Landings: a small one to start on, and a far one with the way out.
+            for (var x = BridgeX - 2; x <= BridgeX + 4; x++)
+            {
+                for (var y = 2; y < BridgeStart; y++) Map.SetCellProperties(x, y, true, true);
+                for (var y = BridgeEnd + 1; y <= BridgeEnd + 3; y++) Map.SetCellProperties(x, y, true, true);
+            }
+
+            for (var y = BridgeStart; y <= BridgeEnd; y++)
+                for (var lane = 0; lane < BridgeLanes; lane++)
+                    Map.SetCellProperties(BridgeX + lane, y, true, true);
+
+            var tilePosition = new Vector3Int();
+            for (var x = 0; x < BridgeWidth; x++)
+            {
+                for (var y = 0; y < BridgeHeight; y++)
+                {
+                    tilePosition.Set(x, y, 0);
+                    var onBridge = x >= BridgeX && x < BridgeX + BridgeLanes && y >= BridgeStart && y <= BridgeEnd;
+                    if (onBridge)
+                    {
+                        _map.SetTile(tilePosition, x == BridgeX ? _bridgeLeft : x == BridgeX + BridgeLanes - 1 ? _bridgeRight : _bridgeMiddle);
+                    }
+                    else if (Map.IsWalkable(x, y))
+                    {
+                        _map.SetTile(tilePosition, _floorTile);
+                    }
+                    else if (y + 1 < BridgeHeight && Map.IsWalkable(x, y + 1) && !(y + 1 >= BridgeStart && y + 1 <= BridgeEnd))
+                    {
+                        // Rock faces under the landings; the bridge hangs over nothing.
+                        _map.SetTile(tilePosition, _cliffTile);
+                    }
+                    else
+                    {
+                        continue;
+                    }
+
+                    _map.SetColor(tilePosition, Visibility.Invisible);
+                }
+            }
+
+            SpawnPoint = new Vector2Int(BridgeX + 1, 3);
         }
 
         private void CreateDefaultMap()

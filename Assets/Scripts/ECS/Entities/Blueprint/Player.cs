@@ -63,14 +63,26 @@ namespace ECS.Entities.Blueprint
             SavePlayerStat(ComponentType.FieldOfView);
         }
 
+        /// <summary>
+        /// Sets the stats the knight arrives with on the next level, e.g. for the testing shortcut to the Scrawl.
+        /// </summary>
+        public static void SavePlayerStats(int health, int damage, int reach, int fieldOfView)
+        {
+            PlayerPrefs.SetInt(ComponentType.Health.ToString(), health);
+            PlayerPrefs.SetInt(ComponentType.Damage.ToString(), damage);
+            PlayerPrefs.SetInt(ComponentType.Reach.ToString(), reach);
+            PlayerPrefs.SetInt(ComponentType.FieldOfView.ToString(), fieldOfView);
+            PlayerPrefs.Save();
+        }
+
         public IComponent[] GetComponents(Entity owner)
         {
             var components = new IComponent[]
                                  {
                                      new GridPositionComponent(owner)
                                          {
-                                             Position = MapSystem.Instance
-                                                 .GetRandomAvailableTile()
+                                             Position = MapSystem.Instance.SpawnPoint
+                                                        ?? MapSystem.Instance.GetRandomAvailableTile()
                                          },
                                      new RenderComponent(owner) { Sprite = Resources.Load<Sprite>("Sprites/Player") },
                                      new IntegerComponent(owner, ComponentType.Health)

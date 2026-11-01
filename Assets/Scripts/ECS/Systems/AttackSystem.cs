@@ -161,6 +161,21 @@ namespace ECS.Systems
             return _attackingEntities.Contains(entity);
         }
 
+        /// <summary>
+        /// Hurts the player by the given amount, the same way a creature's hit would: for the boss's slams and beams.
+        /// </summary>
+        public void HurtPlayer(int amount)
+        {
+            var player = ActorCache.Instance.Player;
+            if (player == null) return;
+            var health = player.Entity.GetComponent<IntegerComponent>(ComponentType.Health);
+            if (health == null || health.Value <= 0) return;
+            ApplyDamage(
+                player.Entity.GetComponent<GridPositionComponent>(),
+                new IntegerComponent(player.Entity, ComponentType.Damage) { Value = amount },
+                health);
+        }
+
         private void ApplyDamage(
             GridPositionComponent targetPosition,
             IntegerComponent damage,

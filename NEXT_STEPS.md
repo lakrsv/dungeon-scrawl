@@ -1,6 +1,6 @@
 # Next steps
 
-Where the work on Dungeon Scrawl stands, what to check, and what to do next. Last updated 2026-10-31.
+Where the work on Dungeon Scrawl stands, what to check, and what to do next. Last updated 2026-11-01.
 
 ## Where it stands
 
@@ -11,24 +11,17 @@ The Ludum Dare game has been brought up to a polished state, in this order (see 
 3. **Run stats and victory** (`c15d413`): `RunStats`, a tallying run report on the game over and new victory screens, a saved best score, WASD or letter quick moves (setting on the main menu), per-press quick moves, and F9/F10 testing shortcuts.
 4. **Fixes** (`de09249`, `fe14ebe`): the congratulations popup on one line; a letter that starts another word switches targets instead of being thrown away.
 5. **Interface** (`00f62c5`): prompts, status panel and floating text in the menus' style with a true pixel font (`MunroSmall Pixel`), plus pause and options menus.
-
-## Check by hand
-
-These couldn't be tested from the command line (keys can't be sent to the Editor, and nobody has listened to the audio):
-
-- Escape opens and closes the pause menu; Escape in Options goes back; arrow keys and Enter work in both.
-- Holding W (or any quick-move key) moves one step, not a run of steps.
-- F9 wins and F10 loses during a level, in the Editor; neither works in a release build.
-- **Listen to the music and sound effects.** They were checked for level, clipping and seamless loops, and by spectrogram, but never heard. Tune them in `Tools/Audio` (`music.py`, `sfx.py`) and the volumes on the `Jukebox` objects and `AudioPlayer`.
+6. **Checked by hand and built** (2026-11-01, by the user): the keyboard in the pause and options menus, per-press quick moves, F9/F10, the audio, and a real build.
+7. **The Scrawl** (2026-11-01, not yet committed): level 5 is now a bridge over the void and a boss fight, with its own art, theme and effects. Design, balance and how to test it are in `BOSS.md`. F8 jumps to it.
 
 ## Next up
 
 In rough priority order:
 
-1. **Make a real build and play it.** Everything so far was tested in the Editor only. A Windows build (`unity build . --target StandaloneWindows64 -o Builds/DungeonScrawl.exe`) should check the streamed music, saved settings (`PlayerPrefs`), the pixel-perfect scaling at other resolutions (720p, 1440p, 4K change `PixelPerfect.Zoom` and `UiZoom`), the pixel font in a build, and that F9/F10 are gone. A WebGL build for itch.io is worth a try too.
+1. **Play the Scrawl by hand** (F8 in the Editor, see `BOSS.md`): on all three difficulties, with sound on. Things only a person can judge: whether the warnings read in time, whether the dodge rule (step away from the burning hand) is clear without being told, the theme and effects, and how long the fight feels. The numbers to tune are at the top of `Assets/Scripts/Boss/Scrawl.cs`.
 2. **One options screen everywhere.** `OptionsMenu` exists only in the Game scene's `PauseCanvas`. The main menu still has its own corner buttons for music, sound and move keys (`Sound.VolumeButton`, `UI.MoveKeysButton`), which the user approved. Consider an OPTIONS button on the main menu that opens the same panel; ask before removing the corner buttons.
 3. **Tune the move prompts' prominence** if they feel too loud: `CanvasGroup` alpha on each hint in `Assets/Prefabs/Hints/MoveHints.prefab` is 0.85 (the original was 0.5).
-4. **More to play:** a boss on level 5, an endless mode after the win, or another enemy type (a new blueprint in `ECS/Entities/Blueprint`, spawned from `ActorSpawnerSystem`).
+4. **More to play:** an endless mode after the win, or another enemy type (a new blueprint in `ECS/Entities/Blueprint`, spawned from `ActorSpawnerSystem`).
 5. **Update the README's screenshots and GIFs** (`PR/`): they still show the original graphics and none of the new screens. `Tools/Probe/capture.sh` takes 1920x1080 shots.
 
 ## Smaller follow-ups
@@ -38,11 +31,12 @@ In rough priority order:
 - WASD isn't a cross on AZERTY keyboards; the LETTERS setting covers it, but a ZQSD option could too (`Controllers.MoveKeys`).
 - Unused originals could be removed: `Assets/Prefabs/Hints/Move{Up,Down,Left,Right}Hint.prefab`, `Assets/Graphics/UI/{HealthPanel,InputBox,AbilityIconBox}.psd`, `ProgressEnabled/Disabled.png`, the old heart sprites, and the `Electronic Highway Sign SDF` font (check references first).
 - The Scrawler bot can get stuck flip-flopping between a chest and an unexplored spot (`Tools/Scrawler/Scrawler.cs`, target commitment).
+- The Scrawl's hands and mask take no light from the knight's lantern; they are lit by their own rim. If that looks off on a dim run, tint them like `RenderSystem` tints actors.
 
 ## Gotchas learnt the hard way
 
 - Playing modifies `Assets/TextMesh Pro/Resources/Fonts & Materials/Electronic Highway Sign SDF.asset`. Revert it before every commit.
-- Test runs save a best score and can change settings: clean up with `Tools/Probe/probe.sh ClearBest` and `Settings`.
+- Test runs save a best score and can change settings: clean up with `Tools/Probe/probe.sh ClearBest` and `Settings`. If there was a best score before testing, put it back instead of clearing it. Scrawler practice runs also set the difficulty to Impossible (the main menu sets it again on the next Play).
 - TextMesh Pro: an old prefab's legacy `m_textAlignment` overwrites the alignment on every load until set to 65535; bold adds spacing and padding to the pixel font; a font asset built from code must get its version (`m_Version = 1.1.0`) stamped first, or it "upgrades" to nothing. See `CLAUDE.md`.
 - One-off setup scripts were run from Unity's `Temp/` folder, which the Editor deletes when it closes. Everything needed to rebuild the art, font and audio is in `Tools/`; the scene and prefab changes themselves are committed.
 
@@ -50,4 +44,5 @@ In rough priority order:
 
 - `unity recompile --project-path .` for a compile check.
 - `Tools/Probe` (see its README) to inspect and drive a playing Editor and take screenshots.
-- `Tools/Scrawler/scrawl.sh practice --level 1 ...` to have the bot play a level; `official` for a full run.
+- `Tools/Scrawler/scrawl.sh practice --level 1 ...` to have the bot play a level; `official` for a full run. `--level 5` fights the Scrawl.
+- F8 in the Editor jumps to the Scrawl; F9 and F10 win or lose the run.

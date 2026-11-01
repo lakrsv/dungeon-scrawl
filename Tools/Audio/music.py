@@ -1,5 +1,5 @@
 """The music and the ambience: a title theme for the splash screen and main menu, a dungeon theme for the levels,
-and the sound of the dungeon itself. All three loop without a seam.
+a theme for the fight with the Scrawl, and the sound of the dungeon itself. All four loop without a seam.
 
 The songs are written out below as chords and melodies; the instruments are the same pulse and triangle waves as
 the sound effects, so everything sounds like one small machine.
@@ -20,6 +20,7 @@ CHORDS = {
     "C": ("C", "E", "G"),
     "Dm": ("D", "F", "A"),
     "E": ("E", "G#", "B"),
+    "Eb": ("Eb", "G", "Bb"),
     "Em": ("E", "G", "B"),
     "F": ("F", "A", "C"),
     "G": ("G", "B", "D"),
@@ -280,5 +281,98 @@ def dungeon_ambience():
     return loudness(out, -24.0, -6.0)
 
 
+
+# The Scrawl's theme: D minor like the dungeon, so typing still plays along, but faster and darker. The flat second
+# (Eb) gives it its menace, a bell tolls at the top of every phrase, and a grinding bass drives it on.
+
+SCRAWL_A = ["Dm", "Dm", "Eb", "Eb", "Dm", "Dm", "Bb", "A"]
+SCRAWL_B = ["Gm", "Gm", "Eb", "Eb", "Bb", "C", "A", "A"]
+SCRAWL_CHORDS = SCRAWL_A + SCRAWL_A + SCRAWL_B + SCRAWL_A
+
+SCRAWL_MELODY_A = [
+    [("D5", 3), ("F5", 1), ("A5", 2), ("G5", 2)],
+    [("F5", 3), ("E5", 1), ("D5", 4)],
+    [("Eb5", 3), ("G5", 1), ("Bb5", 2), ("A5", 2)],
+    [("G5", 6), (None, 2)],
+    [("D5", 2), ("F5", 2), ("A5", 3), ("C6", 1)],
+    [("A5", 3), ("G5", 1), ("F5", 4)],
+    [("F5", 2), ("G5", 2), ("Bb5", 3), ("A5", 1)],
+    [("E5", 3), ("C#5", 1), ("A4", 4)],
+]
+
+SCRAWL_MELODY_B = [
+    [("G5", 4), ("Bb5", 2), ("D6", 2)],
+    [("D6", 3), ("C6", 1), ("Bb5", 4)],
+    [("Eb6", 4), ("D6", 2), ("Bb5", 2)],
+    [("G5", 6), (None, 2)],
+    [("F5", 2), ("Bb5", 2), ("D6", 3), ("C6", 1)],
+    [("C6", 3), ("Bb5", 1), ("G5", 2), ("E5", 2)],
+    [("A5", 3), ("G5", 1), ("E5", 2), ("C#5", 2)],
+    [("E5", 4), ("A4", 4)],
+]
+
+SCRAWL_MELODY = [None] * 8 + SCRAWL_MELODY_A + SCRAWL_MELODY_B + SCRAWL_MELODY_A
+
+
+
+def grind(f, seconds):
+    """The Scrawl's bass: a triangle with a growl of narrow pulse under it."""
+    release = 0.04
+    tone = add(osc("triangle", f, seconds + release, RATE), lowpass(osc("pulse", f, seconds + release, RATE, duty=0.2),
+                                                                    700, RATE), gain=0.35)
+    return mul(tone, env_adsr(seconds, RATE, 0.003, 0.08, 0.8, release))
+
+
+def bell(f):
+    """A deep tolling bell: inharmonic partials dying away at their own rates."""
+    seconds = 3.0
+    out = []
+    for ratio, gain, tau in ((0.5, 0.6, 1.4), (1.0, 1.0, 1.0), (1.19, 0.5, 0.7), (1.56, 0.35, 0.5),
+                             (2.0, 0.3, 0.45), (2.74, 0.2, 0.3)):
+        add(out, mul(osc("sine", f * ratio, seconds, RATE), env_exp(seconds, RATE, 0.002, tau)), gain=gain)
+    return lowpass(out, 3000, RATE)
+
+
+def scrawl_theme():
+    song = Song(bpm=132, bars=len(SCRAWL_CHORDS))
+    hats = [hat(30), hat(31)]
+    snares = [snare(32), snare(33)]
+    boom = kick()
+    toll = bell(freq("D3"))
+    for bar, chord in enumerate(SCRAWL_CHORDS):
+        root = _root(chord, midi("D2"))
+        for i, octave in enumerate([0, 0, 12, 0, 0, 12, 0, 12]):
+            song.play(grind(hz(root + octave), song.eighth * 0.75), bar, i, gain=0.36)
+
+        # A low drone of the chord, dark and close.
+        for note in _stack(chord, midi("D3"), 3):
+            song.play(pad(hz(note), song.bar - 0.05), bar, 0, gain=0.07, room=0.4)
+
+        notes = _stack(chord, midi("D4"), 4)
+        for i, index in enumerate([0, 2, 1, 3, 2, 1, 3, 2] * 2):
+            song.play(pluck(hz(notes[index]), tau=0.05), bar, i * 0.5, gain=0.07, room=0.4, echo=0.3)
+
+        if bar % 4 == 0:
+            song.play(toll, bar, 0, gain=0.22, room=0.8)
+
+        for i in range(8):
+            song.play(hats[i % 2], bar, i, gain=0.07 if i % 2 == 0 else 0.1)
+
+        # The drums come in after the first four bars, and drive harder from the second phrase on.
+        if bar >= 4:
+            for eighth in ([0, 3, 4] if bar >= 8 else [0, 4]):
+                song.play(boom, bar, eighth, gain=0.55)
+            song.play(snares[0], bar, 2, gain=0.17, room=0.3)
+            song.play(snares[1], bar, 6, gain=0.19, room=0.3)
+            if bar % 8 == 7:
+                song.play(snares[0], bar, 7, gain=0.12, room=0.3)
+                song.play(snares[1], bar, 7.5, gain=0.14, room=0.3)
+
+        if SCRAWL_MELODY[bar]:
+            song.melody(bar, SCRAWL_MELODY[bar], gain=0.24, room=0.4, echo=0.3, duty=0.5)
+    return song.render(room_size=0.86, room_gain=0.85, rms_db=-18.0)
+
+
 def all_tracks():
-    return [("TitleTheme", title_theme), ("DungeonTheme", dungeon_theme), ("DungeonAmbience", dungeon_ambience)]
+    return [("TitleTheme", title_theme), ("DungeonTheme", dungeon_theme), ("DungeonAmbience", dungeon_ambience),
+            ("ScrawlTheme", scrawl_theme)]

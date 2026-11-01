@@ -1,6 +1,6 @@
 # Audio
 
-Generates the game's newer sounds as code: the typing sounds, footsteps, the death puff, the menu clicks, the title and dungeon themes, and the cave ambience. It is a small chiptune synthesizer in plain Python (no packages needed), so everything sounds like one small machine and matches the original Ludum Dare effects.
+Generates the game's newer sounds as code: the typing sounds, footsteps, the death puff, the menu clicks, the Scrawl's effects, the title, dungeon and Scrawl themes, and the cave ambience. It is a small chiptune synthesizer in plain Python (no packages needed), so everything sounds like one small machine and matches the original Ludum Dare effects.
 
 The original effects (`ChestOpen`, `Damage`, `Explosion`, `GameOver`, `ItemApply`, `LevelText`, `Powerup`, `Shoot`, `Teleport`) are hand-made and not touched by this tool.
 
@@ -24,8 +24,8 @@ unity command script run --file Tools/Audio/ImportAudio.cs --entry ImportAudio.R
 ## Files
 
 - `synth.py`: oscillators (anti-aliased pulse, triangle, sine, noise), envelopes, filters, echo, a small Freeverb, and WAV output.
-- `sfx.py`: the sound effects. The typed-letter blip is tuned to A4. The game raises its pitch letter by letter up the dungeon theme's D minor pentatonic scale (`AudioPlayer.LetterSteps`), so typing plays along with the music.
-- `music.py`: the two themes, written out as chords and melodies, and the ambience. Echo and reverb tails are folded back onto the start of each loop, so the loop point is seamless.
+- `sfx.py`: the sound effects. The typed-letter blip is tuned to A4. The game raises its pitch letter by letter up the dungeon theme's D minor pentatonic scale (`AudioPlayer.LetterSteps`), so typing plays along with the music. The `Boss*` effects are the Scrawl's: it rising, charging, slamming, its beam, a strike landing, a hand sinking, and its death. They sit louder than the other new effects, next to the original ones they play with.
+- `music.py`: the three themes, written out as chords and melodies, and the ambience. The Scrawl's theme stays in D minor like the dungeon theme, so typing plays along with it too. Echo and reverb tails are folded back onto the start of each loop, so the loop point is seamless.
 - `build.py`: writes `Assets/Audio/*.wav`.
 - `ImportAudio.cs`: the loops stream as Vorbis; the effects load uncompressed, so they play the instant they are triggered.
 
