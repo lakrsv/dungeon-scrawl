@@ -25,29 +25,73 @@ namespace Controllers
     using Utilities.Game.Navigation;
 
     /// <summary>
-    /// With nothing hostile in sight, the move prompts are single keys. They are either W, A, S and D (the default),
-    /// or a random letter per direction. The player picks on the main menu, and the choice is kept.
+    /// With nothing hostile in sight, the move prompts are single keys: W, A, S and D (the default); Z, Q, S and D,
+    /// which sit in the same place on an AZERTY keyboard; or a random letter per direction. The player picks on the
+    /// main menu or in the options, and the choice is kept.
     /// </summary>
     public static class MoveKeys
     {
+        // Saved as 1 for WASD and 0 for letters, as when that was the only choice, and 2 for ZQSD.
         private const string PrefsKey = "MoveKeys";
 
-        private static int _wasd = -1;
+        private static readonly Layout[] Order = { Layout.Wasd, Layout.Zqsd, Layout.Letters };
 
-        public static bool Wasd
+        private static int _keys = -1;
+
+        public enum Layout
+        {
+            Letters = 0,
+
+            Wasd = 1,
+
+            Zqsd = 2
+        }
+
+        public static Layout Keys
         {
             get
             {
-                if (_wasd < 0) _wasd = PlayerPrefs.GetInt(PrefsKey, 1);
-                return _wasd == 1;
+                if (_keys < 0) _keys = PlayerPrefs.GetInt(PrefsKey, (int)Layout.Wasd);
+                return (Layout)Mathf.Clamp(_keys, 0, 2);
             }
 
             set
             {
-                _wasd = value ? 1 : 0;
-                PlayerPrefs.SetInt(PrefsKey, _wasd);
+                _keys = (int)value;
+                PlayerPrefs.SetInt(PrefsKey, _keys);
                 PlayerPrefs.Save();
             }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether each direction has its own fixed key (WASD or ZQSD), rather than a letter.
+        /// </summary>
+        public static bool Fixed
+        {
+            get { return Keys != Layout.Letters; }
+        }
+
+        /// <summary>
+        /// Gets the name of the choice, as the menus show it.
+        /// </summary>
+        public static string Name
+        {
+            get { return Keys == Layout.Letters ? "LETTERS" : Keys.ToString().ToUpperInvariant(); }
+        }
+
+        // Up, left, down, right.
+        private static string Set
+        {
+            get { return Keys == Layout.Zqsd ? "zqsd" : "wasd"; }
+        }
+
+        /// <summary>
+        /// Moves to the next choice (or the previous one, with a step of -1), round and round.
+        /// </summary>
+        public static void Next(int step = 1)
+        {
+            var at = System.Array.IndexOf(Order, Keys);
+            Keys = Order[((at + step) % Order.Length + Order.Length) % Order.Length];
         }
 
         public static string For(Direction direction)
@@ -55,23 +99,23 @@ namespace Controllers
             switch (direction)
             {
                 case Direction.Up:
-                    return "w";
+                    return Set.Substring(0, 1);
                 case Direction.Left:
-                    return "a";
+                    return Set.Substring(1, 1);
                 case Direction.Down:
-                    return "s";
+                    return Set.Substring(2, 1);
                 default:
-                    return "d";
+                    return Set.Substring(3, 1);
             }
         }
 
         /// <summary>
-        /// Whether a word would get in the way of the WASD keys: with them on, the first letter of a word must never
-        /// be one of them, or typing it would move instead.
+        /// Whether a word would get in the way of the move keys: with WASD or ZQSD on, the first letter of a word must
+        /// never be one of them, or typing it would move instead.
         /// </summary>
         public static bool Blocks(string word)
         {
-            return Wasd && word.Length > 0 && "wasd".IndexOf(word[0]) >= 0;
+            return Fixed && word.Length > 0 && Set.IndexOf(word[0]) >= 0;
         }
     }
 }

@@ -41,7 +41,7 @@ The loop is dodge, punish, dodge. The Scrawl acts in turns, one at a time: **lef
 - **Breaking a hand** sinks it into the void, and its turns become breathers: so going for the hands makes the fight calmer, going for the head makes it shorter. With both hands gone, the head drifts closer and beams every turn.
 - **Desperation:** once the head is cracked (half health or less), everything comes 15% faster.
 - **Difficulty** (Normal, Hard, Impossible): slam warning 2.5, 1.8, 1.3 s; a hand rests 3.5, 3, 2.6 s; the pause between turns is 1.2, 0.9, 0.6 s; health is scaled by 1, 1.25, 1.5.
-- **Words:** dodges are 3 letters, so they can be typed under pressure; hand words are 6, head words 8. No two words on screen share a first letter, and with WASD quick moves on, none start with W, A, S or D. A struck part's next word appears when the blow lands.
+- **Words:** dodges are 3 letters, so they can be typed under pressure; hand words are 6, head words 8. No two words on screen share a first letter, and with WASD or ZQSD quick moves on, none start with one of those keys. A struck part's next word appears when the blow lands.
 - **Health** is counted in strikes of the knight's own damage, so power collected on levels 1 to 4 shortens the fight, but only so far: before difficulty, a hand takes 3 strikes and the head 12, times 1 + 0.5 / power. A knight with no power needs half as many again; at power 5, a hand takes 4 strikes on Hard and the head 16.
 - **Stats:** each part broken counts as a kill; beating the Scrawl adds 1000 points (times the difficulty, like the rest of the score).
 
@@ -83,4 +83,4 @@ Generated in `Tools/Audio`:
 3. [x] The boss sprites and their animations.
 4. [x] The fight logic.
 5. [x] Audio.
-6. [x] Balance on Hard and Impossible with the autopilot and the Scrawler; the Scrawler fights it; docs. Still to do by hand: play it yourself on all three difficulties, and listen to the theme and effects.
+6. [x] Balance on Hard and Impossible with the autopilot and the Scrawler; the Scrawler fights it; docs. Played by the user on 2026-11-01: "works great". If it needs tuning later, the numbers are at the top of `Assets/Scripts/Boss/Scrawl.cs`.

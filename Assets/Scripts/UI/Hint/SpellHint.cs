@@ -405,8 +405,12 @@ namespace UI.Hint
             var left = Frame + Margin + (_icon != null ? IconWidth + IconGap : 0);
             box.sizeDelta = new Vector2((left + textWidth + Margin + Frame) * Px, box.sizeDelta.y);
 
+            // The word keeps its distance from the plaque's left edge, so its place under the plaque's centre moves
+            // with the width: keep it as the place its hops and shakes return to.
+            StopJolt();
             var text = _text.rectTransform;
             text.anchoredPosition = new Vector2(left * Px, text.anchoredPosition.y);
+            _wordPosition = text.localPosition;
         }
 
         // One pixel of the game's art (1/16 of a world unit), in the word's own units. The hints are world-space

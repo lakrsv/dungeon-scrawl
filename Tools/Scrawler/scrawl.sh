@@ -3,7 +3,7 @@
 # See README.md.
 #
 #   Tools/Scrawler/scrawl.sh official [--wpm 85|120]
-#   Tools/Scrawler/scrawl.sh practice [--wpm 85|120] [--level N] [--health N] [--damage N] [--reach N] [--sight N] [--speed X]
+#   Tools/Scrawler/scrawl.sh practice [--wpm 85|120] [--level N] [--health N] [--damage N] [--reach N] [--sight N] [--speed X] [--difficulty 1|2|3]
 
 set -u
 
@@ -12,7 +12,7 @@ project="$(cd "$here/../.." && pwd)"
 
 mode="${1:-official}"
 [ $# -gt 0 ] && shift
-wpm=120 level=1 health=5 damage=1 reach=1 sight=3 speed=1
+wpm=120 level=1 health=5 damage=1 reach=1 sight=3 speed=1 difficulty=3
 while [ $# -gt 0 ]; do
   case "$1" in
     --wpm) wpm="$2"; shift 2 ;;
@@ -22,6 +22,7 @@ while [ $# -gt 0 ]; do
     --reach) reach="$2"; shift 2 ;;
     --sight) sight="$2"; shift 2 ;;
     --speed) speed="$2"; shift 2 ;;
+    --difficulty) difficulty="$2"; shift 2 ;;
     *) echo "unknown option: $1"; exit 2 ;;
   esac
 done
@@ -37,7 +38,7 @@ case "$mode" in
   practice)
     scene="Assets/Scenes/Game.unity"
     entry="Scrawler.Practice"
-    args="[\"$speed\",\"$level\",\"$health\",\"$damage\",\"$reach\",\"$sight\",\"$wpm\"]"
+    args="[\"$speed\",\"$level\",\"$health\",\"$damage\",\"$reach\",\"$sight\",\"$wpm\",\"$difficulty\"]"
     ;;
   *)
     echo "usage: $0 official|practice [options]"

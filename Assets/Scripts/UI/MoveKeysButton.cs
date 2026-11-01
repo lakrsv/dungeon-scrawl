@@ -31,8 +31,8 @@ namespace UI
     using UnityEngine.UI;
 
     /// <summary>
-    /// A main menu button that switches the quick moves (used while nothing hostile is in sight) between WASD and a
-    /// random letter per direction.
+    /// A main menu button that switches the quick moves (used while nothing hostile is in sight) between WASD, ZQSD
+    /// and a random letter per direction.
     /// </summary>
     public class MoveKeysButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
     {
@@ -51,7 +51,7 @@ namespace UI
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            MoveKeys.Wasd = !MoveKeys.Wasd;
+            MoveKeys.Next();
             ShowKeys();
             Jukebox.Select();
             _label.transform.DOKill(true);
@@ -77,7 +77,7 @@ namespace UI
         // Centres the icon and the label together in the frame, on whole art pixels (4 canvas units).
         private void ShowKeys()
         {
-            _label.text = MoveKeys.Wasd ? "WASD" : "LETTERS";
+            _label.text = MoveKeys.Name;
 
             var iconWidth = _icon.sizeDelta.x;
             // The label's preferred width ends with the spacing after its last letter: one font pixel, which is

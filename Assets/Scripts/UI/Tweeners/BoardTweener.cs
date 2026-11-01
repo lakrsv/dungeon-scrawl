@@ -45,9 +45,11 @@ namespace UI.Tweeners
             Camera.main.transform.DOMove(new Vector3(playerPos.Position.x, playerPos.Position.y, -10), 1.0f).SetEase(Ease.OutBack);
             yield return new WaitForSeconds(1.0f);
             AudioPlayer.Instance.PlayAudio(AudioPlayer.Type.Teleport);
-            Camera.main.DOOrthoSize(0.01f, 2.0f).SetEase(Ease.InBounce);
+
+            // Wait for the zoom itself: a wait of the same length could end a frame before it, and its last step
+            // then undid the camera reset that follows, leaving the level announcement zoomed in past reading.
             ////transform.DOMove(new Vector3(0, -100, 0), 1.0f);
-            yield return new WaitForSeconds(2.0f);
+            yield return Camera.main.DOOrthoSize(0.01f, 2.0f).SetEase(Ease.InBounce).WaitForCompletion();
         }
 
         public IEnumerator BoardDisappearOpposite()

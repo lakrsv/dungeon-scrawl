@@ -39,6 +39,10 @@ Tools/Scrawler/scrawl.sh official --wpm 85
 # Practice from any level with any stats. --speed scales game time; typing timers run in game
 # time, so 4x speed plays out the same as 1x, only faster.
 Tools/Scrawler/scrawl.sh practice --level 5 --health 9 --damage 8 --reach 6 --sight 8 --speed 4
+
+# Practice runs are on IMPOSSIBLE unless told otherwise (1 Normal, 2 Hard, 3 Impossible). They leave that
+# difficulty saved; the main menu sets it again on the next Play.
+Tools/Scrawler/scrawl.sh practice --level 1 --difficulty 1
 ```
 
 The script follows the player's log (lines tagged `[SCRAWL]` in the Unity console) until the run ends. To stop early, exit Play mode.
@@ -62,7 +66,7 @@ It keeps a memory of the level as it sees it: explored floor, chests and whether
 3. Fight, if it would survive the expected damage plus one extra hit.
 4. Otherwise, run to the nearest tile that no visible enemy can hit. If none exists, run to the tile the fewest can hit. Escapes avoid dead ends, prefer corridors when several Pests are about, and keep away from Pests.
 
-It never attacks Slimes, which stay passive unless attacked.
+It leaves Slimes alone, since they stay passive unless attacked, until one is the only thing in the way of everything it could still go for. Then it walks up to it and clears it.
 
 **Pests.** When a Pest is two tiles away, Scrawler waits for it to step up. Its turn has then just ended, which leaves a full rotation to hit it and step back.
 
@@ -76,7 +80,7 @@ It never attacks Slimes, which stay passive unless attacked.
 - Level 4: nearby chests, then the exit.
 - Level 5: north along the bridge to the Scrawl, then the exit once it is dead.
 
-It commits to a target until it is reached or stops being useful.
+It commits to a target until it is reached or stops being useful. It remembers where it last saw each creature, and paths around that tile until it comes back into view empty: forgetting a creature the moment it left the light once had it walking back and forth for ever, between a chest past a Slime (with the Slime out of sight) and somewhere else to explore (with it in sight).
 
 **The Scrawl.** While its bar is up, the fight comes first. When dodges are offered, it steps away from the hand that is burning red (a slam covers the knight's lane and the lane on that hand's side), or towards the middle when it is the mask charging its beam (which covers only the knight's lane). It drops a half-typed word to dodge, as a person would. Between blows it strikes a resting hand first, since a broken hand's slams are gone for good, then the head.
 

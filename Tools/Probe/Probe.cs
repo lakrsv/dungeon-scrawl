@@ -3,6 +3,8 @@
 //   Tools/Probe/probe.sh Type "kick" 0.12
 // It is compiled in memory by the Unity CLI's `script run`, so it never ships with the game.
 
+using System.Collections;
+using System.IO;
 using System.Reflection;
 using System.Text;
 
@@ -38,7 +40,7 @@ public static class Probe
             "scene {0}  time {1:0.0}  timeScale {2}  level {3}  playing {4}  paused {5}",
             SceneManager.GetActiveScene().name, Time.time, Time.timeScale, GameController.CurrentLevel,
             game != null && game.IsPlaying, game != null && game.IsPaused));
-        log.AppendLine(string.Format("music {0}  sound {1}  wasd {2}", Volume.MusicLevel, Volume.SoundLevel, MoveKeys.Wasd));
+        log.AppendLine(string.Format("music {0}  sound {1}  keys {2}", Volume.MusicLevel, Volume.SoundLevel, MoveKeys.Name));
         foreach (var jukebox in Object.FindObjectsByType<Jukebox>())
             foreach (var source in jukebox.GetComponents<AudioSource>())
                 if (source.clip != null)
@@ -259,6 +261,34 @@ public static class Probe
         return null;
     }
 
+    /// <summary>
+    /// Records the Game view for a while: every frame as a PNG in `folder`, with the game's clock fixed to `fps`
+    /// frames a second (Time.captureFramerate), so the frames are evenly spaced however long each takes to save.
+    /// frames.tsv lists each frame's game time and level. It carries on across level loads.
+    /// </summary>
+    public static string Record(string seconds, string fps, string folder)
+    {
+        var old = Object.FindAnyObjectByType<ProbeRecorder>();
+        if (old != null) Object.Destroy(old.gameObject);
+        var go = new GameObject("ProbeRecorder");
+        Object.DontDestroyOnLoad(go);
+        var recorder = go.AddComponent<ProbeRecorder>();
+        recorder.Folder = folder;
+        recorder.Rate = int.Parse(fps);
+        recorder.Frames = Mathf.RoundToInt(float.Parse(seconds, System.Globalization.CultureInfo.InvariantCulture) * recorder.Rate);
+        return string.Format("recording {0} frames at {1} fps to {2}", recorder.Frames, recorder.Rate, folder);
+    }
+
+    public static string StopRecording()
+    {
+        var recorder = Object.FindAnyObjectByType<ProbeRecorder>();
+        if (recorder == null) return "not recording";
+        var frames = recorder.Written;
+        Object.Destroy(recorder.gameObject);
+        Time.captureFramerate = 0;
+        return "stopped after " + frames + " frames";
+    }
+
     public static string Popup(string text, string size)
     {
         var camera = Camera.main.transform.position;
@@ -267,13 +297,13 @@ public static class Probe
     }
 
     /// <summary>
-    /// Sets the player's settings, e.g. to put them back after a test: music and sound 0-3, wasd true or false.
+    /// Sets the player's settings, e.g. to put them back after a test: music and sound 0-3, keys wasd, zqsd or letters.
     /// </summary>
-    public static string Settings(string music, string sound, string wasd)
+    public static string Settings(string music, string sound, string keys)
     {
         Volume.MusicLevel = int.Parse(music);
         Volume.SoundLevel = int.Parse(sound);
-        MoveKeys.Wasd = bool.Parse(wasd);
+        MoveKeys.Keys = keys == "zqsd" ? MoveKeys.Layout.Zqsd : keys == "letters" ? MoveKeys.Layout.Letters : MoveKeys.Layout.Wasd;
         return State();
     }
 
@@ -285,5 +315,43 @@ public static class Probe
         PlayerPrefs.DeleteKey("BestScore");
         PlayerPrefs.Save();
         return "best score cleared";
+    }
+}
+
+/// <summary>
+/// Saves the Game view every frame for Probe.Record.
+/// </summary>
+public class ProbeRecorder : MonoBehaviour
+{
+    public string Folder;
+
+    public int Rate;
+
+    public int Frames;
+
+    public int Written;
+
+    private IEnumerator Start()
+    {
+        Directory.CreateDirectory(Folder);
+        var index = new StringBuilder("frame\ttime\tscene\tlevel\n");
+        Time.captureFramerate = Rate;
+        for (Written = 0; Written < Frames; Written++)
+        {
+            yield return new WaitForEndOfFrame();
+            var shot = ScreenCapture.CaptureScreenshotAsTexture();
+            File.WriteAllBytes(Path.Combine(Folder, string.Format("f{0:00000}.png", Written)), shot.EncodeToPNG());
+            Destroy(shot);
+            index.AppendFormat("{0}\t{1:0.000}\t{2}\t{3}\n", Written, Time.time, SceneManager.GetActiveScene().name, GameController.CurrentLevel);
+            File.WriteAllText(Path.Combine(Folder, "frames.tsv"), index.ToString());
+        }
+
+        Time.captureFramerate = 0;
+        Destroy(gameObject);
+    }
+
+    private void OnDestroy()
+    {
+        Time.captureFramerate = 0;
     }
 }

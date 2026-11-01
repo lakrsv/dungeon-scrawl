@@ -141,6 +141,11 @@ public static class Scrawler
         public readonly Dictionary<int, int> Dealt = new Dictionary<int, int>();
         public readonly Dictionary<int, Kind> Seen = new Dictionary<int, Kind>();
         public readonly Dictionary<int, KeyValuePair<Vector2Int, float>> DemonMemory = new Dictionary<int, KeyValuePair<Vector2Int, float>>();
+
+        // Where each living creature was last seen. Paths treat those tiles as taken until they come back into view
+        // empty: forgetting a creature the moment it leaves the light made the bot walk back and forth for ever
+        // between a goal past it (with the creature out of sight) and another goal (with it in sight).
+        public readonly Dictionary<int, KeyValuePair<Vector2Int, Kind>> Blockers = new Dictionary<int, KeyValuePair<Vector2Int, Kind>>();
         public string LastGoal;
         public View Latest;
         public readonly Dictionary<int, Vector2Int> Stable = new Dictionary<int, Vector2Int>();
@@ -179,10 +184,10 @@ public static class Scrawler
     }
 
     // Practice from any level with given stats. Only for tuning; never used in the official run.
-    public static string Practice(string timeScale, string level, string hp, string dmg, string reach, string fov, string wpm)
+    public static string Practice(string timeScale, string level, string hp, string dmg, string reach, string fov, string wpm, string difficulty = "3")
     {
         SetProfile(wpm);
-        PlayerPrefs.SetInt("Difficulty", 3);
+        PlayerPrefs.SetInt("Difficulty", int.Parse(difficulty));
         PlayerPrefs.SetInt("Health", int.Parse(hp));
         PlayerPrefs.SetInt("Damage", int.Parse(dmg));
         PlayerPrefs.SetInt("Reach", int.Parse(reach));
@@ -551,6 +556,15 @@ public static class Scrawler
             m.Seen[e.Id] = e.Kind;
             if (e.Kind == Kind.Demon) m.DemonMemory[e.Id] = new KeyValuePair<Vector2Int, float>(e.Pos, Time.time);
             if (e.Kind == Kind.Dead) m.DemonMemory.Remove(e.Id);
+            if (e.Kind == Kind.Dead) m.Blockers.Remove(e.Id);
+            else m.Blockers[e.Id] = new KeyValuePair<Vector2Int, Kind>(e.Pos, e.Kind);
+        }
+
+        // A remembered creature is gone once its tile is lit again and it isn't drawn there.
+        foreach (var id in m.Blockers.Keys.ToList())
+        {
+            var at = m.Blockers[id].Key;
+            if (!v.Enemies.Any(e => e.Id == id) && map.IsInFov(at.x, at.y)) m.Blockers.Remove(id);
         }
 
         foreach (var id in m.DemonMemory.Keys.ToList())
@@ -962,6 +976,7 @@ public static class Scrawler
         var map = MapSystem.Instance.Map;
         int w = map.Width, h = map.Height;
         var occupied = new HashSet<Vector2Int>(v.Enemies.Where(e => e.Kind != Kind.Dead).Select(e => e.Pos));
+        occupied.UnionWith(m.Blockers.Values.Select(b => b.Key));
         var remembered = m.DemonMemory.Where(kv => !v.Enemies.Any(e => e.Id == kv.Key))
             .Select(kv => new Enemy { Id = kv.Key, Pos = kv.Value.Key, Kind = Kind.Demon }).ToList();
 
@@ -1045,6 +1060,17 @@ public static class Scrawler
             if (door.HasValue) { goal = door; why = "exit"; }
             else if (chestGoal.HasValue && costTo(chestGoal) <= 8) { goal = chestGoal; why = "chest"; }
             else if (frontier.HasValue) { goal = frontier; why = "explore"; }
+        }
+
+        // Nothing left to reach but past a Slime: Slimes stay passive unless attacked, so it is left alone until it
+        // is the only thing in the way. Then go up to it, and clear it out of the way.
+        if (!goal.HasValue)
+        {
+            var slime = v.Enemies.FirstOrDefault(e => e.Kind == Kind.Slime);
+            var strike = slime == null ? null : v.Prompts.FirstOrDefault(p => p.IsAttack && p.Target == slime.T && !Conflicts(p.Word, v));
+            if (strike != null) return new Act { Kind = ActKind.Attack, Prompt = strike, Target = slime, Why = "clear the Slime out of the way" };
+            goal = nearest(dist.Keys.Where(t => m.Blockers.Values.Any(b => b.Value == Kind.Slime && Manhattan(b.Key, t) == 1)));
+            why = "reach the Slime in the way";
         }
 
         // Stick with the current goal while it is still worth reaching and of the same kind.

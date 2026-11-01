@@ -56,6 +56,9 @@ namespace Controllers
 
         private bool _shouldRemoveMovementWords = false;
 
+        // The move keys the quick-move prompts were made with, so a change in the options shows at once.
+        private MoveKeys.Layout? _quickKeys;
+
         // Words that other systems ask for, each with what typing it does: the boss's dodges and attacks.
         private readonly Dictionary<string, Action> _requiredCustomWord = new Dictionary<string, Action>();
 
@@ -81,7 +84,7 @@ namespace Controllers
 
         private bool _movingSimple;
 
-        // With nothing hostile in sight the move prompts are single keys (WASD or letters, see MoveKeys). Those keys
+        // With nothing hostile in sight the move prompts are single keys (WASD, ZQSD or letters, see MoveKeys). Those keys
         // are steering, not typing.
         private bool QuickMovesUp
         {
@@ -232,6 +235,14 @@ namespace Controllers
             if (invalid) _currentInputWord.Length = 0;
         }
 
+        // Drops the letters typed so far, and the prompts show their words untouched again.
+        private void ClearInput()
+        {
+            if (_currentInputWord.Length == 0) return;
+            _currentInputWord.Length = 0;
+            foreach (var hint in HintCache.Instance.GetCached().ToList()) hint.OnWordTyped(string.Empty);
+        }
+
         private void SubmitInput()
         {
             var inputWord = _currentInputWord.ToString();
@@ -328,7 +339,8 @@ namespace Controllers
                         break;
                     case '\n':
                     case '\r':
-                        SubmitInput();
+                        // Words go off on their last letter, so Enter only gives up on the word under way.
+                        ClearInput();
                         break;
                     default:
                         // Quick moves go by presses: while their prompts are up and no word is under way, the
@@ -403,6 +415,12 @@ namespace Controllers
 
         private void UpdateMovementType()
         {
+            if (_quickKeys != MoveKeys.Keys)
+            {
+                _quickKeys = MoveKeys.Keys;
+                if (_movingSimple) _shouldRemoveMovementWords = true;
+            }
+
             var renderers = ComponentCache.Instance.GetCached<RenderComponent>();
 
             if (renderers == null)
@@ -523,7 +541,7 @@ namespace Controllers
         {
             string requiredWord;
             if (!_movingSimple) requiredWord = GetWordNonConflicting(_movementDifficulty, false);
-            else requiredWord = MoveKeys.Wasd ? MoveKeys.For(direction) : GetLetterNonConflicting();
+            else requiredWord = MoveKeys.Fixed ? MoveKeys.For(direction) : GetLetterNonConflicting();
             if (_requiredDirectionWord.ContainsKey(requiredWord))
             {
                 // Hide the prompt rather than leave the previous word up: it would no longer map to anything.
@@ -542,8 +560,8 @@ namespace Controllers
             _moveHints.SetHint(direction, false);
         }
 
-        // Attack and loot words also keep clear of the WASD keys when those are on (see MoveKeys.Blocks). Move words
-        // needn't: they are only words while the WASD keys are not in use.
+        // Attack and loot words also keep clear of the WASD or ZQSD keys when those are on (see MoveKeys.Blocks).
+        // Move words needn't: they are only words while the single-key moves are not in use.
         private string GetWordNonConflicting(int length, bool clearOfMoveKeys = true)
         {
             string word;

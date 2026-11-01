@@ -118,7 +118,7 @@ namespace UI
                     Volume.SoundLevel += step;
                     break;
                 case 2:
-                    MoveKeys.Wasd = !MoveKeys.Wasd;
+                    MoveKeys.Next(step);
                     _moveKeys.transform.DOKill(true);
                     _moveKeys.transform.DOPunchScale(new Vector3(0.2f, 0.2f, 0f), 0.25f, 1, 0f).SetUpdate(true);
                     break;
@@ -142,7 +142,7 @@ namespace UI
         {
             for (var i = 0; i < _musicBars.Length; i++) _musicBars[i].color = i < Volume.MusicLevel ? Gold : Plum;
             for (var i = 0; i < _soundBars.Length; i++) _soundBars[i].color = i < Volume.SoundLevel ? Gold : Plum;
-            _moveKeys.text = MoveKeys.Wasd ? "WASD" : "LETTERS";
+            _moveKeys.text = MoveKeys.Name;
         }
 
         private void Update()

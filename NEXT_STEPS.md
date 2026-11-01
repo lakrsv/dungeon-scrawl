@@ -12,30 +12,73 @@ The Ludum Dare game has been brought up to a polished state, in this order (see 
 4. **Fixes** (`de09249`, `fe14ebe`): the congratulations popup on one line; a letter that starts another word switches targets instead of being thrown away.
 5. **Interface** (`00f62c5`): prompts, status panel and floating text in the menus' style with a true pixel font (`MunroSmall Pixel`), plus pause and options menus.
 6. **Checked by hand and built** (2026-11-01, by the user): the keyboard in the pause and options menus, per-press quick moves, F9/F10, the audio, and a real build.
-7. **The Scrawl** (`81a4c63`): level 5 is now a bridge over the void and a boss fight, with its own art, theme and effects. Design, balance and how to test it are in `BOSS.md`. F8 jumps to it.
+7. **The Scrawl** (`81a4c63`): level 5 is now a bridge over the void and a boss fight, with its own art, theme and effects. Design, balance and how to test it are in `BOSS.md`. F8 jumps to it. Played by the user on 2026-11-01: "works great".
+8. **Small fixes** (2026-11-01, not yet committed): Enter gives up on the word under way and the prompts show their words plain again; the text popups' console warning is gone; ZQSD is a third choice of move keys for AZERTY keyboards, and a change of move keys shows at once; unused originals are removed (the old move hint prefabs, UI images and the Electronic Highway Sign font), after checking references. Two bugs turned up while recording the README's GIFs, both fixed: a typed word drifted right in its plaque from the second letter on (long loot words spilled out of it), and a level's exit zoom could finish a frame after the camera reset, leaving the "-LEVEL N-" or "-CONGRATULATIONS-" announcement zoomed in past reading. The Scrawler no longer walks back and forth for ever when a Slime it won't attack sits between it and a goal.
+9. **README pictures** (2026-11-01, not yet committed): a new screenshot and four new GIFs in `PR/` (loot, a Demon fight, a level exit, and the Scrawl rising and fighting), recorded frame by frame with `Tools/Probe/probe.sh Record` while the Scrawler played. The README's text is unchanged.
 
-## Next up
+## Roadmap: toward a commercial release
 
-In rough priority order:
+Decided with the user on 2026-11-01: Dungeon Scrawl becomes a small paid Steam game (around $3–6) and the first commercial release, ahead of Vampyre. The target is **15 levels in three acts, 3 boss fights, an endless mode, more enemies, events and typing challenges, custom word lists, and the interface and default word lists in all major languages**. Schools are a possible future audience, so the game must be configurable throughout.
 
-1. **Play the Scrawl by hand** (F8 in the Editor, see `BOSS.md`): on all three difficulties, with sound on. Things only a person can judge: whether the warnings read in time, whether the dodge rule (step away from the burning hand) is clear without being told, the theme and effects, and how long the fight feels. The numbers to tune are at the top of `Assets/Scripts/Boss/Scrawl.cs`.
-2. **One options screen everywhere.** `OptionsMenu` exists only in the Game scene's `PauseCanvas`. The main menu still has its own corner buttons for music, sound and move keys (`Sound.VolumeButton`, `UI.MoveKeysButton`), which the user approved. Consider an OPTIONS button on the main menu that opens the same panel; ask before removing the corner buttons.
-3. **Tune the move prompts' prominence** if they feel too loud: `CanvasGroup` alpha on each hint in `Assets/Prefabs/Hints/MoveHints.prefab` is 0.85 (the original was 0.5).
-4. **More to play:** an endless mode after the win, or another enemy type (a new blueprint in `ECS/Entities/Blueprint`, spawned from `ActorSpawnerSystem`).
-5. **Update the README's screenshots and GIFs** (`PR/`): they still show the original graphics and none of the new screens. `Tools/Probe/capture.sh` takes 1920x1080 shots.
+### Principle: everything can be switched off
+
+Teachers, parents and players must be able to set the game up for what they care about. This shapes every feature below.
+
+- **One central configuration.** Add a single settings object (e.g. `GameConfig`) that every feature reads, instead of scattered `PlayerPrefs` keys (`"Difficulty"`, `"MoveKeys"`, `"MusicVolume"`, …). Move the existing settings into it, keeping their saved values.
+- **Every new enemy, event, challenge and power-up gets a switch from day one.** No feature lands without one. Defaults are "on" for regular players.
+- Things a school would likely want to control: which word lists are used and their word lengths; enemy speed and game speed; timed challenges on/off (time pressure is an accessibility issue); a no-fail or practice mode; which enemies, events and power-ups appear; music and sound.
+- **Presets:** for example Standard, Relaxed (no timers, slower) and Classroom, plus Custom.
+- **Later, for schools:** settings saved as a readable file (e.g. JSON) that an administrator can copy to many machines, with an optional lock so students can't change it. Design the configuration so this is easy to add, but build it later.
+
+### Principle: every language is a first-class citizen
+
+Decided with the user on 2026-11-01: the interface is localized into all major languages, and every language gets its own default word lists. For a typing game these are two separate jobs.
+
+- **Two separate settings: interface language and word language.** A Norwegian class practising English needs a Norwegian interface and English words. Both live in the central configuration.
+- **Every new piece of text goes through localization from the day it is written.** No hard-coded interface strings in new code. Unity's Localization package (String Tables) is the likely tool; the existing hard-coded strings (menus, run report, popups like "-LEVEL N-" and "-CONGRATULATIONS-", the pause and options menus) get moved over when the localization work starts.
+- **Languages, in rough order of Steam's player base:** English, Simplified Chinese, Russian, Spanish, Brazilian Portuguese, German, French, Japanese, Korean, Polish, Turkish, Italian. Add Traditional Chinese, Ukrainian and the Nordic languages if cheap. Ask the user to confirm the list before translating.
+- **Word lists per language need native-quality curation:** common, school-appropriate words in each length bucket, no offensive words, checked by a native speaker if possible. Machine-generated lists are a starting point only.
+
+Technical problems to solve, found in the current code:
+
+- **Fonts.** `MunroSmall Pixel` and the menus' Munro fonts cover Latin only (check whether they even cover æøå, ß, ç, ł and other accented letters). Cyrillic, Greek, CJK and Korean need pixel fonts with matching style, as TextMesh Pro fallback fonts. CJK at this pixel size is the hardest part; budget for it.
+- **Typing input.** `InputController` reads `Input.inputString` (legacy Input Manager). That delivers whatever characters the keyboard layout produces, which is good for Latin, Cyrillic and Greek, but Chinese, Japanese and Korean are typed through an input method editor (IME) that composes characters before committing them. Decide per language what the player types: e.g. pinyin for Chinese, romaji or kana for Japanese, and composed Hangul syllables or individual jamo for Korean. Test that Unity delivers IME text in-game at all.
+- **Quick-move keys assume Latin letters.** WASD and ZQSD are matched as characters, so on a Russian layout those keys produce Cyrillic letters and quick moves stop working. Quick moves should go by physical key (key codes), not by the character typed. `MoveKeys.Blocks` (which keeps attack words from starting with a move key) must then block whatever characters those physical keys produce on the player's layout.
+- **Accents and special letters.** Decide whether "é" can be typed as "e" (an option in the configuration; strict for spelling practice, lenient for casual play). Check that dead keys (´ then e) arrive as one "é" in `Input.inputString`. Case-folding must be culture-aware (Turkish dotted and dotless i).
+- **Word rules per language.** `WordSystem` buckets words by length 3–9 and needs distinct first letters. Some languages have very long average words (German, Finnish) and some very short (Chinese in characters), so word-length curves and bucket sizes become per-language settings.
+- **Right-to-left languages (Arabic, Hebrew)** need text shaping and mirrored layouts that TextMesh Pro doesn't do well. Leave them out of the first round.
+
+### Order of work
+
+1. **Central configuration and one options screen.** Build the settings object and presets, including the interface language and word language settings (English only at first). Install the Localization package and set up an English String Table now, so the text written in steps 2–7 goes into it from the start. Give the main menu an OPTIONS button that opens the same panel as the pause menu (`OptionsMenu` exists only in the Game scene's `PauseCanvas` today). Ask before removing the main menu's corner buttons (`Sound.VolumeButton`, `UI.MoveKeysButton`), which the user approved.
+2. **Combo meter and power-ups.** Typing without mistakes builds a meter that strengthens attacks. Prefer power-ups that change *how you type* over plain stat boosts: shorter words, one free typo, a word that hits two enemies, an auto-completed first letter. Events, challenges and enemies all hand these out, so they come first.
+3. **Events and typing challenges.** Start with 3–4, then add more over time. Candidates:
+   - Speed trial: type a sentence before the timer runs out to earn a power-up; harder sentences give better rewards.
+   - Cursed shrine: choose a blessing or a curse (e.g. scrambled words for double loot).
+   - Mimic chest: open it with a long word; a typo wakes the mimic.
+   - Merchant: spend gold by typing an item's name.
+   - Locked door or riddle: type a phrase to open it.
+4. **Enemies.** Each one differs in *how you type against it*, not only in stats. Each is a new blueprint in `ECS/Entities/Blueprint`, spawned from `ActorSpawnerSystem`.
+   - **Decided (build these):**
+     - *Armored*: needs a long word, or several words, to bring down.
+     - *Fast*: a short word, but very little time before it strikes.
+     - *Swarm*: many weak enemies with very short words.
+   - **Undecided (parked; ask before building):**
+     - *Shielded*: its word changes partway through.
+     - *Caster*: its word is shown backwards or blurred. If built, keep it off in classroom presets, because hard-to-read words work against dyslexic and younger players.
+5. **Levels 1–15 in three acts, each ending with a boss.** Decide where the Scrawl goes (end of act 1 or the final boss) and design two new bosses. Code that assumes 5 levels: the level count in `GameController`, `MapSystem.IsBossLevel`, the per-level `SpawnLevelNActors()` methods, and F8. **Watch out:** attack words are `3 + CurrentLevel` letters long and `WordSystem` only has buckets for lengths 3–9, so levels past 6 would ask for words that don't exist. Word length needs its own curve, set by the configuration.
+6. **Custom word lists.** Load plain `.txt` lists from a user folder (e.g. `Application.persistentDataPath/WordLists/`) as well as the built-in `Resources/Words/` lists, and pick them in the options. Check each list before use: enough words in each length bucket, duplicates removed, and enough distinct first letters given `MoveKeys.Blocks`. Fall back to the built-in lists if a list doesn't pass, and tell the player why. Ship a few built-in packs (easy words for kids, longer words, maybe programming terms). Lists carry their language, so the word-language setting picks from them. Build the loader with the language problems above in mind (Unicode, accents, per-language length rules) even while only English ships.
+7. **Endless mode** after the win, reusing everything above.
+8. **Localization.** Move the remaining older interface text into the String Tables; solve fonts, quick moves by physical key, accent handling and IME input (see "every language is a first-class citizen" above). Then translate the interface and curate default word lists language by language, starting with the Latin-alphabet languages (cheapest: fonts and input mostly work), then Russian, then Chinese, Japanese and Korean. Earlier steps add their text through the localization system from the start, so this step is about the tooling and translations, not hunting down strings.
+
+**In parallel: the Steam page.** Start the store page as soon as the game looks presentable, so wishlists build up during development. That needs screenshots and GIFs made for the store. The README's (`PR/`) were redone on 2026-11-01 and show the new graphics and the Scrawl; `Tools/Probe/probe.sh Record` records smooth footage frame by frame (that is how they were made, with the Scrawler playing), and `Tools/Probe/capture.sh` takes 1920x1080 shots. Mention "3rd overall, Ludum Dare 41" on the page.
 
 ## Smaller follow-ups
 
-- Pressing Enter mid-word clears the input but leaves the prompt showing its typed (gold) letters until the next key (`InputController.Update`, the `'\n'` case calls `SubmitInput` without refreshing the hints).
-- The text popups log "Please remove the CanvasRenderer component from the [TextPopup(Clone)]" (`Assets/Prefabs/TextPopup.prefab`).
-- WASD isn't a cross on AZERTY keyboards; the LETTERS setting covers it, but a ZQSD option could too (`Controllers.MoveKeys`).
-- Unused originals could be removed: `Assets/Prefabs/Hints/Move{Up,Down,Left,Right}Hint.prefab`, `Assets/Graphics/UI/{HealthPanel,InputBox,AbilityIconBox}.psd`, `ProgressEnabled/Disabled.png`, the old heart sprites, and the `Electronic Highway Sign SDF` font (check references first).
-- The Scrawler bot can get stuck flip-flopping between a chest and an unexplored spot (`Tools/Scrawler/Scrawler.cs`, target commitment).
 - The Scrawl's hands and mask take no light from the knight's lantern; they are lit by their own rim. If that looks off on a dim run, tint them like `RenderSystem` tints actors.
 
 ## Gotchas learnt the hard way
 
-- Playing modifies `Assets/TextMesh Pro/Resources/Fonts & Materials/Electronic Highway Sign SDF.asset`. Revert it before every commit.
 - Test runs save a best score and can change settings: clean up with `Tools/Probe/probe.sh ClearBest` and `Settings`. If there was a best score before testing, put it back instead of clearing it. Scrawler practice runs also set the difficulty to Impossible (the main menu sets it again on the next Play).
 - TextMesh Pro: an old prefab's legacy `m_textAlignment` overwrites the alignment on every load until set to 65535; bold adds spacing and padding to the pixel font; a font asset built from code must get its version (`m_Version = 1.1.0`) stamped first, or it "upgrades" to nothing. See `CLAUDE.md`.
 - One-off setup scripts were run from Unity's `Temp/` folder, which the Editor deletes when it closes. Everything needed to rebuild the art, font and audio is in `Tools/`; the scene and prefab changes themselves are committed.

@@ -26,6 +26,7 @@ Tools/Probe/probe.sh Knight 10 5           # set the knight's hearts and power
 Tools/Probe/probe.sh Fight                 # the Scrawl fight: the knight's lane, each part's health, the prompts
 Tools/Probe/probe.sh Autopilot 60 0.15 safe   # fight the Scrawl for 60s at a letter every 0.15s (see below)
 Tools/Probe/capture.sh shot.png            # the Game view at 1920x1080
+Tools/Probe/probe.sh Record 30 14 frames/   # every frame for 30s of game time, at a steady 14 fps (see below)
 
 unity command editor.playmode stop --project-path .
 ```
@@ -34,11 +35,12 @@ The Escape key, the arrow keys and holding a key down can't be sent from outside
 
 The autopilot takes the safe dodge when one is offered, else strikes a resting hand, else the head. Mode `unsafe` takes the wrong dodge, to test getting hit; `hands` leaves the head alone until both hands are broken, to reach the last phase. To reach the fight, walk north from the bridge's start: `Type "wwwwwwwwwwwwwwwwwww" 0.15` (with WASD quick moves on).
 
+`Record` saves each frame of the Game view as a PNG, with `frames.tsv` listing their game times. It fixes the game's clock to the frame rate (`Time.captureFramerate`), so frames are evenly spaced however long each takes to save, and the game plays out exactly as it would; it carries on across level loads. Frames grabbed with `capture.sh` instead come about four a second, too few for an animation. `StopRecording` ends it early. The README's GIFs were made this way, with the Scrawler playing.
+
 ## Clean up after testing
 
 - A test run that ends saves a best score: `Tools/Probe/probe.sh ClearBest`. If there was a best score before, set it back instead (`PlayerPrefs` key `BestScore`).
-- If a test changed the player's settings, put them back: `Tools/Probe/probe.sh Settings 2 2 true` (music, sound, WASD).
-- Playing modifies `Assets/TextMesh Pro/Resources/Fonts & Materials/Electronic Highway Sign SDF.asset`. Revert it before committing: `git checkout -- "Assets/TextMesh Pro/Resources/Fonts & Materials/Electronic Highway Sign SDF.asset"`.
+- If a test changed the player's settings, put them back: `Tools/Probe/probe.sh Settings 2 2 wasd` (music, sound, and the move keys: `wasd`, `zqsd` or `letters`).
 
 ## Gotchas
 
